@@ -1,0 +1,1586 @@
+
+<script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<style>
+.token.comment{color:var(--c-comment);font-style:italic}
+.token.tag,.token.keyword,.token.boolean,.token.null{color:var(--c-key)}
+.token.attr-name{color:var(--c-attr)}
+.token.attr-value,.token.string{color:var(--c-str)}
+.token.number{color:var(--c-num)}
+.token.function,.token.class-name{color:var(--c-fn)}
+.token.punctuation,.token.operator{color:var(--c-punct)}
+.token.tag .token.punctuation{color:var(--c-punct)}
+.token.tag .token.attr-name{color:var(--c-attr)}
+</style>
+<script>
+"use strict";
+
+var SESSION = {
+  n: 1,
+  fecha: "lunes 21 de septiembre",
+  desde: "15:30",
+  hasta: "19:30"
+};
+
+var STEPS = [
+
+/* ------------------------------------------------------------------ 1 */
+{
+  id: "que-es",
+  time: "15:30", end: "15:55", dur: 25,
+  kind: "Teoría + lab",
+  modulo: "Módulo 1",
+  title: "Qué es AngularJS y por qué se escribe así",
+  goal: "Situar AngularJS 1.x en el mapa (qué resolvió en 2010, en qué se diferencia de lo que usas hoy) y ver el primer binding funcionando en menos de diez líneas.",
+  notes: `
+    <h3>Historia en cuatro fechas</h3>
+    <ul>
+      <li><strong>2009</strong> — Miško Hevery y Adam Abrons escriben <em>GetAngular</em> como proyecto paralelo en Google. La anécdota fundacional: Hevery reescribe en tres semanas una aplicación interna de 17.000 líneas en 1.500.</li>
+      <li><strong>2012</strong> — AngularJS 1.0. Su idea central: <strong>extender el HTML</strong> con atributos nuevos en lugar de generarlo desde JavaScript.</li>
+      <li><strong>2016</strong> — Angular 2 se reescribe entero en TypeScript. No es una actualización: es otro framework. Por eso el que nos ocupa se llama para siempre <strong>AngularJS</strong> (con "JS") y el otro, <strong>Angular</strong> a secas.</li>
+      <li><strong>2021/2022</strong> — última versión, <strong>1.8.3</strong>. El soporte a largo plazo (LTS) terminó el 31 de diciembre de 2021.</li>
+    </ul>
+    <p>Trabajar hoy con AngularJS casi siempre significa <strong>mantener y evolucionar</strong> una aplicación que ya está en producción. Eso cambia las prioridades del curso: nos interesa tanto escribir código nuevo como <em>leer</em> el que ya existe y entender por qué está escrito así.</p>
+
+    <h3>Las cuatro ideas que hay que llevarse</h3>
+    <ol>
+      <li><strong>HTML declarativo.</strong> La vista dice <em>qué</em> quiere (<code>ng-repeat</code>, <code>ng-if</code>) en lugar de que el JavaScript describa <em>cómo</em> construir nodos.</li>
+      <li><strong>Enlace bidireccional.</strong> Vista y modelo se sincronizan solos. Lo veremos a fondo en el módulo 3.</li>
+      <li><strong>Inyección de dependencias.</strong> Nada se instancia con <code>new</code>: se pide por nombre. Módulo 5.</li>
+      <li><strong>Es siempre una SPA.</strong> Una única página HTML, y el navegador nunca recarga. De ahí que el <em>routing</em> no sea un extra al final del curso, sino el esqueleto desde el primer día.</li>
+    </ol>
+
+    <h3>Comparativa con lo que hay alrededor</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Herramienta</th><th>Modelo mental</th><th>Actualizar la vista</th><th>Dónde la encuentras</th></tr></thead>
+      <tbody>
+        <tr><td>jQuery</td><td>Manipular el DOM a mano</td><td>Tú, nodo a nodo</td><td>Capas antiguas, widgets sueltos</td></tr>
+        <tr><td>AngularJS 1.x</td><td>MVW: vista declarativa + <code>$scope</code></td><td>El ciclo <code>$digest</code>, automático</td><td>Intranets y ERPs 2013–2018</td></tr>
+        <tr><td>Angular 2+</td><td>Componentes + TypeScript + RxJS</td><td>Zone.js / signals</td><td>Reescrituras y proyectos nuevos</td></tr>
+        <tr><td>React</td><td>Funciones que devuelven UI</td><td>DOM virtual y reconciliación</td><td>Producto y frontends públicos</td></tr>
+        <tr><td>Vue</td><td>Reactividad por proxy</td><td>Dependencias observadas</td><td>Migraciones suaves desde 1.x</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Ojo con el vocabulario</b>
+      <p>"Angular" a secas nunca significa esto. Al buscar documentación, añade siempre <em>angularjs</em> o <em>angular 1.x</em>: si no, el 95 % de los resultados serán de un framework distinto que no comparte ni una línea de API.</p>
+    </div>
+
+    <h3>El ejemplo de la derecha</h3>
+    <p>Tres piezas, y ya está todo AngularJS en miniatura:</p>
+    <ul>
+      <li><code>ng-app="holaApp"</code> marca la raíz de la aplicación. Angular arranca ahí al cargar la página.</li>
+      <li><code>ng-model="nombre"</code> crea la propiedad <code>nombre</code> en el ámbito y la ata al input.</li>
+      <li><code>{{ nombre }}</code> es una <em>interpolación</em>: se reevalúa sola cada vez que el modelo cambia.</li>
+    </ul>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- ng-app marca la raíz: Angular arranca sobre este elemento -->
+<div ng-app="holaApp">
+
+  <h1>Hola, {{ nombre || 'mundo' }}</h1>
+
+  <label>
+    Tu nombre
+    <input type="text" ng-model="nombre" placeholder="Escribe aquí...">
+  </label>
+
+  <p class="muted">
+    {{ nombre.length || 0 }} caracteres · en mayúsculas: {{ nombre | uppercase }}
+  </p>
+
+  <p class="muted">Las llaves evalúan expresiones: 2 + 2 = {{ 2 + 2 }}</p>
+
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`// Un módulo es el contenedor de la aplicación.
+//
+// OJO a los corchetes: con el segundo argumento DEFINES el módulo
+// (el array son sus dependencias). Sin él, angular.module('holaApp')
+// es una CONSULTA, y si aún no existe, revienta.
+angular.module('holaApp', []);`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Cambia <code>{{ nombre }}</code> por <code>{{ nombre.toUpperCase() }}</code> y escribe algo. Abre la consola de abajo: verás por qué Angular no se cae aunque <code>nombre</code> todavía no exista.</li>
+      <li>Añade un segundo <code>&lt;input ng-model="nombre"&gt;</code>. Los dos quedan sincronizados sin escribir una sola línea de JavaScript: eso es el enlace bidireccional.</li>
+      <li>Borra los corchetes de <code>angular.module('holaApp', [])</code>. Mira el error en la consola: es el mensaje que más vas a ver esta semana.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 2 */
+{
+  id: "modulo-controlador",
+  time: "15:55", end: "16:20", dur: 25,
+  kind: "Lab",
+  modulo: "Módulos 1 y 2",
+  title: "Entorno, módulo y controlador",
+  goal: "Montar el proyecto como se monta de verdad: qué scripts, en qué orden, y el controlador escrito con el patrón que vas a encontrar en cualquier código de empresa.",
+  notes: `
+    <h3>Montar el entorno</h3>
+    <p>AngularJS no necesita compilación. Dos etiquetas <code>&lt;script&gt;</code> y ya tienes un proyecto:</p>
+    <ul>
+      <li><strong>CDN</strong> — <code>angular.min.js</code> y, aparte, <code>angular-route.min.js</code>. Es lo que usamos en este REPL.</li>
+      <li><strong>npm</strong> — <code>npm i angular@1.8.3 angular-route@1.8.3</code>. Lo habitual en proyectos con build (gulp, webpack) o con tests.</li>
+      <li><strong>Bower</strong> — lo verás en proyectos antiguos. Está descontinuado; si te lo encuentras, migra a npm.</li>
+    </ul>
+    <div class="callout"><b>El orden importa</b>
+      <p><code>angular.js</code> siempre primero. Después los módulos oficiales (<code>angular-route</code>, <code>angular-animate</code>...). Después tu código, y dentro de tu código el archivo que <em>define</em> el módulo antes que los que lo <em>consultan</em>.</p>
+    </div>
+
+    <h3>Anatomía de un proyecto</h3>
+    <p>La estructura que recomienda la guía de estilo de John Papa, y la que usaremos toda la semana, agrupa <strong>por funcionalidad, no por tipo de archivo</strong>:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Ruta</th><th>Qué contiene</th></tr></thead>
+      <tbody>
+        <tr><td>index.html</td><td>El único HTML real. Carga los scripts y contiene el <code>ng-view</code>.</td></tr>
+        <tr><td>app/app.module.js</td><td>Declaración del módulo raíz y sus dependencias.</td></tr>
+        <tr><td>app/app.routes.js</td><td>El <code>.config()</code> con todas las rutas.</td></tr>
+        <tr><td>app/cursos/</td><td>cursos.controller.js, cursos.html, cursos.service.js — todo lo de esa pantalla, junto.</td></tr>
+        <tr><td>app/core/</td><td>Servicios compartidos: API, sesión, formateadores.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Por qué el código se escribe así</h3>
+    <ul>
+      <li><strong>IIFE</strong> — <code>(function () { ... }());</code> evita que las variables del archivo acaben en <code>window</code>. Sin módulos ES, es la única forma de aislar.</li>
+      <li><strong>Funciones con nombre</strong> en vez de anónimas: las trazas de error dicen <code>AsistenciaController</code> en vez de <code>&lt;anonymous&gt;</code>.</li>
+      <li><strong><code>$inject</code></strong> — declara las dependencias en un array de strings para que el minificador no rompa la inyección. <code>ng-strict-di</code> en el HTML hace que Angular falle en alto si a algo le falta.</li>
+      <li><strong><code>controllerAs</code></strong> — <code>SaludoController as vm</code> publica la instancia en la vista. Evita el <code>$scope</code> suelto y los problemas de herencia de ámbitos. Es el estilo por defecto desde 1.3.</li>
+    </ul>
+    <div class="callout ok"><b>Regla de oro del controlador</b>
+      <p>Un controlador prepara datos y expone funciones. <strong>No toca el DOM.</strong> Si necesitas tocar el DOM, eso es una directiva (módulo 4).</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- ng-strict-di: Angular falla si alguna dependencia no está declarada -->
+<div ng-app="cursoApp" ng-strict-di>
+
+  <!-- "as vm" publica la instancia del controlador con el nombre vm -->
+  <section ng-controller="AsistenciaController as vm">
+
+    <h1>{{ vm.titulo }}</h1>
+    <p class="muted">{{ vm.alumnos.length }} personas en el aula</p>
+
+    <form ng-submit="vm.anadir()">
+      <label>
+        Añadir alumno
+        <input type="text" ng-model="vm.nuevo">
+      </label>
+      <button type="submit" ng-disabled="!vm.nuevo">Añadir</button>
+    </form>
+
+    <ul>
+      <li ng-repeat="alumno in vm.alumnos">{{ alumno }}</li>
+    </ul>
+
+  </section>
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // 1. El módulo: contenedor de todo lo que registremos.
+  angular
+    .module('cursoApp', [])
+    .controller('AsistenciaController', AsistenciaController);
+
+  // 2. Dependencias explícitas: sobrevive a la minificación.
+  AsistenciaController.$inject = [];
+
+  // 3. El controlador prepara datos y comportamiento para UNA vista.
+  function AsistenciaController() {
+    var vm = this;               // vm = view model
+
+    vm.titulo  = 'Aula AngularJS';
+    vm.alumnos = ['Ana', 'Bruno', 'Clara'];
+    vm.nuevo   = '';
+
+    // Primero el "qué" (la API pública del controlador)...
+    vm.anadir = anadir;
+
+    // ...y debajo el "cómo".
+    function anadir() {
+      if (!vm.nuevo) { return; }
+      vm.alumnos.push(vm.nuevo);
+      vm.nuevo = '';
+    }
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Añade <code>vm.quitar = function (i) { vm.alumnos.splice(i, 1); };</code> y un botón por fila con <code>ng-click="vm.quitar($index)"</code>.</li>
+      <li>Cambia <code>as vm</code> por <code>as ctrl</code> en el HTML sin tocar el JavaScript. Funciona: el alias es cosa de la vista.</li>
+      <li>Rompe el <code>$inject</code> a propósito: pon <code>AsistenciaController.$inject = ['$http'];</code> sin añadir el parámetro. Observa qué pasa y qué dice la consola.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 3 */
+{
+  id: "routing",
+  time: "16:20", end: "16:50", dur: 30,
+  kind: "Lab",
+  modulo: "Módulos 2 y 6",
+  title: "La aplicación nace con routing",
+  goal: "Convertir la página en una SPA de verdad: varias pantallas, una sola carga, y la URL como fuente de la verdad.",
+  notes: `
+    <h3>Por qué el routing va primero</h3>
+    <p>AngularJS solo sabe construir <em>single page applications</em>. Una aplicación real tiene varias pantallas, así que o hay router, o acabas escribiendo un <code>ng-switch</code> gigante que hace de router mal hecho. Montarlo desde el primer día evita esa deuda: cada pantalla nueva es una entrada más en la tabla de rutas.</p>
+
+    <h3>Las tres piezas</h3>
+    <ol>
+      <li><strong><code>ngRoute</code></strong> vive en un archivo aparte, <code>angular-route.js</code>, y se declara como dependencia del módulo: <code>angular.module('cursoApp', ['ngRoute'])</code>.</li>
+      <li><strong><code>$routeProvider</code></strong> se configura en un bloque <code>.config()</code>. Los <em>providers</em> solo existen en esa fase, antes de que arranque la aplicación.</li>
+      <li><strong><code>ng-view</code></strong> es el hueco donde el router inserta la plantilla de la ruta activa. <strong>Solo puede haber uno</strong> en toda la aplicación.</li>
+    </ol>
+
+    <h3>El signo de admiración</h3>
+    <p>Desde la versión 1.6 el prefijo del hash es <code>!</code>, así que las URLs son <code>#!/temario</code> y no <code>#/temario</code>. Es el cambio que más rompe tutoriales antiguos: si copias un ejemplo de 2015 y no navega, casi siempre es esto.</p>
+    <p>Para volver al comportamiento antiguo: <code>$locationProvider.hashPrefix('')</code>.</p>
+    <div class="callout"><b>Y el modo sin almohadilla</b>
+      <p><code>$locationProvider.html5Mode(true)</code> da URLs limpias (<code>/temario</code>), pero <strong>exige</strong> que el servidor devuelva <code>index.html</code> para cualquier ruta. Si no configuras eso, el usuario recarga en <code>/temario</code> y recibe un 404. En el aula seguimos con hash.</p>
+    </div>
+
+    <h3>otherwise, el comodín</h3>
+    <p><code>.otherwise()</code> atrapa cualquier ruta que no encaje. Sin él, una URL desconocida deja el <code>ng-view</code> en blanco y parece que la aplicación se ha roto. Puede redirigir (<code>redirectTo</code>) o pintar una pantalla 404 propia.</p>
+    <p>Fíjate en la barra de direcciones que hay sobre la vista: es la URL real de la aplicación y cambia sin recargar. Puedes escribir ahí <code>#!/loquesea</code> y ver actuar al <code>otherwise</code>.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <!-- Enlaces normales: lo que cambia es el fragmento (#!) -->
+  <nav>
+    <a href="#!/">Inicio</a>
+    <a href="#!/temario">Temario</a>
+    <a href="#!/equipo">Equipo</a>
+  </nav>
+
+  <!-- Aquí dentro el router inserta la vista de la ruta activa.
+       Solo puede haber UN ng-view en toda la aplicación. -->
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp', ['ngRoute'])   // ngRoute = angular-route.js
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider', '$locationProvider'];
+
+  function configurarRutas($routeProvider, $locationProvider) {
+
+    // Desde 1.6 el prefijo por defecto es '!'  ->  #!/temario
+    // Con '' volverías al estilo antiguo        ->  #/temario
+    $locationProvider.hashPrefix('!');
+
+    $routeProvider
+      .when('/', {
+        template: '<h1>Inicio</h1>' +
+                  '<p>Una sola carga de página. A partir de aquí manda la URL.</p>'
+      })
+      .when('/temario', {
+        template: '<h1>Temario</h1>' +
+                  '<p>10 módulos, 20 horas, 5 tardes.</p>'
+      })
+      .when('/equipo', {
+        template: '<h1>Equipo</h1>' +
+                  '<p>Formación a medida para Ayesa.</p>'
+      })
+      // Comodín: cualquier otra URL cae aquí.
+      .otherwise({ redirectTo: '/' });
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Escribe <code>#!/precios</code> en la barra de direcciones de la vista. Comprueba que <code>otherwise</code> te devuelve a Inicio.</li>
+      <li>Sustituye el <code>redirectTo</code> por una plantilla 404 propia: <code>.otherwise({ template: '&lt;h1&gt;404&lt;/h1&gt;&lt;p&gt;Esa página no existe.&lt;/p&gt;' })</code>.</li>
+      <li>Añade una cuarta ruta <code>/contacto</code> con su enlace.</li>
+      <li>Cambia <code>hashPrefix('!')</code> por <code>hashPrefix('')</code>. La navegación se rompe: los <code>href</code> del HTML ya no coinciden. Arréglalos y entenderás de un vistazo cientos de preguntas en Stack Overflow.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 4 */
+{
+  id: "descanso-1",
+  time: "16:50", end: "17:05", dur: 15,
+  kind: "Descanso",
+  modulo: "",
+  title: "Descanso",
+  goal: "",
+  break: true,
+  breakText: "Volvemos a las 17:05 con la estructura de carpetas y las plantillas en archivos aparte."
+},
+
+/* ------------------------------------------------------------------ 5 */
+{
+  id: "estructura",
+  time: "17:05", end: "17:35", dur: 30,
+  kind: "Lab",
+  modulo: "Módulo 2",
+  title: "Un archivo por cosa: templateUrl y carpetas por funcionalidad",
+  goal: "Sacar las plantillas del JavaScript, dar a cada ruta su controlador, y dejar el proyecto con la forma que tendrá el resto de la semana.",
+  notes: `
+    <h3>De <code>template</code> a <code>templateUrl</code></h3>
+    <p>Concatenar HTML dentro de un string de JavaScript se aguanta dos pantallas. A la tercera, <code>templateUrl</code>: Angular pide el archivo con <code>$templateRequest</code>, lo guarda en <code>$templateCache</code> y no vuelve a pedirlo.</p>
+    <p>Las pestañas <code>inicio/inicio.html</code> y <code>temario/temario.html</code> de aquí al lado <strong>son archivos reales</strong> para la aplicación: el router los resuelve por su ruta, exactamente igual que en tu proyecto.</p>
+
+    <h3>Definir frente a consultar el módulo</h3>
+    <p>La distinción que más confusión genera al repartir el código en archivos:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Escritura</th><th>Qué hace</th><th>Dónde va</th></tr></thead>
+      <tbody>
+        <tr><td><code>angular.module('cursoApp', [])</code></td><td><strong>Define</strong> el módulo (y lo sobrescribe si ya existía)</td><td>Una sola vez, en app.module.js</td></tr>
+        <tr><td><code>angular.module('cursoApp')</code></td><td><strong>Consulta</strong> el módulo ya definido</td><td>En todos los demás archivos</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>El error clásico</b>
+      <p>Si dos archivos definen el módulo con corchetes, el segundo borra todo lo que registró el primero. Síntoma: "Argument 'InicioController' is not a function, got undefined".</p>
+    </div>
+
+    <h3>El controlador en la ruta</h3>
+    <p>Cuando una plantilla pertenece a una ruta, su controlador se declara <strong>en la ruta</strong>, no con <code>ng-controller</code> en el HTML:</p>
+    <ul>
+      <li><code>controller: 'InicioController'</code> — quién manda en esa vista.</li>
+      <li><code>controllerAs: 'vm'</code> — con qué nombre lo ve la plantilla.</li>
+    </ul>
+    <p>Así la plantilla no sabe qué controlador la gobierna y puede reutilizarse; y el router crea y destruye la instancia al entrar y salir de la ruta.</p>
+
+    <h3>Cómo se traduce a carpetas</h3>
+    <p>Los nombres de las pestañas son las rutas reales del proyecto. En disco tendrías exactamente esto, más el <code>index.html</code> cargando los cuatro scripts en orden.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <nav>
+    <a href="#!/">Inicio</a>
+    <a href="#!/temario">Temario</a>
+  </nav>
+
+  <main ng-view></main>
+
+  <!-- En tu proyecto, aquí abajo irían en este orden:
+       angular.js, angular-route.js,
+       app/app.module.js,
+       app/inicio/inicio.controller.js,
+       app/temario/temario.controller.js -->
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // Este archivo, y SOLO este, define el módulo (con corchetes).
+  angular.module('cursoApp', ['ngRoute']);
+
+  angular
+    .module('cursoApp')      // sin corchetes: consulta
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'inicio/inicio.html',
+        controller:   'InicioController',
+        controllerAs: 'vm'
+      })
+      .when('/temario', {
+        templateUrl:  'temario/temario.html',
+        controller:   'TemarioController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ redirectTo: '/' });
+  }
+}());`
+    },
+    { name: "inicio/inicio.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')      // consulta: el módulo ya existe
+    .controller('InicioController', InicioController);
+
+  InicioController.$inject = [];
+
+  function InicioController() {
+    var vm = this;
+
+    vm.titulo        = 'Curso de AngularJS';
+    vm.sesion        = 1;
+    vm.totalSesiones = 5;
+  }
+}());`
+    },
+    { name: "inicio/inicio.html", lang: "markup", code:
+`<h1>{{ vm.titulo }}</h1>
+
+<p>Sesión {{ vm.sesion }} de {{ vm.totalSesiones }}.</p>
+
+<p class="muted">
+  Esta plantilla vive en su propio archivo. El router la pide por su ruta
+  y la deja cacheada en $templateCache.
+</p>`
+    },
+    { name: "temario/temario.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .controller('TemarioController', TemarioController);
+
+  TemarioController.$inject = [];
+
+  function TemarioController() {
+    var vm = this;
+
+    vm.modulos = [
+      { n: 1, nombre: 'Introducción a AngularJS', horas: 2 },
+      { n: 2, nombre: 'Fundamentos',              horas: 2 },
+      { n: 3, nombre: 'Enlace de datos',          horas: 2 },
+      { n: 4, nombre: 'Directivas avanzadas',     horas: 2 },
+      { n: 5, nombre: 'Servicios y dependencias', horas: 2 }
+    ];
+
+    vm.totalHoras = totalHoras;
+
+    function totalHoras() {
+      return vm.modulos.reduce(function (suma, m) {
+        return suma + m.horas;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "temario/temario.html", lang: "markup", code:
+`<h1>Temario</h1>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Módulo</th><th>Horas</th></tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="m in vm.modulos">
+      <td>{{ m.n }}</td>
+      <td>{{ m.nombre }}</td>
+      <td>{{ m.horas }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="muted">Total: {{ vm.totalHoras() }} h</p>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Añade una tercera funcionalidad completa: <code>equipo/equipo.controller.js</code> y <code>equipo/equipo.html</code>, su ruta y su enlace. Usa el botón <em>+ archivo</em> de la barra del editor.</li>
+      <li>En <code>inicio/inicio.controller.js</code> cambia <code>angular.module('cursoApp')</code> por <code>angular.module('cursoApp', [])</code>. Lee el error de la consola: memorízalo, es el 90 % de los "not a function, got undefined".</li>
+      <li>Completa el temario con los 10 módulos del curso y comprueba que el total pasa a 20 h.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 6 */
+{
+  id: "directivas",
+  time: "17:35", end: "18:10", dur: 35,
+  kind: "Lab",
+  modulo: "Módulo 2",
+  title: "Vistas: las directivas y los filtros que usarás a diario",
+  goal: "Dominar el juego completo de directivas integradas —repetir, condicionar, clasificar, reaccionar— y encadenar filtros para buscar y ordenar sin escribir un bucle.",
+  notes: `
+    <h3>Repetir</h3>
+    <p><code>ng-repeat</code> clona el elemento por cada ítem y crea un <strong>ámbito hijo</strong> por iteración, con estas variables regaladas: <code>$index</code>, <code>$first</code>, <code>$last</code>, <code>$even</code>, <code>$odd</code>.</p>
+    <div class="callout"><b>track by, siempre que puedas</b>
+      <p>Por defecto Angular indexa por identidad del objeto, y una lista con valores repetidos lanza <em>"Duplicates in a repeater are not allowed"</em>. Con <code>ng-repeat="c in vm.cursos track by c.id"</code> evitas el error y, sobre todo, evitas que se recreen todos los nodos en cada refresco.</p>
+    </div>
+
+    <h3>Condicionar: ng-if frente a ng-show</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th></th><th>ng-if</th><th>ng-show / ng-hide</th></tr></thead>
+      <tbody>
+        <tr><td>Cuando es falso</td><td>El nodo no existe en el DOM</td><td>El nodo existe, oculto con CSS</td></tr>
+        <tr><td>Ámbito</td><td>Crea un ámbito hijo</td><td>No crea ámbito</td></tr>
+        <tr><td>Coste</td><td>Caro de alternar, barato de mantener</td><td>Barato de alternar, caro si hay muchos</td></tr>
+        <tr><td>Úsalo para</td><td>Bloques pesados o que rara vez aparecen</td><td>Alternancias rápidas y frecuentes</td></tr>
+      </tbody>
+    </table></div>
+    <p>El ámbito hijo de <code>ng-if</code> es una trampa clásica: un <code>ng-model="dato"</code> dentro de un <code>ng-if</code> escribe en el hijo, no en el padre. Con <code>controllerAs</code> (<code>vm.dato</code>) el problema desaparece, porque escribes sobre un objeto. Es la famosa "regla del punto".</p>
+
+    <h3>Clases y eventos</h3>
+    <ul>
+      <li><code>ng-class="{activo: c.activo, urgente: c.dias &lt; 3}"</code> — un objeto donde la clave es la clase y el valor, la condición.</li>
+      <li><code>ng-click</code>, <code>ng-change</code>, <code>ng-submit</code>, <code>ng-keyup</code>... Todos avisan al ciclo <code>$digest</code> por su cuenta; por eso la vista se actualiza sola.</li>
+      <li><code>ng-disabled</code>, <code>ng-checked</code>, <code>ng-selected</code> existen porque en HTML no puedes escribir <code>disabled="{{ ... }}"</code>: el navegador lee el atributo antes de que Angular lo interpole.</li>
+      <li><code>ng-src</code> y <code>ng-href</code>, por lo mismo: evitan que el navegador pida <code>/{{ url }}</code> literal.</li>
+    </ul>
+
+    <h3>Filtros: transformar en la vista</h3>
+    <p>Un filtro es una función pura que se aplica con <code>|</code> y se encadena. Los integrados que más se usan:</p>
+    <ul>
+      <li><code>filter</code> — busca. Con un string busca en todas las propiedades; con <code>{nombre: vm.q}</code> solo en esa; con una función, tu propio criterio.</li>
+      <li><code>orderBy</code> — ordena. Con <code>'-horas'</code>, descendente.</li>
+      <li><code>currency</code>, <code>number</code>, <code>date</code>, <code>uppercase</code>, <code>limitTo</code>, <code>json</code> (este último, oro puro para depurar).</li>
+    </ul>
+    <p>El sufijo <code>as resultados</code> al final de un <code>ng-repeat</code> guarda la lista ya filtrada en una variable: así puedes pintar el mensaje de "sin resultados" sin volver a filtrar.</p>
+    <div class="callout"><b>Coste</b>
+      <p>Los filtros se evalúan en cada <code>$digest</code>. Con listas grandes (miles de filas) muévelos al controlador y recalcula solo cuando cambie la búsqueda.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <nav>
+    <a href="#!/catalogo">Catálogo</a>
+    <a href="#!/ayuda">Ayuda</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('cursoApp', ['ngRoute']);
+
+  angular
+    .module('cursoApp')
+    .config(configurarRutas)
+    .controller('CatalogoController', CatalogoController);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/catalogo', {
+        templateUrl:  'catalogo/catalogo.html',
+        controller:   'CatalogoController',
+        controllerAs: 'vm'
+      })
+      .when('/ayuda', {
+        template: '<h1>Ayuda</h1><p>Prueba a escribir en el buscador del catálogo.</p>'
+      })
+      .otherwise({ redirectTo: '/catalogo' });
+  }
+
+  CatalogoController.$inject = [];
+
+  function CatalogoController() {
+    var vm = this;
+
+    vm.q           = '';
+    vm.soloActivos = false;
+    vm.mostrar     = true;
+
+    vm.cursos = [
+      { id: 1, nombre: 'AngularJS',  horas: 20, precio: 1200, activo: true,  alta: new Date(2026, 8, 21) },
+      { id: 2, nombre: 'Java 21',    horas: 30, precio: 1800, activo: true,  alta: new Date(2026, 5, 3) },
+      { id: 3, nombre: 'Struts 1',   horas: 12, precio: 600,  activo: false, alta: new Date(2019, 1, 14) },
+      { id: 4, nombre: 'Angular 19', horas: 40, precio: 2400, activo: true,  alta: new Date(2026, 0, 9) }
+    ];
+
+    vm.esVisible = esVisible;
+    vm.alternar  = alternar;
+
+    // Un filtro puede ser una función: recibe cada elemento
+    // y devuelve true si debe mostrarse.
+    function esVisible(curso) {
+      return vm.soloActivos ? curso.activo : true;
+    }
+
+    function alternar(curso) {
+      curso.activo = !curso.activo;
+    }
+  }
+}());`
+    },
+    { name: "catalogo/catalogo.html", lang: "markup", code:
+`<h1>Catálogo de cursos</h1>
+
+<label>
+  Buscar por nombre
+  <input type="text" ng-model="vm.q" placeholder="angular, java...">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo cursos activos
+</label>
+
+<!-- Filtros encadenados, alias "as resultados" y track by.
+     El orden de la expresión es fijo:  X in COLECCIÓN | filtros  as ALIAS  track by CLAVE -->
+<div class="ficha"
+     ng-repeat="c in vm.cursos | filter:{nombre: vm.q} | filter:vm.esVisible | orderBy:'-horas' as resultados track by c.id">
+
+  <h3>
+    {{ $index + 1 }}. {{ c.nombre }}
+    <span class="chip" ng-class="{activo: c.activo}">
+      {{ c.activo ? 'activo' : 'archivado' }}
+    </span>
+  </h3>
+
+  <p class="muted">
+    {{ c.horas }} h · {{ c.precio | currency:'€ ':0 }} · alta {{ c.alta | date:'dd/MM/yyyy' }}
+  </p>
+
+  <button class="sec" ng-click="vm.alternar(c)">Cambiar estado</button>
+</div>
+
+<p class="muted" ng-if="resultados.length === 0">
+  Sin resultados para "{{ vm.q }}".
+</p>
+
+<h2>ng-if frente a ng-show</h2>
+
+<button ng-click="vm.mostrar = !vm.mostrar">
+  {{ vm.mostrar ? 'Ocultar' : 'Mostrar' }}
+</button>
+
+<p ng-if="vm.mostrar">ng-if: cuando es falso, este nodo NO existe en el DOM.</p>
+<p ng-show="vm.mostrar">ng-show: el nodo existe siempre, sólo se oculta con CSS.</p>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Intercambia el orden: pon <code>track by c.id</code> antes de <code>as resultados</code>. Angular lanza <em>"Expected expression in form of..."</em>. Ese orden no es negociable, y el mensaje de error te lo dice entero: acostúmbrate a leerlos hasta el final.</li>
+      <li>Cambia <code>orderBy:'-horas'</code> por <code>orderBy:'nombre'</code>, y luego permite elegir el criterio desde un <code>&lt;select ng-model="vm.orden"&gt;</code>.</li>
+      <li>Añade <code>{{ vm.cursos | json }}</code> al final de la plantilla: verás el modelo entero en crudo mientras lo manipulas.</li>
+      <li>Pinta en rojo los cursos archivados añadiendo una clase con <code>ng-class</code>.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 7 */
+{
+  id: "descanso-2",
+  time: "18:10", end: "18:20", dur: 10,
+  kind: "Descanso",
+  modulo: "",
+  title: "Descanso corto",
+  goal: "",
+  break: true,
+  breakText: "Diez minutos. Luego, parámetros de ruta: lista y detalle."
+},
+
+/* ------------------------------------------------------------------ 8 */
+{
+  id: "route-params",
+  time: "18:20", end: "18:55", dur: 35,
+  kind: "Lab",
+  modulo: "Módulos 6 y 5",
+  title: "Parámetros de ruta: de la lista al detalle",
+  goal: "Hacer que la URL lleve datos, compartir información entre dos pantallas con un servicio, y navegar desde JavaScript.",
+  notes: `
+    <h3>Rutas con parámetros</h3>
+    <p>Un segmento con dos puntos captura un valor: <code>/cursos/:id</code> encaja con <code>#!/cursos/3</code>. El valor llega al controlador a través del servicio <code>$routeParams</code>.</p>
+    <div class="callout"><b>Siempre llega como texto</b>
+      <p><code>$routeParams.id</code> es el string <code>"3"</code>, no el número <code>3</code>. Compararlo con <code>===</code> contra un id numérico falla en silencio. Conviértelo (<code>Number(...)</code>) o compara con <code>==</code> a conciencia.</p>
+    </div>
+    <p>Variantes útiles: <code>/cursos/:id?</code> hace el parámetro opcional, y <code>/docs/:ruta*</code> captura varios segmentos.</p>
+
+    <h3>El primer servicio</h3>
+    <p>Dos controladores necesitan los mismos cursos. Duplicar el array sería un error: en cuanto la lista venga de una API, habría dos verdades. La respuesta de AngularJS es un <strong>servicio</strong>, que es un <em>singleton</em>: se crea una vez y se comparte.</p>
+    <ul>
+      <li><code>.factory('nombre', fn)</code> — la función devuelve el objeto público. Es la forma más usada.</li>
+      <li><code>.service('nombre', Fn)</code> — Angular hace <code>new Fn()</code> y el servicio es esa instancia.</li>
+      <li><code>.value</code> y <code>.constant</code> — para configuración. <code>constant</code> es el único disponible dentro de un <code>.config()</code>.</li>
+    </ul>
+    <p>El módulo 5 entra a fondo. Hoy basta con la idea: <strong>el estado compartido vive en un servicio, no en un controlador</strong>.</p>
+
+    <h3>Navegar desde JavaScript</h3>
+    <p><code>$location.path('/cursos')</code> cambia la ruta desde código y queda en el historial. Para leer o escribir parámetros de consulta, <code>$location.search()</code>.</p>
+
+    <h3>Lo que resuelve un 404 de datos</h3>
+    <p><code>#!/cursos/99</code> encaja con la ruta pero no existe el curso. El controlador debe contemplarlo: aquí se resuelve con un <code>ng-if</code> y una tarjeta de "no encontrado". La alternativa elegante es <code>resolve</code>, que retrasa el cambio de ruta hasta tener los datos; lo veremos con <code>$http</code> en el módulo 8.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <nav>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/cursos/3">Ir directo al curso 3</a>
+    <a href="#!/cursos/99">Un curso que no existe</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('cursoApp', ['ngRoute']);
+
+  angular
+    .module('cursoApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/cursos', {
+        templateUrl:  'cursos/lista.html',
+        controller:   'ListaController',
+        controllerAs: 'vm'
+      })
+      // :id captura un segmento de la URL
+      .when('/cursos/:id', {
+        templateUrl:  'cursos/detalle.html',
+        controller:   'DetalleController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ redirectTo: '/cursos' });
+  }
+}());`
+    },
+    { name: "cursos/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  // Un servicio es un singleton: Angular lo crea UNA vez
+  // y entrega la misma instancia a todo el que lo pida.
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',  horas: 20, nivel: 'Inicial',  docente: 'Pedro Hurtado' },
+      { id: 2, nombre: 'Java 21',    horas: 30, nivel: 'Medio',    docente: 'Equipo Idexa' },
+      { id: 3, nombre: 'Angular 19', horas: 40, nivel: 'Avanzado', docente: 'Pedro Hurtado' }
+    ];
+
+    // Sólo esto sale al exterior: la API pública del servicio.
+    return {
+      getAll:  getAll,
+      getById: getById
+    };
+
+    function getAll() {
+      return cursos;
+    }
+
+    function getById(id) {
+      var buscado = Number(id);          // $routeParams devuelve texto
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .controller('ListaController', ListaController);
+
+  // El servicio se PIDE por su nombre. El controlador no sabe
+  // cómo se construye ni de dónde salen los datos.
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos = cursosService.getAll();
+  }
+}());`
+    },
+    { name: "cursos/detalle.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .controller('DetalleController', DetalleController);
+
+  DetalleController.$inject = ['$routeParams', '$location', 'cursosService'];
+
+  function DetalleController($routeParams, $location, cursosService) {
+    var vm = this;
+
+    vm.id    = $routeParams.id;               // ojo: siempre es un string
+    vm.curso = cursosService.getById(vm.id);  // null si no existe
+
+    vm.volver = volver;
+
+    function volver() {
+      $location.path('/cursos');              // navegar desde el código
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<ul>
+  <li ng-repeat="c in vm.cursos track by c.id">
+    <!-- ng-href evita que el navegador pida la URL sin interpolar -->
+    <a ng-href="#!/cursos/{{ c.id }}">{{ c.nombre }}</a>
+    <span class="chip">{{ c.horas }} h</span>
+  </li>
+</ul>`
+    },
+    { name: "cursos/detalle.html", lang: "markup", code:
+`<div ng-if="vm.curso">
+  <h1>{{ vm.curso.nombre }}</h1>
+
+  <div class="ficha">
+    <p><strong>Nivel:</strong> {{ vm.curso.nivel }}</p>
+    <p><strong>Duración:</strong> {{ vm.curso.horas }} horas</p>
+    <p><strong>Docente:</strong> {{ vm.curso.docente }}</p>
+    <p class="muted">Parámetro recibido en la ruta: id = "{{ vm.id }}"</p>
+  </div>
+</div>
+
+<div ng-if="!vm.curso">
+  <h1>Curso no encontrado</h1>
+  <p class="muted">La ruta encaja, pero no hay ningún curso con id {{ vm.id }}.</p>
+</div>
+
+<button class="sec" ng-click="vm.volver()">Volver a la lista</button>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Añade al servicio un cuarto curso y comprueba que aparece en la lista sin tocar ningún controlador. Esa es la ganancia del singleton.</li>
+      <li>Haz que el detalle tenga enlaces de "anterior" y "siguiente" navegando por <code>id</code>.</li>
+      <li>Añade una ruta <code>/cursos/:id/temario</code> con su plantilla, y enlázala desde el detalle.</li>
+      <li>En <code>getById</code>, quita el <code>Number(id)</code>. El detalle deja de encontrar nada: acabas de vivir el fallo de tipos más habitual con <code>$routeParams</code>.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 9 */
+{
+  id: "reto-final",
+  time: "18:55", end: "19:25", dur: 30,
+  kind: "Reto",
+  modulo: "Módulos 1, 2 y 6",
+  title: "Reto: el panel de formación de Ayesa",
+  goal: "Montar tú solo una SPA completa con cuatro rutas, un servicio, búsqueda y pantalla de error, usando únicamente lo visto esta tarde.",
+  notes: `
+    <h3>Qué hay que entregar</h3>
+    <p>Una aplicación con estas cuatro rutas:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Ruta</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td><code>#!/</code></td><td>Portada con el número de cursos y el total de horas.</td></tr>
+        <tr><td><code>#!/cursos</code></td><td>Lista con buscador, filtro de activos y enlace al detalle.</td></tr>
+        <tr><td><code>#!/cursos/:id</code></td><td>Ficha del curso, con aviso si el id no existe.</td></tr>
+        <tr><td>cualquier otra</td><td>Pantalla 404 propia, con enlace de vuelta a la portada.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Requisitos</h3>
+    <ul>
+      <li>Un único archivo define el módulo; el resto lo consulta.</li>
+      <li>Los datos viven en un <code>factory</code>, no en los controladores.</li>
+      <li>Todas las plantillas en archivos aparte, con <code>templateUrl</code>.</li>
+      <li><code>$inject</code> en todo, y <code>controllerAs: 'vm'</code> en todas las rutas.</li>
+      <li>Ningún controlador toca el DOM.</li>
+    </ul>
+
+    <h3>Punto de partida</h3>
+    <p>El código de al lado es el esqueleto con los huecos marcados como <code>TODO</code>. Trabaja sobre él; la vista se recarga sola al escribir. Cuando lo tengas —o si te atascas— el botón <em>Solución</em> de la barra del editor carga una versión de referencia completa.</p>
+    <div class="callout ok"><b>Pista para el 404</b>
+      <p>No uses <code>redirectTo</code>: define <code>.otherwise({ templateUrl: 'core/404.html' })</code> y crea esa plantilla con el botón <em>+ archivo</em>.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="panelApp">
+
+  <nav>
+    <a href="#!/">Portada</a>
+    <a href="#!/cursos">Cursos</a>
+    <!-- TODO 1: añade un enlace a una ruta que no existe
+         para comprobar tu pantalla 404 -->
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('panelApp', ['ngRoute']);
+
+  angular
+    .module('panelApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'portada/portada.html',
+        controller:   'PortadaController',
+        controllerAs: 'vm'
+      })
+
+      // TODO 2: ruta '/cursos'   -> cursos/lista.html   + ListaController
+      // TODO 3: ruta '/cursos/:id' -> cursos/detalle.html + DetalleController
+
+      // TODO 4: otherwise con templateUrl 'core/404.html' (NO redirectTo)
+      .otherwise({ redirectTo: '/' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',        horas: 20, activo: true,  area: 'Frontend' },
+      { id: 2, nombre: 'Java 21',          horas: 30, activo: true,  area: 'Backend' },
+      { id: 3, nombre: 'Angular 19',       horas: 40, activo: true,  area: 'Frontend' },
+      { id: 4, nombre: 'Struts 1',         horas: 12, activo: false, area: 'Legacy' },
+      { id: 5, nombre: 'Spring Boot',      horas: 35, activo: true,  area: 'Backend' },
+      { id: 6, nombre: 'Oracle Forms',     horas: 16, activo: false, area: 'Legacy' }
+    ];
+
+    return {
+      getAll:  getAll,
+      getById: getById,
+      totalHoras: totalHoras
+    };
+
+    function getAll() { return cursos; }
+
+    function getById(id) {
+      var buscado = Number(id);
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+
+    // TODO 5: devuelve la suma de horas de los cursos ACTIVOS
+    function totalHoras() {
+      return 0;
+    }
+  }
+}());`
+    },
+    { name: "portada/portada.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('PortadaController', PortadaController);
+
+  PortadaController.$inject = ['cursosService'];
+
+  function PortadaController(cursosService) {
+    var vm = this;
+
+    vm.cursos     = cursosService.getAll();
+    vm.totalHoras = cursosService.totalHoras();
+  }
+}());`
+    },
+    { name: "portada/portada.html", lang: "markup", code:
+`<h1>Panel de formación</h1>
+
+<div class="ficha">
+  <p><strong>{{ vm.cursos.length }}</strong> cursos en catálogo</p>
+  <p><strong>{{ vm.totalHoras }}</strong> horas activas</p>
+</div>
+
+<p><a href="#!/cursos">Ver el catálogo</a></p>`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('ListaController', ListaController);
+
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos      = cursosService.getAll();
+    vm.q           = '';
+    vm.soloActivos = false;
+
+    // TODO 6: expón vm.esVisible(curso) para usarlo como filtro
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="vm.q">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo activos
+</label>
+
+<!-- TODO 7: repite sobre vm.cursos filtrando por nombre y por vm.esVisible,
+     ordenando por nombre, con "as resultados" y track by c.id.
+     Cada fila enlaza a #!/cursos/{{ c.id }} -->
+<ul>
+  <li ng-repeat="c in vm.cursos">{{ c.nombre }}</li>
+</ul>
+
+<!-- TODO 8: mensaje cuando resultados.length === 0 -->`
+    }
+  ],
+  solution: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="panelApp">
+
+  <nav>
+    <a href="#!/">Portada</a>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/no-existe">Probar el 404</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('panelApp', ['ngRoute']);
+
+  angular
+    .module('panelApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'portada/portada.html',
+        controller:   'PortadaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos', {
+        templateUrl:  'cursos/lista.html',
+        controller:   'ListaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos/:id', {
+        templateUrl:  'cursos/detalle.html',
+        controller:   'DetalleController',
+        controllerAs: 'vm'
+      })
+      .otherwise({
+        templateUrl: 'core/404.html'
+      });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',        horas: 20, activo: true,  area: 'Frontend' },
+      { id: 2, nombre: 'Java 21',          horas: 30, activo: true,  area: 'Backend' },
+      { id: 3, nombre: 'Angular 19',       horas: 40, activo: true,  area: 'Frontend' },
+      { id: 4, nombre: 'Struts 1',         horas: 12, activo: false, area: 'Legacy' },
+      { id: 5, nombre: 'Spring Boot',      horas: 35, activo: true,  area: 'Backend' },
+      { id: 6, nombre: 'Oracle Forms',     horas: 16, activo: false, area: 'Legacy' }
+    ];
+
+    return {
+      getAll:     getAll,
+      getById:    getById,
+      totalHoras: totalHoras
+    };
+
+    function getAll() { return cursos; }
+
+    function getById(id) {
+      var buscado = Number(id);
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+
+    function totalHoras() {
+      return cursos.reduce(function (suma, c) {
+        return c.activo ? suma + c.horas : suma;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "core/404.html", lang: "markup", code:
+`<h1>404</h1>
+
+<p class="muted">Esa ruta no existe en el panel.</p>
+
+<p><a href="#!/">Volver a la portada</a></p>`
+    },
+    { name: "portada/portada.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('PortadaController', PortadaController);
+
+  PortadaController.$inject = ['cursosService'];
+
+  function PortadaController(cursosService) {
+    var vm = this;
+
+    vm.cursos     = cursosService.getAll();
+    vm.totalHoras = cursosService.totalHoras();
+  }
+}());`
+    },
+    { name: "portada/portada.html", lang: "markup", code:
+`<h1>Panel de formación</h1>
+
+<div class="ficha">
+  <p><strong>{{ vm.cursos.length }}</strong> cursos en catálogo</p>
+  <p><strong>{{ vm.totalHoras }}</strong> horas activas</p>
+</div>
+
+<p><a href="#!/cursos">Ver el catálogo</a></p>`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('ListaController', ListaController);
+
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos      = cursosService.getAll();
+    vm.q           = '';
+    vm.soloActivos = false;
+
+    vm.esVisible = esVisible;
+
+    function esVisible(curso) {
+      return vm.soloActivos ? curso.activo : true;
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="vm.q">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo activos
+</label>
+
+<ul>
+  <li ng-repeat="c in vm.cursos | filter:{nombre: vm.q} | filter:vm.esVisible | orderBy:'nombre' as resultados">
+    <a ng-href="#!/cursos/{{ c.id }}">{{ c.nombre }}</a>
+    <span class="chip" ng-class="{activo: c.activo}">{{ c.area }}</span>
+    <span class="muted">{{ c.horas }} h</span>
+  </li>
+</ul>
+
+<p class="muted" ng-if="resultados.length === 0">
+  Ningún curso coincide con "{{ vm.q }}".
+</p>`
+    },
+    { name: "cursos/detalle.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('DetalleController', DetalleController);
+
+  DetalleController.$inject = ['$routeParams', '$location', 'cursosService'];
+
+  function DetalleController($routeParams, $location, cursosService) {
+    var vm = this;
+
+    vm.id    = $routeParams.id;
+    vm.curso = cursosService.getById(vm.id);
+
+    vm.volver = volver;
+
+    function volver() {
+      $location.path('/cursos');
+    }
+  }
+}());`
+    },
+    { name: "cursos/detalle.html", lang: "markup", code:
+`<div ng-if="vm.curso">
+  <h1>{{ vm.curso.nombre }}</h1>
+
+  <div class="ficha">
+    <p><strong>Área:</strong> {{ vm.curso.area }}</p>
+    <p><strong>Duración:</strong> {{ vm.curso.horas }} horas</p>
+    <p>
+      <strong>Estado:</strong>
+      <span class="chip" ng-class="{activo: vm.curso.activo}">
+        {{ vm.curso.activo ? 'activo' : 'archivado' }}
+      </span>
+    </p>
+  </div>
+</div>
+
+<div ng-if="!vm.curso">
+  <h1>Curso no encontrado</h1>
+  <p class="muted">No hay ningún curso con id {{ vm.id }}.</p>
+</div>
+
+<button class="sec" ng-click="vm.volver()">Volver a la lista</button>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Completa los ocho <code>TODO</code>. Te faltan por crear <code>core/404.html</code>, <code>cursos/detalle.controller.js</code> y <code>cursos/detalle.html</code>: usa <em>+ archivo</em>.</li>
+      <li>Si acabas pronto: agrupa la lista por área con dos <code>ng-repeat</code> anidados.</li>
+      <li>Si acabas muy pronto: añade a la portada las horas por área usando <code>ng-repeat</code> sobre un objeto (<code>(clave, valor) in vm.porArea</code>).</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 10 */
+{
+  id: "cierre",
+  time: "19:25", end: "19:30", dur: 5,
+  kind: "Cierre",
+  modulo: "",
+  title: "Cierre y puente a mañana",
+  goal: "Repasar lo que ya sabes hacer y dejar planteado lo que abre la sesión 2.",
+  notes: `
+    <h3>Después de estas cuatro horas sabes</h3>
+    <ul>
+      <li>Situar AngularJS 1.x frente a Angular, React y jQuery, y saber qué buscar en la documentación.</li>
+      <li>Arrancar una aplicación con <code>ng-app</code> y repartirla en módulo, controladores y plantillas.</li>
+      <li>Escribir un controlador con IIFE, <code>$inject</code> y <code>controllerAs</code> —el estilo que verás en cualquier código de producción.</li>
+      <li>Montar el routing con <code>ngRoute</code>, <code>ng-view</code>, <code>templateUrl</code>, <code>otherwise</code> y parámetros de ruta.</li>
+      <li>Usar <code>ng-repeat</code>, <code>ng-if</code>, <code>ng-show</code>, <code>ng-class</code>, <code>ng-click</code> y encadenar filtros.</li>
+      <li>Compartir estado entre pantallas con un <code>factory</code>.</li>
+    </ul>
+
+    <h3>Mañana, sesión 2</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Bloque</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td>Módulo 3</td><td>Enlace de datos: <code>$scope</code> frente a <code>controllerAs</code>, <code>ng-model</code> por dentro, unidireccional con <code>::</code> (one-time binding), y el ciclo <code>$digest</code> explicado de verdad: <code>$watch</code>, <code>$apply</code>, dirty checking y por qué a veces hace falta <code>$timeout</code>.</td></tr>
+        <tr><td>Módulo 4 (inicio)</td><td>Directivas propias: <code>restrict</code>, <code>scope</code> aislado con <code>@</code>, <code>=</code> y <code>&amp;</code>, y el salto a <code>.component()</code>.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Para llevarse</h3>
+    <div class="callout ok"><b>Repaso en cinco minutos</b>
+      <p>Si mañana solo recuerdas tres cosas, que sean estas: el módulo se define <strong>una vez</strong> con corchetes; el controlador <strong>no toca el DOM</strong>; y el estado compartido vive en un <strong>servicio</strong>.</p>
+    </div>
+    <p>El editor de la derecha tiene cargada la solución completa del reto. Toda la sesión queda guardada en tu navegador: puedes cerrar la pestaña y seguir donde lo dejaste.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- Banco de pruebas libre: la solución del reto, lista para trastear.
+     Cambia lo que quieras; con "Reiniciar" vuelves a este punto. -->
+<div ng-app="panelApp">
+
+  <nav>
+    <a href="#!/">Portada</a>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/no-existe">Probar el 404</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('panelApp', ['ngRoute']);
+
+  angular
+    .module('panelApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'portada/portada.html',
+        controller:   'PortadaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos', {
+        templateUrl:  'cursos/lista.html',
+        controller:   'ListaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos/:id', {
+        templateUrl:  'cursos/detalle.html',
+        controller:   'DetalleController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ templateUrl: 'core/404.html' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',    horas: 20, activo: true,  area: 'Frontend' },
+      { id: 2, nombre: 'Java 21',      horas: 30, activo: true,  area: 'Backend' },
+      { id: 3, nombre: 'Angular 19',   horas: 40, activo: true,  area: 'Frontend' },
+      { id: 4, nombre: 'Struts 1',     horas: 12, activo: false, area: 'Legacy' },
+      { id: 5, nombre: 'Spring Boot',  horas: 35, activo: true,  area: 'Backend' },
+      { id: 6, nombre: 'Oracle Forms', horas: 16, activo: false, area: 'Legacy' }
+    ];
+
+    return { getAll: getAll, getById: getById, totalHoras: totalHoras };
+
+    function getAll() { return cursos; }
+
+    function getById(id) {
+      var buscado = Number(id);
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+
+    function totalHoras() {
+      return cursos.reduce(function (suma, c) {
+        return c.activo ? suma + c.horas : suma;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "core/404.html", lang: "markup", code:
+`<h1>404</h1>
+
+<p class="muted">Esa ruta no existe en el panel.</p>
+
+<p><a href="#!/">Volver a la portada</a></p>`
+    },
+    { name: "portada/portada.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('PortadaController', PortadaController);
+
+  PortadaController.$inject = ['cursosService'];
+
+  function PortadaController(cursosService) {
+    var vm = this;
+
+    vm.cursos     = cursosService.getAll();
+    vm.totalHoras = cursosService.totalHoras();
+  }
+}());`
+    },
+    { name: "portada/portada.html", lang: "markup", code:
+`<h1>Panel de formación</h1>
+
+<div class="ficha">
+  <p><strong>{{ vm.cursos.length }}</strong> cursos en catálogo</p>
+  <p><strong>{{ vm.totalHoras }}</strong> horas activas</p>
+</div>
+
+<p><a href="#!/cursos">Ver el catálogo</a></p>`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('ListaController', ListaController);
+
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos      = cursosService.getAll();
+    vm.q           = '';
+    vm.soloActivos = false;
+
+    vm.esVisible = esVisible;
+
+    function esVisible(curso) {
+      return vm.soloActivos ? curso.activo : true;
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="vm.q">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo activos
+</label>
+
+<ul>
+  <li ng-repeat="c in vm.cursos | filter:{nombre: vm.q} | filter:vm.esVisible | orderBy:'nombre' as resultados">
+    <a ng-href="#!/cursos/{{ c.id }}">{{ c.nombre }}</a>
+    <span class="chip" ng-class="{activo: c.activo}">{{ c.area }}</span>
+    <span class="muted">{{ c.horas }} h</span>
+  </li>
+</ul>
+
+<p class="muted" ng-if="resultados.length === 0">
+  Ningún curso coincide con "{{ vm.q }}".
+</p>`
+    },
+    { name: "cursos/detalle.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('DetalleController', DetalleController);
+
+  DetalleController.$inject = ['$routeParams', '$location', 'cursosService'];
+
+  function DetalleController($routeParams, $location, cursosService) {
+    var vm = this;
+
+    vm.id    = $routeParams.id;
+    vm.curso = cursosService.getById(vm.id);
+
+    vm.volver = volver;
+
+    function volver() {
+      $location.path('/cursos');
+    }
+  }
+}());`
+    },
+    { name: "cursos/detalle.html", lang: "markup", code:
+`<div ng-if="vm.curso">
+  <h1>{{ vm.curso.nombre }}</h1>
+
+  <div class="ficha">
+    <p><strong>Área:</strong> {{ vm.curso.area }}</p>
+    <p><strong>Duración:</strong> {{ vm.curso.horas }} horas</p>
+    <p>
+      <strong>Estado:</strong>
+      <span class="chip" ng-class="{activo: vm.curso.activo}">
+        {{ vm.curso.activo ? 'activo' : 'archivado' }}
+      </span>
+    </p>
+  </div>
+</div>
+
+<div ng-if="!vm.curso">
+  <h1>Curso no encontrado</h1>
+  <p class="muted">No hay ningún curso con id {{ vm.id }}.</p>
+</div>
+
+<button class="sec" ng-click="vm.volver()">Volver a la lista</button>`
+    }
+  ],
+  reto: `
+    <ul>
+      <li>Trastea libremente: rompe cosas y lee los errores en la consola de abajo. Es la mejor preparación para mañana.</li>
+      <li>Una pregunta para dormir: ¿cómo sabe AngularJS que has escrito en el input, si nadie ha llamado a ninguna función de refresco? Mañana empezamos por ahí.</li>
+    </ul>
+  `
+}
+
+];
+</script>

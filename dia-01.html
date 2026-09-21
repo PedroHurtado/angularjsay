@@ -1,0 +1,2622 @@
+<title>AngularJS Día 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --ground:#F7F3F0;
+  --surface:#FFFFFF;
+  --surface-2:#F0E9E4;
+  --line:#E0D6CF;
+  --line-soft:#EDE5DF;
+  --ink:#1D1613;
+  --ink-2:#5A4D46;
+  --ink-3:#8B7B72;
+  --accent:#B52E31;
+  --accent-soft:#F9E9E8;
+  --live:#0E6A60;
+  --live-soft:#E2F0ED;
+  --warn:#9A6410;
+  --warn-soft:#F8EEDC;
+  --shadow:0 1px 2px rgba(29,22,19,.06), 0 8px 24px -16px rgba(29,22,19,.28);
+
+  --code-bg:#1E1917;
+  --code-bg-2:#272120;
+  --code-line:#3A312D;
+  --code-ink:#EDE4DF;
+  --c-comment:#7E6F68;
+  --c-key:#F2777A;
+  --c-str:#9CC48B;
+  --c-num:#E3B155;
+  --c-fn:#7FB4CE;
+  --c-attr:#D7A162;
+  --c-punct:#9C8D86;
+
+  --sans:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --cond:"IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --rail:274px;
+  --repl-h:clamp(430px, 60vh, 700px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141010;
+    --surface:#1C1716;
+    --surface-2:#251E1C;
+    --line:#352B28;
+    --line-soft:#2A2321;
+    --ink:#F3EBE6;
+    --ink-2:#C2B4AC;
+    --ink-3:#8D7D75;
+    --accent:#E8595B;
+    --accent-soft:#391E1F;
+    --live:#55C0AE;
+    --live-soft:#0F312C;
+    --warn:#D9A249;
+    --warn-soft:#332614;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141010;
+  --surface:#1C1716;
+  --surface-2:#251E1C;
+  --line:#352B28;
+  --line-soft:#2A2321;
+  --ink:#F3EBE6;
+  --ink-2:#C2B4AC;
+  --ink-3:#8D7D75;
+  --accent:#E8595B;
+  --accent-soft:#391E1F;
+  --live:#55C0AE;
+  --live-soft:#0F312C;
+  --warn:#D9A249;
+  --warn-soft:#332614;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-rows:auto minmax(0,1fr);height:100%}
+
+.masthead{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:9px 18px;padding-top:calc(9px + env(safe-area-inset-top,0px));
+  background:var(--surface);border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.shield{
+  font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:.06em;
+  color:#fff;background:var(--accent);padding:4px 9px 11px;
+  clip-path:polygon(0 0,100% 0,100% 68%,50% 100%,0 68%);line-height:1;
+}
+.brand h1{font-family:var(--cond);font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand .sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.02em;white-space:nowrap}
+.spacer{flex:1 1 auto}
+.daystrip{display:flex;gap:4px;align-items:center;overflow-x:auto;max-width:100%}
+.daystrip .d{
+  font-family:var(--mono);font-size:10.5px;padding:3px 8px;border:1px solid var(--line);
+  border-radius:999px;color:var(--ink-3);white-space:nowrap;
+}
+.daystrip .d.now{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:500}
+.tbtn{
+  font:inherit;font-size:11.5px;font-family:var(--mono);cursor:pointer;
+  background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
+  border-radius:4px;padding:4px 9px;white-space:nowrap;
+}
+.tbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+
+.body{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:0}
+
+/* ---------- agenda rail ---------- */
+.rail{
+  border-right:1px solid var(--line);background:var(--surface);
+  overflow:auto;min-height:0;padding:14px 0 calc(24px + env(safe-area-inset-bottom,0px));
+}
+.rail-head{padding:0 16px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.rail-head .eyebrow{font-family:var(--cond);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.rail-head .clock{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.agenda{list-style:none;margin:0;padding:0 8px;display:flex;flex-direction:column;gap:1px}
+.ai{
+  display:grid;grid-template-columns:44px minmax(0,1fr);gap:9px;align-items:start;
+  width:100%;text-align:left;background:none;border:0;border-radius:6px;
+  padding:8px;cursor:pointer;font:inherit;color:inherit;position:relative;
+}
+.ai:hover{background:var(--surface-2)}
+.ai .t{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding-top:2px;font-variant-numeric:tabular-nums}
+.ai .ttl{font-size:13.5px;line-height:1.35;color:var(--ink-2)}
+.ai .kind{
+  display:block;font-family:var(--cond);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);margin-top:3px;
+}
+.ai[aria-current="true"]{background:var(--accent-soft)}
+.ai[aria-current="true"] .ttl{color:var(--ink);font-weight:600}
+.ai[aria-current="true"] .t{color:var(--accent)}
+.ai[aria-current="true"]::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2px;background:var(--accent);border-radius:2px}
+.ai.is-break{opacity:.7}
+.ai.is-break .ttl{font-style:italic}
+.ai.is-reto .kind,.ai.is-cierre .kind{color:var(--accent)}
+.rail-foot{padding:14px 16px 0;margin:10px 8px 0;border-top:1px solid var(--line-soft);font-size:12px;color:var(--ink-3)}
+.rail-foot b{color:var(--ink-2);font-weight:600;font-family:var(--cond);letter-spacing:.04em}
+
+/* ---------- main ---------- */
+.main{overflow:auto;min-height:0;padding:0 0 calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 0}
+
+.lhead{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.lmeta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.lmeta .pill{border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.lmeta .pill.mod{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.lmeta .pill.hour{font-variant-numeric:tabular-nums}
+.lhead h2{
+  font-family:var(--cond);font-weight:700;font-size:clamp(25px,4vw,33px);line-height:1.12;
+  letter-spacing:-.015em;margin:2px 0 0;text-wrap:balance;
+}
+.goal{font-size:15.5px;color:var(--ink-2);max-width:68ch;margin:0}
+
+.note{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.note > :first-child{margin-top:0}
+.note > :last-child{margin-bottom:0}
+.note h3{
+  font-family:var(--cond);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:20px 0 8px;font-weight:600;
+}
+.note h4{font-size:15px;font-weight:600;margin:16px 0 4px}
+.note p{margin:0 0 10px;max-width:74ch}
+.note ul,.note ol{margin:0 0 10px;padding-left:20px;max-width:74ch}
+.note li{margin-bottom:5px}
+.note li::marker{color:var(--ink-3)}
+.note strong{font-weight:600}
+code{
+  font-family:var(--mono);font-size:.875em;background:var(--surface-2);
+  border:1px solid var(--line-soft);border-radius:3px;padding:.5px 4px;color:var(--ink);
+}
+.note a{color:var(--accent)}
+
+.tblwrap{overflow-x:auto;margin:0 0 12px;border:1px solid var(--line);border-radius:6px}
+table.tbl{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+table.tbl th,table.tbl td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+table.tbl thead th{
+  font-family:var(--cond);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+table.tbl tbody tr:last-child td{border-bottom:0}
+table.tbl td:first-child{font-weight:500}
+
+.callout{
+  border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:10px 14px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:14px;
+}
+.callout b{font-family:var(--cond);letter-spacing:.07em;text-transform:uppercase;font-size:10.5px;color:var(--warn);display:block;margin-bottom:2px}
+.callout.ok{border-left-color:var(--live);background:var(--live-soft)}
+.callout.ok b{color:var(--live)}
+.callout p{margin:0 0 8px;max-width:74ch}
+.callout p:last-child{margin-bottom:0}
+
+/* ---------- repl ---------- */
+.repl{
+  border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface);
+  box-shadow:var(--shadow);margin-bottom:16px;
+}
+.repl-bar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:7px 10px;background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+.repl-bar .label{
+  font-family:var(--cond);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+}
+.segbtn{display:none;gap:0;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.segbtn button{
+  font:inherit;font-family:var(--mono);font-size:11.5px;padding:4px 12px;border:0;cursor:pointer;
+  background:var(--surface);color:var(--ink-3);
+}
+.segbtn button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.btn{
+  font:inherit;font-family:var(--mono);font-size:11.5px;cursor:pointer;border-radius:5px;
+  padding:4px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+}
+.btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.btn.run{background:var(--live);border-color:var(--live);color:#fff;font-weight:500}
+.btn.run:hover{filter:brightness(1.08);color:#fff}
+.btn.sol{border-color:var(--accent);color:var(--accent)}
+.btn.sol:hover{background:var(--accent-soft);color:var(--accent)}
+
+.panes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);height:var(--repl-h)}
+.pane{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0}
+.pane.code{border-right:1px solid var(--line);background:var(--code-bg)}
+
+.tabs{display:flex;gap:0;overflow-x:auto;background:var(--code-bg-2);border-bottom:1px solid var(--code-line)}
+.tabs button{
+  font:inherit;font-family:var(--mono);font-size:11.5px;white-space:nowrap;cursor:pointer;
+  background:none;border:0;border-right:1px solid var(--code-line);border-bottom:2px solid transparent;
+  padding:7px 12px;color:#8E807A;
+}
+.tabs button:hover{color:var(--code-ink)}
+.tabs button[aria-selected="true"]{color:var(--code-ink);background:var(--code-bg);border-bottom-color:var(--c-key)}
+
+.edit{overflow:auto;min-height:0;background:var(--code-bg)}
+.edit .inner{position:relative;min-height:100%}
+.edit .layer{
+  margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.62;
+  padding:12px 14px;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;
+  tab-size:2;border:0;letter-spacing:0;
+}
+.edit pre.layer{color:var(--code-ink);pointer-events:none;min-height:100%}
+.edit pre.layer code{background:none;border:0;padding:0;font-size:inherit;color:inherit;font-family:inherit;line-height:inherit}
+.edit textarea.layer{
+  position:absolute;top:0;right:0;bottom:0;left:0;resize:none;overflow:hidden;
+  background:transparent;color:transparent;caret-color:#F6B99B;outline:none;display:block;
+}
+.edit textarea.layer::selection{background:rgba(242,119,122,.32)}
+
+.pane.out{background:var(--surface)}
+.outbar{
+  display:flex;align-items:center;gap:8px;padding:6px 10px;
+  background:var(--surface-2);border-bottom:1px solid var(--line);min-width:0;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);flex:none}
+.dot.err{background:var(--accent)}
+.urlbar{
+  flex:1 1 auto;min-width:0;font-family:var(--mono);font-size:11.5px;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  padding:3px 8px;color:var(--ink-2);
+}
+.urlbar:focus{outline:none;border-color:var(--live);color:var(--ink)}
+.outbody{display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0}
+.frame{width:100%;height:100%;border:0;background:#fff;display:block}
+.console{
+  border-top:1px solid var(--line);background:var(--surface-2);max-height:34%;overflow:auto;
+  font-family:var(--mono);font-size:11.5px;padding:0;
+}
+.console[hidden]{display:none!important}
+.console .ln{padding:4px 10px;border-bottom:1px solid var(--line-soft);color:var(--ink-2);white-space:pre-wrap;overflow-wrap:break-word}
+.console .ln:last-child{border-bottom:0}
+.console .ln.error{color:var(--accent);background:var(--accent-soft)}
+.console .ln.warn{color:var(--warn);background:var(--warn-soft)}
+.console .ln .tag{color:var(--ink-3);margin-right:6px}
+
+/* ---------- challenge ---------- */
+.reto{
+  border:1px solid var(--accent);border-radius:8px;background:var(--surface);
+  padding:14px 18px;margin-bottom:16px;
+}
+.reto h3{
+  font-family:var(--cond);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 8px;font-weight:700;
+}
+.reto ol,.reto ul{margin:0;padding-left:20px;max-width:74ch}
+.reto li{margin-bottom:6px}
+.reto li:last-child{margin-bottom:0}
+.reto li::marker{color:var(--accent)}
+
+/* ---------- nav ---------- */
+.lnav{display:flex;gap:10px;justify-content:space-between;align-items:stretch;margin:22px 0 0}
+.lnav a{
+  flex:1 1 0;min-width:0;text-decoration:none;color:inherit;border:1px solid var(--line);
+  border-radius:8px;padding:10px 14px;background:var(--surface);display:block;
+}
+.lnav a:hover{border-color:var(--ink-3)}
+.lnav a[aria-disabled="true"]{opacity:.35;pointer-events:none}
+.lnav .dir{font-family:var(--cond);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);display:block}
+.lnav .nx{text-align:right}
+.lnav .nm{font-size:14px;color:var(--ink-2);display:block;margin-top:2px}
+
+.breakcard{
+  border:1px dashed var(--line);border-radius:9px;background:var(--surface);
+  padding:28px 22px;text-align:center;margin-bottom:16px;
+}
+.breakcard .big{font-family:var(--cond);font-size:34px;font-weight:700;color:var(--ink-3);letter-spacing:-.01em}
+.breakcard p{margin:6px auto 0;max-width:50ch;color:var(--ink-2)}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px){
+  :root{--rail:240px}
+}
+@media (max-width: 900px){
+  .body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .rail{
+    border-right:0;border-bottom:1px solid var(--line);max-height:38vh;
+    padding:10px 0;
+  }
+  .rail[hidden]{display:none!important}
+  .railtoggle{display:inline-flex!important}
+  .panes{grid-template-columns:minmax(0,1fr);height:auto}
+  .pane{height:var(--repl-h)}
+  .pane.code{border-right:0;border-bottom:1px solid var(--line)}
+  .segbtn{display:flex}
+  .repl[data-pane="code"] .pane.out{display:none}
+  .repl[data-pane="out"] .pane.code{display:none}
+  .wrap{padding:16px 16px 0}
+  .brand .sub{display:none}
+}
+@media (max-width: 560px){
+  .lnav{flex-direction:column}
+  .daystrip{display:none}
+}
+</style>
+
+
+<div class="shell">
+  <header class="masthead">
+    <div class="brand">
+      <span class="shield">JS</span>
+      <h1>AngularJS 1.8</h1>
+      <span class="sub">Idexa · Ayesa · Pedro Hurtado</span>
+    </div>
+    <div class="spacer"></div>
+    <nav class="daystrip" aria-label="Sesiones del curso">
+      <span class="d now">S1 lun 21</span>
+      <span class="d">S2 mar 22</span>
+      <span class="d">S3 mié 23</span>
+      <span class="d">S4 jue 24</span>
+      <span class="d">S5 lun 28</span>
+    </nav>
+    <button class="tbtn railtoggle" id="railToggle" aria-expanded="true">Agenda</button>
+    <button class="tbtn" id="themeToggle" title="Cambiar tema">Tema</button>
+  </header>
+
+  <div class="body">
+    <aside class="rail" id="rail" aria-label="Agenda de la sesión">
+      <div class="rail-head">
+        <span class="eyebrow">Sesión 1 · 4 h</span>
+        <span class="clock">15:30–19:30</span>
+      </div>
+      <ul class="agenda" id="agenda"></ul>
+      <div class="rail-foot">
+        <b>Hoy cubrimos</b><br>
+        Módulo 1 · Introducción a AngularJS<br>
+        Módulo 2 · Fundamentos<br>
+        <span style="color:var(--ink-3)">+ el routing que sostiene todo lo demás</span>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <div class="wrap" id="lesson"></div>
+    </main>
+  </div>
+</div>
+
+
+<script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<style>
+.token.comment{color:var(--c-comment);font-style:italic}
+.token.tag,.token.keyword,.token.boolean,.token.null{color:var(--c-key)}
+.token.attr-name{color:var(--c-attr)}
+.token.attr-value,.token.string{color:var(--c-str)}
+.token.number{color:var(--c-num)}
+.token.function,.token.class-name{color:var(--c-fn)}
+.token.punctuation,.token.operator{color:var(--c-punct)}
+.token.tag .token.punctuation{color:var(--c-punct)}
+.token.tag .token.attr-name{color:var(--c-attr)}
+</style>
+<script>
+"use strict";
+
+var SESSION = {
+  n: 1,
+  fecha: "lunes 21 de septiembre",
+  desde: "15:30",
+  hasta: "19:30"
+};
+
+var STEPS = [
+
+/* ------------------------------------------------------------------ 1 */
+{
+  id: "que-es",
+  time: "15:30", end: "15:55", dur: 25,
+  kind: "Teoría + lab",
+  modulo: "Módulo 1",
+  title: "Qué es AngularJS y por qué se escribe así",
+  goal: "Situar AngularJS 1.x en el mapa (qué resolvió en 2010, en qué se diferencia de lo que usas hoy) y ver el primer binding funcionando en menos de diez líneas.",
+  notes: `
+    <h3>Historia en cuatro fechas</h3>
+    <ul>
+      <li><strong>2009</strong> — Miško Hevery y Adam Abrons escriben <em>GetAngular</em> como proyecto paralelo en Google. La anécdota fundacional: Hevery reescribe en tres semanas una aplicación interna de 17.000 líneas en 1.500.</li>
+      <li><strong>2012</strong> — AngularJS 1.0. Su idea central: <strong>extender el HTML</strong> con atributos nuevos en lugar de generarlo desde JavaScript.</li>
+      <li><strong>2016</strong> — Angular 2 se reescribe entero en TypeScript. No es una actualización: es otro framework. Por eso el que nos ocupa se llama para siempre <strong>AngularJS</strong> (con "JS") y el otro, <strong>Angular</strong> a secas.</li>
+      <li><strong>2021/2022</strong> — última versión, <strong>1.8.3</strong>. El soporte a largo plazo (LTS) terminó el 31 de diciembre de 2021.</li>
+    </ul>
+    <p>Trabajar hoy con AngularJS casi siempre significa <strong>mantener y evolucionar</strong> una aplicación que ya está en producción. Eso cambia las prioridades del curso: nos interesa tanto escribir código nuevo como <em>leer</em> el que ya existe y entender por qué está escrito así.</p>
+
+    <h3>Las cuatro ideas que hay que llevarse</h3>
+    <ol>
+      <li><strong>HTML declarativo.</strong> La vista dice <em>qué</em> quiere (<code>ng-repeat</code>, <code>ng-if</code>) en lugar de que el JavaScript describa <em>cómo</em> construir nodos.</li>
+      <li><strong>Enlace bidireccional.</strong> Vista y modelo se sincronizan solos. Lo veremos a fondo en el módulo 3.</li>
+      <li><strong>Inyección de dependencias.</strong> Nada se instancia con <code>new</code>: se pide por nombre. Módulo 5.</li>
+      <li><strong>Es siempre una SPA.</strong> Una única página HTML, y el navegador nunca recarga. De ahí que el <em>routing</em> no sea un extra al final del curso, sino el esqueleto desde el primer día.</li>
+    </ol>
+
+    <h3>Comparativa con lo que hay alrededor</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Herramienta</th><th>Modelo mental</th><th>Actualizar la vista</th><th>Dónde la encuentras</th></tr></thead>
+      <tbody>
+        <tr><td>jQuery</td><td>Manipular el DOM a mano</td><td>Tú, nodo a nodo</td><td>Capas antiguas, widgets sueltos</td></tr>
+        <tr><td>AngularJS 1.x</td><td>MVW: vista declarativa + <code>$scope</code></td><td>El ciclo <code>$digest</code>, automático</td><td>Intranets y ERPs 2013–2018</td></tr>
+        <tr><td>Angular 2+</td><td>Componentes + TypeScript + RxJS</td><td>Zone.js / signals</td><td>Reescrituras y proyectos nuevos</td></tr>
+        <tr><td>React</td><td>Funciones que devuelven UI</td><td>DOM virtual y reconciliación</td><td>Producto y frontends públicos</td></tr>
+        <tr><td>Vue</td><td>Reactividad por proxy</td><td>Dependencias observadas</td><td>Migraciones suaves desde 1.x</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Ojo con el vocabulario</b>
+      <p>"Angular" a secas nunca significa esto. Al buscar documentación, añade siempre <em>angularjs</em> o <em>angular 1.x</em>: si no, el 95 % de los resultados serán de un framework distinto que no comparte ni una línea de API.</p>
+    </div>
+
+    <h3>El ejemplo de la derecha</h3>
+    <p>Tres piezas, y ya está todo AngularJS en miniatura:</p>
+    <ul>
+      <li><code>ng-app="holaApp"</code> marca la raíz de la aplicación. Angular arranca ahí al cargar la página.</li>
+      <li><code>ng-model="nombre"</code> crea la propiedad <code>nombre</code> en el ámbito y la ata al input.</li>
+      <li><code>{{ nombre }}</code> es una <em>interpolación</em>: se reevalúa sola cada vez que el modelo cambia.</li>
+    </ul>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- ng-app marca la raíz: Angular arranca sobre este elemento -->
+<div ng-app="holaApp">
+
+  <h1>Hola, {{ nombre || 'mundo' }}</h1>
+
+  <label>
+    Tu nombre
+    <input type="text" ng-model="nombre" placeholder="Escribe aquí...">
+  </label>
+
+  <p class="muted">
+    {{ nombre.length || 0 }} caracteres · en mayúsculas: {{ nombre | uppercase }}
+  </p>
+
+  <p class="muted">Las llaves evalúan expresiones: 2 + 2 = {{ 2 + 2 }}</p>
+
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`// Un módulo es el contenedor de la aplicación.
+//
+// OJO a los corchetes: con el segundo argumento DEFINES el módulo
+// (el array son sus dependencias). Sin él, angular.module('holaApp')
+// es una CONSULTA, y si aún no existe, revienta.
+angular.module('holaApp', []);`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Cambia <code>{{ nombre }}</code> por <code>{{ nombre.toUpperCase() }}</code> y escribe algo. Abre la consola de abajo: verás por qué Angular no se cae aunque <code>nombre</code> todavía no exista.</li>
+      <li>Añade un segundo <code>&lt;input ng-model="nombre"&gt;</code>. Los dos quedan sincronizados sin escribir una sola línea de JavaScript: eso es el enlace bidireccional.</li>
+      <li>Borra los corchetes de <code>angular.module('holaApp', [])</code>. Mira el error en la consola: es el mensaje que más vas a ver esta semana.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 2 */
+{
+  id: "modulo-controlador",
+  time: "15:55", end: "16:20", dur: 25,
+  kind: "Lab",
+  modulo: "Módulos 1 y 2",
+  title: "Entorno, módulo y controlador",
+  goal: "Montar el proyecto como se monta de verdad: qué scripts, en qué orden, y el controlador escrito con el patrón que vas a encontrar en cualquier código de empresa.",
+  notes: `
+    <h3>Montar el entorno</h3>
+    <p>AngularJS no necesita compilación. Dos etiquetas <code>&lt;script&gt;</code> y ya tienes un proyecto:</p>
+    <ul>
+      <li><strong>CDN</strong> — <code>angular.min.js</code> y, aparte, <code>angular-route.min.js</code>. Es lo que usamos en este REPL.</li>
+      <li><strong>npm</strong> — <code>npm i angular@1.8.3 angular-route@1.8.3</code>. Lo habitual en proyectos con build (gulp, webpack) o con tests.</li>
+      <li><strong>Bower</strong> — lo verás en proyectos antiguos. Está descontinuado; si te lo encuentras, migra a npm.</li>
+    </ul>
+    <div class="callout"><b>El orden importa</b>
+      <p><code>angular.js</code> siempre primero. Después los módulos oficiales (<code>angular-route</code>, <code>angular-animate</code>...). Después tu código, y dentro de tu código el archivo que <em>define</em> el módulo antes que los que lo <em>consultan</em>.</p>
+    </div>
+
+    <h3>Anatomía de un proyecto</h3>
+    <p>La estructura que recomienda la guía de estilo de John Papa, y la que usaremos toda la semana, agrupa <strong>por funcionalidad, no por tipo de archivo</strong>:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Ruta</th><th>Qué contiene</th></tr></thead>
+      <tbody>
+        <tr><td>index.html</td><td>El único HTML real. Carga los scripts y contiene el <code>ng-view</code>.</td></tr>
+        <tr><td>app/app.module.js</td><td>Declaración del módulo raíz y sus dependencias.</td></tr>
+        <tr><td>app/app.routes.js</td><td>El <code>.config()</code> con todas las rutas.</td></tr>
+        <tr><td>app/cursos/</td><td>cursos.controller.js, cursos.html, cursos.service.js — todo lo de esa pantalla, junto.</td></tr>
+        <tr><td>app/core/</td><td>Servicios compartidos: API, sesión, formateadores.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Por qué el código se escribe así</h3>
+    <ul>
+      <li><strong>IIFE</strong> — <code>(function () { ... }());</code> evita que las variables del archivo acaben en <code>window</code>. Sin módulos ES, es la única forma de aislar.</li>
+      <li><strong>Funciones con nombre</strong> en vez de anónimas: las trazas de error dicen <code>AsistenciaController</code> en vez de <code>&lt;anonymous&gt;</code>.</li>
+      <li><strong><code>$inject</code></strong> — declara las dependencias en un array de strings para que el minificador no rompa la inyección. <code>ng-strict-di</code> en el HTML hace que Angular falle en alto si a algo le falta.</li>
+      <li><strong><code>controllerAs</code></strong> — <code>SaludoController as vm</code> publica la instancia en la vista. Evita el <code>$scope</code> suelto y los problemas de herencia de ámbitos. Es el estilo por defecto desde 1.3.</li>
+    </ul>
+    <div class="callout ok"><b>Regla de oro del controlador</b>
+      <p>Un controlador prepara datos y expone funciones. <strong>No toca el DOM.</strong> Si necesitas tocar el DOM, eso es una directiva (módulo 4).</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- ng-strict-di: Angular falla si alguna dependencia no está declarada -->
+<div ng-app="cursoApp" ng-strict-di>
+
+  <!-- "as vm" publica la instancia del controlador con el nombre vm -->
+  <section ng-controller="AsistenciaController as vm">
+
+    <h1>{{ vm.titulo }}</h1>
+    <p class="muted">{{ vm.alumnos.length }} personas en el aula</p>
+
+    <form ng-submit="vm.anadir()">
+      <label>
+        Añadir alumno
+        <input type="text" ng-model="vm.nuevo">
+      </label>
+      <button type="submit" ng-disabled="!vm.nuevo">Añadir</button>
+    </form>
+
+    <ul>
+      <li ng-repeat="alumno in vm.alumnos">{{ alumno }}</li>
+    </ul>
+
+  </section>
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // 1. El módulo: contenedor de todo lo que registremos.
+  angular
+    .module('cursoApp', [])
+    .controller('AsistenciaController', AsistenciaController);
+
+  // 2. Dependencias explícitas: sobrevive a la minificación.
+  AsistenciaController.$inject = [];
+
+  // 3. El controlador prepara datos y comportamiento para UNA vista.
+  function AsistenciaController() {
+    var vm = this;               // vm = view model
+
+    vm.titulo  = 'Aula AngularJS';
+    vm.alumnos = ['Ana', 'Bruno', 'Clara'];
+    vm.nuevo   = '';
+
+    // Primero el "qué" (la API pública del controlador)...
+    vm.anadir = anadir;
+
+    // ...y debajo el "cómo".
+    function anadir() {
+      if (!vm.nuevo) { return; }
+      vm.alumnos.push(vm.nuevo);
+      vm.nuevo = '';
+    }
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Añade <code>vm.quitar = function (i) { vm.alumnos.splice(i, 1); };</code> y un botón por fila con <code>ng-click="vm.quitar($index)"</code>.</li>
+      <li>Cambia <code>as vm</code> por <code>as ctrl</code> en el HTML sin tocar el JavaScript. Funciona: el alias es cosa de la vista.</li>
+      <li>Rompe el <code>$inject</code> a propósito: pon <code>AsistenciaController.$inject = ['$http'];</code> sin añadir el parámetro. Observa qué pasa y qué dice la consola.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 3 */
+{
+  id: "routing",
+  time: "16:20", end: "16:50", dur: 30,
+  kind: "Lab",
+  modulo: "Módulos 2 y 6",
+  title: "La aplicación nace con routing",
+  goal: "Convertir la página en una SPA de verdad: varias pantallas, una sola carga, y la URL como fuente de la verdad.",
+  notes: `
+    <h3>Por qué el routing va primero</h3>
+    <p>AngularJS solo sabe construir <em>single page applications</em>. Una aplicación real tiene varias pantallas, así que o hay router, o acabas escribiendo un <code>ng-switch</code> gigante que hace de router mal hecho. Montarlo desde el primer día evita esa deuda: cada pantalla nueva es una entrada más en la tabla de rutas.</p>
+
+    <h3>Las tres piezas</h3>
+    <ol>
+      <li><strong><code>ngRoute</code></strong> vive en un archivo aparte, <code>angular-route.js</code>, y se declara como dependencia del módulo: <code>angular.module('cursoApp', ['ngRoute'])</code>.</li>
+      <li><strong><code>$routeProvider</code></strong> se configura en un bloque <code>.config()</code>. Los <em>providers</em> solo existen en esa fase, antes de que arranque la aplicación.</li>
+      <li><strong><code>ng-view</code></strong> es el hueco donde el router inserta la plantilla de la ruta activa. <strong>Solo puede haber uno</strong> en toda la aplicación.</li>
+    </ol>
+
+    <h3>El signo de admiración</h3>
+    <p>Desde la versión 1.6 el prefijo del hash es <code>!</code>, así que las URLs son <code>#!/temario</code> y no <code>#/temario</code>. Es el cambio que más rompe tutoriales antiguos: si copias un ejemplo de 2015 y no navega, casi siempre es esto.</p>
+    <p>Para volver al comportamiento antiguo: <code>$locationProvider.hashPrefix('')</code>.</p>
+    <div class="callout"><b>Y el modo sin almohadilla</b>
+      <p><code>$locationProvider.html5Mode(true)</code> da URLs limpias (<code>/temario</code>), pero <strong>exige</strong> que el servidor devuelva <code>index.html</code> para cualquier ruta. Si no configuras eso, el usuario recarga en <code>/temario</code> y recibe un 404. En el aula seguimos con hash.</p>
+    </div>
+
+    <h3>otherwise, el comodín</h3>
+    <p><code>.otherwise()</code> atrapa cualquier ruta que no encaje. Sin él, una URL desconocida deja el <code>ng-view</code> en blanco y parece que la aplicación se ha roto. Puede redirigir (<code>redirectTo</code>) o pintar una pantalla 404 propia.</p>
+    <p>Fíjate en la barra de direcciones que hay sobre la vista: es la URL real de la aplicación y cambia sin recargar. Puedes escribir ahí <code>#!/loquesea</code> y ver actuar al <code>otherwise</code>.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <!-- Enlaces normales: lo que cambia es el fragmento (#!) -->
+  <nav>
+    <a href="#!/">Inicio</a>
+    <a href="#!/temario">Temario</a>
+    <a href="#!/equipo">Equipo</a>
+  </nav>
+
+  <!-- Aquí dentro el router inserta la vista de la ruta activa.
+       Solo puede haber UN ng-view en toda la aplicación. -->
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp', ['ngRoute'])   // ngRoute = angular-route.js
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider', '$locationProvider'];
+
+  function configurarRutas($routeProvider, $locationProvider) {
+
+    // Desde 1.6 el prefijo por defecto es '!'  ->  #!/temario
+    // Con '' volverías al estilo antiguo        ->  #/temario
+    $locationProvider.hashPrefix('!');
+
+    $routeProvider
+      .when('/', {
+        template: '<h1>Inicio</h1>' +
+                  '<p>Una sola carga de página. A partir de aquí manda la URL.</p>'
+      })
+      .when('/temario', {
+        template: '<h1>Temario</h1>' +
+                  '<p>10 módulos, 20 horas, 5 tardes.</p>'
+      })
+      .when('/equipo', {
+        template: '<h1>Equipo</h1>' +
+                  '<p>Formación a medida para Ayesa.</p>'
+      })
+      // Comodín: cualquier otra URL cae aquí.
+      .otherwise({ redirectTo: '/' });
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Escribe <code>#!/precios</code> en la barra de direcciones de la vista. Comprueba que <code>otherwise</code> te devuelve a Inicio.</li>
+      <li>Sustituye el <code>redirectTo</code> por una plantilla 404 propia: <code>.otherwise({ template: '&lt;h1&gt;404&lt;/h1&gt;&lt;p&gt;Esa página no existe.&lt;/p&gt;' })</code>.</li>
+      <li>Añade una cuarta ruta <code>/contacto</code> con su enlace.</li>
+      <li>Cambia <code>hashPrefix('!')</code> por <code>hashPrefix('')</code>. La navegación se rompe: los <code>href</code> del HTML ya no coinciden. Arréglalos y entenderás de un vistazo cientos de preguntas en Stack Overflow.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 4 */
+{
+  id: "descanso-1",
+  time: "16:50", end: "17:05", dur: 15,
+  kind: "Descanso",
+  modulo: "",
+  title: "Descanso",
+  goal: "",
+  break: true,
+  breakText: "Volvemos a las 17:05 con la estructura de carpetas y las plantillas en archivos aparte."
+},
+
+/* ------------------------------------------------------------------ 5 */
+{
+  id: "estructura",
+  time: "17:05", end: "17:35", dur: 30,
+  kind: "Lab",
+  modulo: "Módulo 2",
+  title: "Un archivo por cosa: templateUrl y carpetas por funcionalidad",
+  goal: "Sacar las plantillas del JavaScript, dar a cada ruta su controlador, y dejar el proyecto con la forma que tendrá el resto de la semana.",
+  notes: `
+    <h3>De <code>template</code> a <code>templateUrl</code></h3>
+    <p>Concatenar HTML dentro de un string de JavaScript se aguanta dos pantallas. A la tercera, <code>templateUrl</code>: Angular pide el archivo con <code>$templateRequest</code>, lo guarda en <code>$templateCache</code> y no vuelve a pedirlo.</p>
+    <p>Las pestañas <code>inicio/inicio.html</code> y <code>temario/temario.html</code> de aquí al lado <strong>son archivos reales</strong> para la aplicación: el router los resuelve por su ruta, exactamente igual que en tu proyecto.</p>
+
+    <h3>Definir frente a consultar el módulo</h3>
+    <p>La distinción que más confusión genera al repartir el código en archivos:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Escritura</th><th>Qué hace</th><th>Dónde va</th></tr></thead>
+      <tbody>
+        <tr><td><code>angular.module('cursoApp', [])</code></td><td><strong>Define</strong> el módulo (y lo sobrescribe si ya existía)</td><td>Una sola vez, en app.module.js</td></tr>
+        <tr><td><code>angular.module('cursoApp')</code></td><td><strong>Consulta</strong> el módulo ya definido</td><td>En todos los demás archivos</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>El error clásico</b>
+      <p>Si dos archivos definen el módulo con corchetes, el segundo borra todo lo que registró el primero. Síntoma: "Argument 'InicioController' is not a function, got undefined".</p>
+    </div>
+
+    <h3>El controlador en la ruta</h3>
+    <p>Cuando una plantilla pertenece a una ruta, su controlador se declara <strong>en la ruta</strong>, no con <code>ng-controller</code> en el HTML:</p>
+    <ul>
+      <li><code>controller: 'InicioController'</code> — quién manda en esa vista.</li>
+      <li><code>controllerAs: 'vm'</code> — con qué nombre lo ve la plantilla.</li>
+    </ul>
+    <p>Así la plantilla no sabe qué controlador la gobierna y puede reutilizarse; y el router crea y destruye la instancia al entrar y salir de la ruta.</p>
+
+    <h3>Cómo se traduce a carpetas</h3>
+    <p>Los nombres de las pestañas son las rutas reales del proyecto. En disco tendrías exactamente esto, más el <code>index.html</code> cargando los cuatro scripts en orden.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <nav>
+    <a href="#!/">Inicio</a>
+    <a href="#!/temario">Temario</a>
+  </nav>
+
+  <main ng-view></main>
+
+  <!-- En tu proyecto, aquí abajo irían en este orden:
+       angular.js, angular-route.js,
+       app/app.module.js,
+       app/inicio/inicio.controller.js,
+       app/temario/temario.controller.js -->
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // Este archivo, y SOLO este, define el módulo (con corchetes).
+  angular.module('cursoApp', ['ngRoute']);
+
+  angular
+    .module('cursoApp')      // sin corchetes: consulta
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'inicio/inicio.html',
+        controller:   'InicioController',
+        controllerAs: 'vm'
+      })
+      .when('/temario', {
+        templateUrl:  'temario/temario.html',
+        controller:   'TemarioController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ redirectTo: '/' });
+  }
+}());`
+    },
+    { name: "inicio/inicio.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')      // consulta: el módulo ya existe
+    .controller('InicioController', InicioController);
+
+  InicioController.$inject = [];
+
+  function InicioController() {
+    var vm = this;
+
+    vm.titulo        = 'Curso de AngularJS';
+    vm.sesion        = 1;
+    vm.totalSesiones = 5;
+  }
+}());`
+    },
+    { name: "inicio/inicio.html", lang: "markup", code:
+`<h1>{{ vm.titulo }}</h1>
+
+<p>Sesión {{ vm.sesion }} de {{ vm.totalSesiones }}.</p>
+
+<p class="muted">
+  Esta plantilla vive en su propio archivo. El router la pide por su ruta
+  y la deja cacheada en $templateCache.
+</p>`
+    },
+    { name: "temario/temario.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .controller('TemarioController', TemarioController);
+
+  TemarioController.$inject = [];
+
+  function TemarioController() {
+    var vm = this;
+
+    vm.modulos = [
+      { n: 1, nombre: 'Introducción a AngularJS', horas: 2 },
+      { n: 2, nombre: 'Fundamentos',              horas: 2 },
+      { n: 3, nombre: 'Enlace de datos',          horas: 2 },
+      { n: 4, nombre: 'Directivas avanzadas',     horas: 2 },
+      { n: 5, nombre: 'Servicios y dependencias', horas: 2 }
+    ];
+
+    vm.totalHoras = totalHoras;
+
+    function totalHoras() {
+      return vm.modulos.reduce(function (suma, m) {
+        return suma + m.horas;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "temario/temario.html", lang: "markup", code:
+`<h1>Temario</h1>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Módulo</th><th>Horas</th></tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="m in vm.modulos">
+      <td>{{ m.n }}</td>
+      <td>{{ m.nombre }}</td>
+      <td>{{ m.horas }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="muted">Total: {{ vm.totalHoras() }} h</p>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Añade una tercera funcionalidad completa: <code>equipo/equipo.controller.js</code> y <code>equipo/equipo.html</code>, su ruta y su enlace. Usa el botón <em>+ archivo</em> de la barra del editor.</li>
+      <li>En <code>inicio/inicio.controller.js</code> cambia <code>angular.module('cursoApp')</code> por <code>angular.module('cursoApp', [])</code>. Lee el error de la consola: memorízalo, es el 90 % de los "not a function, got undefined".</li>
+      <li>Completa el temario con los 10 módulos del curso y comprueba que el total pasa a 20 h.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 6 */
+{
+  id: "directivas",
+  time: "17:35", end: "18:10", dur: 35,
+  kind: "Lab",
+  modulo: "Módulo 2",
+  title: "Vistas: las directivas y los filtros que usarás a diario",
+  goal: "Dominar el juego completo de directivas integradas —repetir, condicionar, clasificar, reaccionar— y encadenar filtros para buscar y ordenar sin escribir un bucle.",
+  notes: `
+    <h3>Repetir</h3>
+    <p><code>ng-repeat</code> clona el elemento por cada ítem y crea un <strong>ámbito hijo</strong> por iteración, con estas variables regaladas: <code>$index</code>, <code>$first</code>, <code>$last</code>, <code>$even</code>, <code>$odd</code>.</p>
+    <div class="callout"><b>track by, siempre que puedas</b>
+      <p>Por defecto Angular indexa por identidad del objeto, y una lista con valores repetidos lanza <em>"Duplicates in a repeater are not allowed"</em>. Con <code>ng-repeat="c in vm.cursos track by c.id"</code> evitas el error y, sobre todo, evitas que se recreen todos los nodos en cada refresco.</p>
+    </div>
+
+    <h3>Condicionar: ng-if frente a ng-show</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th></th><th>ng-if</th><th>ng-show / ng-hide</th></tr></thead>
+      <tbody>
+        <tr><td>Cuando es falso</td><td>El nodo no existe en el DOM</td><td>El nodo existe, oculto con CSS</td></tr>
+        <tr><td>Ámbito</td><td>Crea un ámbito hijo</td><td>No crea ámbito</td></tr>
+        <tr><td>Coste</td><td>Caro de alternar, barato de mantener</td><td>Barato de alternar, caro si hay muchos</td></tr>
+        <tr><td>Úsalo para</td><td>Bloques pesados o que rara vez aparecen</td><td>Alternancias rápidas y frecuentes</td></tr>
+      </tbody>
+    </table></div>
+    <p>El ámbito hijo de <code>ng-if</code> es una trampa clásica: un <code>ng-model="dato"</code> dentro de un <code>ng-if</code> escribe en el hijo, no en el padre. Con <code>controllerAs</code> (<code>vm.dato</code>) el problema desaparece, porque escribes sobre un objeto. Es la famosa "regla del punto".</p>
+
+    <h3>Clases y eventos</h3>
+    <ul>
+      <li><code>ng-class="{activo: c.activo, urgente: c.dias &lt; 3}"</code> — un objeto donde la clave es la clase y el valor, la condición.</li>
+      <li><code>ng-click</code>, <code>ng-change</code>, <code>ng-submit</code>, <code>ng-keyup</code>... Todos avisan al ciclo <code>$digest</code> por su cuenta; por eso la vista se actualiza sola.</li>
+      <li><code>ng-disabled</code>, <code>ng-checked</code>, <code>ng-selected</code> existen porque en HTML no puedes escribir <code>disabled="{{ ... }}"</code>: el navegador lee el atributo antes de que Angular lo interpole.</li>
+      <li><code>ng-src</code> y <code>ng-href</code>, por lo mismo: evitan que el navegador pida <code>/{{ url }}</code> literal.</li>
+    </ul>
+
+    <h3>Filtros: transformar en la vista</h3>
+    <p>Un filtro es una función pura que se aplica con <code>|</code> y se encadena. Los integrados que más se usan:</p>
+    <ul>
+      <li><code>filter</code> — busca. Con un string busca en todas las propiedades; con <code>{nombre: vm.q}</code> solo en esa; con una función, tu propio criterio.</li>
+      <li><code>orderBy</code> — ordena. Con <code>'-horas'</code>, descendente.</li>
+      <li><code>currency</code>, <code>number</code>, <code>date</code>, <code>uppercase</code>, <code>limitTo</code>, <code>json</code> (este último, oro puro para depurar).</li>
+    </ul>
+    <p>El sufijo <code>as resultados</code> al final de un <code>ng-repeat</code> guarda la lista ya filtrada en una variable: así puedes pintar el mensaje de "sin resultados" sin volver a filtrar.</p>
+    <div class="callout"><b>Coste</b>
+      <p>Los filtros se evalúan en cada <code>$digest</code>. Con listas grandes (miles de filas) muévelos al controlador y recalcula solo cuando cambie la búsqueda.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <nav>
+    <a href="#!/catalogo">Catálogo</a>
+    <a href="#!/ayuda">Ayuda</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('cursoApp', ['ngRoute']);
+
+  angular
+    .module('cursoApp')
+    .config(configurarRutas)
+    .controller('CatalogoController', CatalogoController);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/catalogo', {
+        templateUrl:  'catalogo/catalogo.html',
+        controller:   'CatalogoController',
+        controllerAs: 'vm'
+      })
+      .when('/ayuda', {
+        template: '<h1>Ayuda</h1><p>Prueba a escribir en el buscador del catálogo.</p>'
+      })
+      .otherwise({ redirectTo: '/catalogo' });
+  }
+
+  CatalogoController.$inject = [];
+
+  function CatalogoController() {
+    var vm = this;
+
+    vm.q           = '';
+    vm.soloActivos = false;
+    vm.mostrar     = true;
+
+    vm.cursos = [
+      { id: 1, nombre: 'AngularJS',  horas: 20, precio: 1200, activo: true,  alta: new Date(2026, 8, 21) },
+      { id: 2, nombre: 'Java 21',    horas: 30, precio: 1800, activo: true,  alta: new Date(2026, 5, 3) },
+      { id: 3, nombre: 'Struts 1',   horas: 12, precio: 600,  activo: false, alta: new Date(2019, 1, 14) },
+      { id: 4, nombre: 'Angular 19', horas: 40, precio: 2400, activo: true,  alta: new Date(2026, 0, 9) }
+    ];
+
+    vm.esVisible = esVisible;
+    vm.alternar  = alternar;
+
+    // Un filtro puede ser una función: recibe cada elemento
+    // y devuelve true si debe mostrarse.
+    function esVisible(curso) {
+      return vm.soloActivos ? curso.activo : true;
+    }
+
+    function alternar(curso) {
+      curso.activo = !curso.activo;
+    }
+  }
+}());`
+    },
+    { name: "catalogo/catalogo.html", lang: "markup", code:
+`<h1>Catálogo de cursos</h1>
+
+<label>
+  Buscar por nombre
+  <input type="text" ng-model="vm.q" placeholder="angular, java...">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo cursos activos
+</label>
+
+<!-- Filtros encadenados, alias "as resultados" y track by.
+     El orden de la expresión es fijo:  X in COLECCIÓN | filtros  as ALIAS  track by CLAVE -->
+<div class="ficha"
+     ng-repeat="c in vm.cursos | filter:{nombre: vm.q} | filter:vm.esVisible | orderBy:'-horas' as resultados track by c.id">
+
+  <h3>
+    {{ $index + 1 }}. {{ c.nombre }}
+    <span class="chip" ng-class="{activo: c.activo}">
+      {{ c.activo ? 'activo' : 'archivado' }}
+    </span>
+  </h3>
+
+  <p class="muted">
+    {{ c.horas }} h · {{ c.precio | currency:'€ ':0 }} · alta {{ c.alta | date:'dd/MM/yyyy' }}
+  </p>
+
+  <button class="sec" ng-click="vm.alternar(c)">Cambiar estado</button>
+</div>
+
+<p class="muted" ng-if="resultados.length === 0">
+  Sin resultados para "{{ vm.q }}".
+</p>
+
+<h2>ng-if frente a ng-show</h2>
+
+<button ng-click="vm.mostrar = !vm.mostrar">
+  {{ vm.mostrar ? 'Ocultar' : 'Mostrar' }}
+</button>
+
+<p ng-if="vm.mostrar">ng-if: cuando es falso, este nodo NO existe en el DOM.</p>
+<p ng-show="vm.mostrar">ng-show: el nodo existe siempre, sólo se oculta con CSS.</p>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Intercambia el orden: pon <code>track by c.id</code> antes de <code>as resultados</code>. Angular lanza <em>"Expected expression in form of..."</em>. Ese orden no es negociable, y el mensaje de error te lo dice entero: acostúmbrate a leerlos hasta el final.</li>
+      <li>Cambia <code>orderBy:'-horas'</code> por <code>orderBy:'nombre'</code>, y luego permite elegir el criterio desde un <code>&lt;select ng-model="vm.orden"&gt;</code>.</li>
+      <li>Añade <code>{{ vm.cursos | json }}</code> al final de la plantilla: verás el modelo entero en crudo mientras lo manipulas.</li>
+      <li>Pinta en rojo los cursos archivados añadiendo una clase con <code>ng-class</code>.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 7 */
+{
+  id: "descanso-2",
+  time: "18:10", end: "18:20", dur: 10,
+  kind: "Descanso",
+  modulo: "",
+  title: "Descanso corto",
+  goal: "",
+  break: true,
+  breakText: "Diez minutos. Luego, parámetros de ruta: lista y detalle."
+},
+
+/* ------------------------------------------------------------------ 8 */
+{
+  id: "route-params",
+  time: "18:20", end: "18:55", dur: 35,
+  kind: "Lab",
+  modulo: "Módulos 6 y 5",
+  title: "Parámetros de ruta: de la lista al detalle",
+  goal: "Hacer que la URL lleve datos, compartir información entre dos pantallas con un servicio, y navegar desde JavaScript.",
+  notes: `
+    <h3>Rutas con parámetros</h3>
+    <p>Un segmento con dos puntos captura un valor: <code>/cursos/:id</code> encaja con <code>#!/cursos/3</code>. El valor llega al controlador a través del servicio <code>$routeParams</code>.</p>
+    <div class="callout"><b>Siempre llega como texto</b>
+      <p><code>$routeParams.id</code> es el string <code>"3"</code>, no el número <code>3</code>. Compararlo con <code>===</code> contra un id numérico falla en silencio. Conviértelo (<code>Number(...)</code>) o compara con <code>==</code> a conciencia.</p>
+    </div>
+    <p>Variantes útiles: <code>/cursos/:id?</code> hace el parámetro opcional, y <code>/docs/:ruta*</code> captura varios segmentos.</p>
+
+    <h3>El primer servicio</h3>
+    <p>Dos controladores necesitan los mismos cursos. Duplicar el array sería un error: en cuanto la lista venga de una API, habría dos verdades. La respuesta de AngularJS es un <strong>servicio</strong>, que es un <em>singleton</em>: se crea una vez y se comparte.</p>
+    <ul>
+      <li><code>.factory('nombre', fn)</code> — la función devuelve el objeto público. Es la forma más usada.</li>
+      <li><code>.service('nombre', Fn)</code> — Angular hace <code>new Fn()</code> y el servicio es esa instancia.</li>
+      <li><code>.value</code> y <code>.constant</code> — para configuración. <code>constant</code> es el único disponible dentro de un <code>.config()</code>.</li>
+    </ul>
+    <p>El módulo 5 entra a fondo. Hoy basta con la idea: <strong>el estado compartido vive en un servicio, no en un controlador</strong>.</p>
+
+    <h3>Navegar desde JavaScript</h3>
+    <p><code>$location.path('/cursos')</code> cambia la ruta desde código y queda en el historial. Para leer o escribir parámetros de consulta, <code>$location.search()</code>.</p>
+
+    <h3>Lo que resuelve un 404 de datos</h3>
+    <p><code>#!/cursos/99</code> encaja con la ruta pero no existe el curso. El controlador debe contemplarlo: aquí se resuelve con un <code>ng-if</code> y una tarjeta de "no encontrado". La alternativa elegante es <code>resolve</code>, que retrasa el cambio de ruta hasta tener los datos; lo veremos con <code>$http</code> en el módulo 8.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="cursoApp">
+
+  <nav>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/cursos/3">Ir directo al curso 3</a>
+    <a href="#!/cursos/99">Un curso que no existe</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('cursoApp', ['ngRoute']);
+
+  angular
+    .module('cursoApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/cursos', {
+        templateUrl:  'cursos/lista.html',
+        controller:   'ListaController',
+        controllerAs: 'vm'
+      })
+      // :id captura un segmento de la URL
+      .when('/cursos/:id', {
+        templateUrl:  'cursos/detalle.html',
+        controller:   'DetalleController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ redirectTo: '/cursos' });
+  }
+}());`
+    },
+    { name: "cursos/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  // Un servicio es un singleton: Angular lo crea UNA vez
+  // y entrega la misma instancia a todo el que lo pida.
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',  horas: 20, nivel: 'Inicial',  docente: 'Pedro Hurtado' },
+      { id: 2, nombre: 'Java 21',    horas: 30, nivel: 'Medio',    docente: 'Equipo Idexa' },
+      { id: 3, nombre: 'Angular 19', horas: 40, nivel: 'Avanzado', docente: 'Pedro Hurtado' }
+    ];
+
+    // Sólo esto sale al exterior: la API pública del servicio.
+    return {
+      getAll:  getAll,
+      getById: getById
+    };
+
+    function getAll() {
+      return cursos;
+    }
+
+    function getById(id) {
+      var buscado = Number(id);          // $routeParams devuelve texto
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .controller('ListaController', ListaController);
+
+  // El servicio se PIDE por su nombre. El controlador no sabe
+  // cómo se construye ni de dónde salen los datos.
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos = cursosService.getAll();
+  }
+}());`
+    },
+    { name: "cursos/detalle.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('cursoApp')
+    .controller('DetalleController', DetalleController);
+
+  DetalleController.$inject = ['$routeParams', '$location', 'cursosService'];
+
+  function DetalleController($routeParams, $location, cursosService) {
+    var vm = this;
+
+    vm.id    = $routeParams.id;               // ojo: siempre es un string
+    vm.curso = cursosService.getById(vm.id);  // null si no existe
+
+    vm.volver = volver;
+
+    function volver() {
+      $location.path('/cursos');              // navegar desde el código
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<ul>
+  <li ng-repeat="c in vm.cursos track by c.id">
+    <!-- ng-href evita que el navegador pida la URL sin interpolar -->
+    <a ng-href="#!/cursos/{{ c.id }}">{{ c.nombre }}</a>
+    <span class="chip">{{ c.horas }} h</span>
+  </li>
+</ul>`
+    },
+    { name: "cursos/detalle.html", lang: "markup", code:
+`<div ng-if="vm.curso">
+  <h1>{{ vm.curso.nombre }}</h1>
+
+  <div class="ficha">
+    <p><strong>Nivel:</strong> {{ vm.curso.nivel }}</p>
+    <p><strong>Duración:</strong> {{ vm.curso.horas }} horas</p>
+    <p><strong>Docente:</strong> {{ vm.curso.docente }}</p>
+    <p class="muted">Parámetro recibido en la ruta: id = "{{ vm.id }}"</p>
+  </div>
+</div>
+
+<div ng-if="!vm.curso">
+  <h1>Curso no encontrado</h1>
+  <p class="muted">La ruta encaja, pero no hay ningún curso con id {{ vm.id }}.</p>
+</div>
+
+<button class="sec" ng-click="vm.volver()">Volver a la lista</button>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Añade al servicio un cuarto curso y comprueba que aparece en la lista sin tocar ningún controlador. Esa es la ganancia del singleton.</li>
+      <li>Haz que el detalle tenga enlaces de "anterior" y "siguiente" navegando por <code>id</code>.</li>
+      <li>Añade una ruta <code>/cursos/:id/temario</code> con su plantilla, y enlázala desde el detalle.</li>
+      <li>En <code>getById</code>, quita el <code>Number(id)</code>. El detalle deja de encontrar nada: acabas de vivir el fallo de tipos más habitual con <code>$routeParams</code>.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 9 */
+{
+  id: "reto-final",
+  time: "18:55", end: "19:25", dur: 30,
+  kind: "Reto",
+  modulo: "Módulos 1, 2 y 6",
+  title: "Reto: el panel de formación de Ayesa",
+  goal: "Montar tú solo una SPA completa con cuatro rutas, un servicio, búsqueda y pantalla de error, usando únicamente lo visto esta tarde.",
+  notes: `
+    <h3>Qué hay que entregar</h3>
+    <p>Una aplicación con estas cuatro rutas:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Ruta</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td><code>#!/</code></td><td>Portada con el número de cursos y el total de horas.</td></tr>
+        <tr><td><code>#!/cursos</code></td><td>Lista con buscador, filtro de activos y enlace al detalle.</td></tr>
+        <tr><td><code>#!/cursos/:id</code></td><td>Ficha del curso, con aviso si el id no existe.</td></tr>
+        <tr><td>cualquier otra</td><td>Pantalla 404 propia, con enlace de vuelta a la portada.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Requisitos</h3>
+    <ul>
+      <li>Un único archivo define el módulo; el resto lo consulta.</li>
+      <li>Los datos viven en un <code>factory</code>, no en los controladores.</li>
+      <li>Todas las plantillas en archivos aparte, con <code>templateUrl</code>.</li>
+      <li><code>$inject</code> en todo, y <code>controllerAs: 'vm'</code> en todas las rutas.</li>
+      <li>Ningún controlador toca el DOM.</li>
+    </ul>
+
+    <h3>Punto de partida</h3>
+    <p>El código de al lado es el esqueleto con los huecos marcados como <code>TODO</code>. Trabaja sobre él; la vista se recarga sola al escribir. Cuando lo tengas —o si te atascas— el botón <em>Solución</em> de la barra del editor carga una versión de referencia completa.</p>
+    <div class="callout ok"><b>Pista para el 404</b>
+      <p>No uses <code>redirectTo</code>: define <code>.otherwise({ templateUrl: 'core/404.html' })</code> y crea esa plantilla con el botón <em>+ archivo</em>.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="panelApp">
+
+  <nav>
+    <a href="#!/">Portada</a>
+    <a href="#!/cursos">Cursos</a>
+    <!-- TODO 1: añade un enlace a una ruta que no existe
+         para comprobar tu pantalla 404 -->
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('panelApp', ['ngRoute']);
+
+  angular
+    .module('panelApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'portada/portada.html',
+        controller:   'PortadaController',
+        controllerAs: 'vm'
+      })
+
+      // TODO 2: ruta '/cursos'   -> cursos/lista.html   + ListaController
+      // TODO 3: ruta '/cursos/:id' -> cursos/detalle.html + DetalleController
+
+      // TODO 4: otherwise con templateUrl 'core/404.html' (NO redirectTo)
+      .otherwise({ redirectTo: '/' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',        horas: 20, activo: true,  area: 'Frontend' },
+      { id: 2, nombre: 'Java 21',          horas: 30, activo: true,  area: 'Backend' },
+      { id: 3, nombre: 'Angular 19',       horas: 40, activo: true,  area: 'Frontend' },
+      { id: 4, nombre: 'Struts 1',         horas: 12, activo: false, area: 'Legacy' },
+      { id: 5, nombre: 'Spring Boot',      horas: 35, activo: true,  area: 'Backend' },
+      { id: 6, nombre: 'Oracle Forms',     horas: 16, activo: false, area: 'Legacy' }
+    ];
+
+    return {
+      getAll:  getAll,
+      getById: getById,
+      totalHoras: totalHoras
+    };
+
+    function getAll() { return cursos; }
+
+    function getById(id) {
+      var buscado = Number(id);
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+
+    // TODO 5: devuelve la suma de horas de los cursos ACTIVOS
+    function totalHoras() {
+      return 0;
+    }
+  }
+}());`
+    },
+    { name: "portada/portada.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('PortadaController', PortadaController);
+
+  PortadaController.$inject = ['cursosService'];
+
+  function PortadaController(cursosService) {
+    var vm = this;
+
+    vm.cursos     = cursosService.getAll();
+    vm.totalHoras = cursosService.totalHoras();
+  }
+}());`
+    },
+    { name: "portada/portada.html", lang: "markup", code:
+`<h1>Panel de formación</h1>
+
+<div class="ficha">
+  <p><strong>{{ vm.cursos.length }}</strong> cursos en catálogo</p>
+  <p><strong>{{ vm.totalHoras }}</strong> horas activas</p>
+</div>
+
+<p><a href="#!/cursos">Ver el catálogo</a></p>`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('ListaController', ListaController);
+
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos      = cursosService.getAll();
+    vm.q           = '';
+    vm.soloActivos = false;
+
+    // TODO 6: expón vm.esVisible(curso) para usarlo como filtro
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="vm.q">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo activos
+</label>
+
+<!-- TODO 7: repite sobre vm.cursos filtrando por nombre y por vm.esVisible,
+     ordenando por nombre, con "as resultados" y track by c.id.
+     Cada fila enlaza a #!/cursos/{{ c.id }} -->
+<ul>
+  <li ng-repeat="c in vm.cursos">{{ c.nombre }}</li>
+</ul>
+
+<!-- TODO 8: mensaje cuando resultados.length === 0 -->`
+    }
+  ],
+  solution: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="panelApp">
+
+  <nav>
+    <a href="#!/">Portada</a>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/no-existe">Probar el 404</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('panelApp', ['ngRoute']);
+
+  angular
+    .module('panelApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'portada/portada.html',
+        controller:   'PortadaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos', {
+        templateUrl:  'cursos/lista.html',
+        controller:   'ListaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos/:id', {
+        templateUrl:  'cursos/detalle.html',
+        controller:   'DetalleController',
+        controllerAs: 'vm'
+      })
+      .otherwise({
+        templateUrl: 'core/404.html'
+      });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',        horas: 20, activo: true,  area: 'Frontend' },
+      { id: 2, nombre: 'Java 21',          horas: 30, activo: true,  area: 'Backend' },
+      { id: 3, nombre: 'Angular 19',       horas: 40, activo: true,  area: 'Frontend' },
+      { id: 4, nombre: 'Struts 1',         horas: 12, activo: false, area: 'Legacy' },
+      { id: 5, nombre: 'Spring Boot',      horas: 35, activo: true,  area: 'Backend' },
+      { id: 6, nombre: 'Oracle Forms',     horas: 16, activo: false, area: 'Legacy' }
+    ];
+
+    return {
+      getAll:     getAll,
+      getById:    getById,
+      totalHoras: totalHoras
+    };
+
+    function getAll() { return cursos; }
+
+    function getById(id) {
+      var buscado = Number(id);
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+
+    function totalHoras() {
+      return cursos.reduce(function (suma, c) {
+        return c.activo ? suma + c.horas : suma;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "core/404.html", lang: "markup", code:
+`<h1>404</h1>
+
+<p class="muted">Esa ruta no existe en el panel.</p>
+
+<p><a href="#!/">Volver a la portada</a></p>`
+    },
+    { name: "portada/portada.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('PortadaController', PortadaController);
+
+  PortadaController.$inject = ['cursosService'];
+
+  function PortadaController(cursosService) {
+    var vm = this;
+
+    vm.cursos     = cursosService.getAll();
+    vm.totalHoras = cursosService.totalHoras();
+  }
+}());`
+    },
+    { name: "portada/portada.html", lang: "markup", code:
+`<h1>Panel de formación</h1>
+
+<div class="ficha">
+  <p><strong>{{ vm.cursos.length }}</strong> cursos en catálogo</p>
+  <p><strong>{{ vm.totalHoras }}</strong> horas activas</p>
+</div>
+
+<p><a href="#!/cursos">Ver el catálogo</a></p>`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('ListaController', ListaController);
+
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos      = cursosService.getAll();
+    vm.q           = '';
+    vm.soloActivos = false;
+
+    vm.esVisible = esVisible;
+
+    function esVisible(curso) {
+      return vm.soloActivos ? curso.activo : true;
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="vm.q">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo activos
+</label>
+
+<ul>
+  <li ng-repeat="c in vm.cursos | filter:{nombre: vm.q} | filter:vm.esVisible | orderBy:'nombre' as resultados">
+    <a ng-href="#!/cursos/{{ c.id }}">{{ c.nombre }}</a>
+    <span class="chip" ng-class="{activo: c.activo}">{{ c.area }}</span>
+    <span class="muted">{{ c.horas }} h</span>
+  </li>
+</ul>
+
+<p class="muted" ng-if="resultados.length === 0">
+  Ningún curso coincide con "{{ vm.q }}".
+</p>`
+    },
+    { name: "cursos/detalle.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('DetalleController', DetalleController);
+
+  DetalleController.$inject = ['$routeParams', '$location', 'cursosService'];
+
+  function DetalleController($routeParams, $location, cursosService) {
+    var vm = this;
+
+    vm.id    = $routeParams.id;
+    vm.curso = cursosService.getById(vm.id);
+
+    vm.volver = volver;
+
+    function volver() {
+      $location.path('/cursos');
+    }
+  }
+}());`
+    },
+    { name: "cursos/detalle.html", lang: "markup", code:
+`<div ng-if="vm.curso">
+  <h1>{{ vm.curso.nombre }}</h1>
+
+  <div class="ficha">
+    <p><strong>Área:</strong> {{ vm.curso.area }}</p>
+    <p><strong>Duración:</strong> {{ vm.curso.horas }} horas</p>
+    <p>
+      <strong>Estado:</strong>
+      <span class="chip" ng-class="{activo: vm.curso.activo}">
+        {{ vm.curso.activo ? 'activo' : 'archivado' }}
+      </span>
+    </p>
+  </div>
+</div>
+
+<div ng-if="!vm.curso">
+  <h1>Curso no encontrado</h1>
+  <p class="muted">No hay ningún curso con id {{ vm.id }}.</p>
+</div>
+
+<button class="sec" ng-click="vm.volver()">Volver a la lista</button>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Completa los ocho <code>TODO</code>. Te faltan por crear <code>core/404.html</code>, <code>cursos/detalle.controller.js</code> y <code>cursos/detalle.html</code>: usa <em>+ archivo</em>.</li>
+      <li>Si acabas pronto: agrupa la lista por área con dos <code>ng-repeat</code> anidados.</li>
+      <li>Si acabas muy pronto: añade a la portada las horas por área usando <code>ng-repeat</code> sobre un objeto (<code>(clave, valor) in vm.porArea</code>).</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 10 */
+{
+  id: "cierre",
+  time: "19:25", end: "19:30", dur: 5,
+  kind: "Cierre",
+  modulo: "",
+  title: "Cierre y puente a mañana",
+  goal: "Repasar lo que ya sabes hacer y dejar planteado lo que abre la sesión 2.",
+  notes: `
+    <h3>Después de estas cuatro horas sabes</h3>
+    <ul>
+      <li>Situar AngularJS 1.x frente a Angular, React y jQuery, y saber qué buscar en la documentación.</li>
+      <li>Arrancar una aplicación con <code>ng-app</code> y repartirla en módulo, controladores y plantillas.</li>
+      <li>Escribir un controlador con IIFE, <code>$inject</code> y <code>controllerAs</code> —el estilo que verás en cualquier código de producción.</li>
+      <li>Montar el routing con <code>ngRoute</code>, <code>ng-view</code>, <code>templateUrl</code>, <code>otherwise</code> y parámetros de ruta.</li>
+      <li>Usar <code>ng-repeat</code>, <code>ng-if</code>, <code>ng-show</code>, <code>ng-class</code>, <code>ng-click</code> y encadenar filtros.</li>
+      <li>Compartir estado entre pantallas con un <code>factory</code>.</li>
+    </ul>
+
+    <h3>Mañana, sesión 2</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Bloque</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td>Módulo 3</td><td>Enlace de datos: <code>$scope</code> frente a <code>controllerAs</code>, <code>ng-model</code> por dentro, unidireccional con <code>::</code> (one-time binding), y el ciclo <code>$digest</code> explicado de verdad: <code>$watch</code>, <code>$apply</code>, dirty checking y por qué a veces hace falta <code>$timeout</code>.</td></tr>
+        <tr><td>Módulo 4 (inicio)</td><td>Directivas propias: <code>restrict</code>, <code>scope</code> aislado con <code>@</code>, <code>=</code> y <code>&amp;</code>, y el salto a <code>.component()</code>.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Para llevarse</h3>
+    <div class="callout ok"><b>Repaso en cinco minutos</b>
+      <p>Si mañana solo recuerdas tres cosas, que sean estas: el módulo se define <strong>una vez</strong> con corchetes; el controlador <strong>no toca el DOM</strong>; y el estado compartido vive en un <strong>servicio</strong>.</p>
+    </div>
+    <p>El editor de la derecha tiene cargada la solución completa del reto. Toda la sesión queda guardada en tu navegador: puedes cerrar la pestaña y seguir donde lo dejaste.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- Banco de pruebas libre: la solución del reto, lista para trastear.
+     Cambia lo que quieras; con "Reiniciar" vuelves a este punto. -->
+<div ng-app="panelApp">
+
+  <nav>
+    <a href="#!/">Portada</a>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/no-existe">Probar el 404</a>
+  </nav>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('panelApp', ['ngRoute']);
+
+  angular
+    .module('panelApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl:  'portada/portada.html',
+        controller:   'PortadaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos', {
+        templateUrl:  'cursos/lista.html',
+        controller:   'ListaController',
+        controllerAs: 'vm'
+      })
+      .when('/cursos/:id', {
+        templateUrl:  'cursos/detalle.html',
+        controller:   'DetalleController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ templateUrl: 'core/404.html' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',    horas: 20, activo: true,  area: 'Frontend' },
+      { id: 2, nombre: 'Java 21',      horas: 30, activo: true,  area: 'Backend' },
+      { id: 3, nombre: 'Angular 19',   horas: 40, activo: true,  area: 'Frontend' },
+      { id: 4, nombre: 'Struts 1',     horas: 12, activo: false, area: 'Legacy' },
+      { id: 5, nombre: 'Spring Boot',  horas: 35, activo: true,  area: 'Backend' },
+      { id: 6, nombre: 'Oracle Forms', horas: 16, activo: false, area: 'Legacy' }
+    ];
+
+    return { getAll: getAll, getById: getById, totalHoras: totalHoras };
+
+    function getAll() { return cursos; }
+
+    function getById(id) {
+      var buscado = Number(id);
+      for (var i = 0; i < cursos.length; i++) {
+        if (cursos[i].id === buscado) { return cursos[i]; }
+      }
+      return null;
+    }
+
+    function totalHoras() {
+      return cursos.reduce(function (suma, c) {
+        return c.activo ? suma + c.horas : suma;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "core/404.html", lang: "markup", code:
+`<h1>404</h1>
+
+<p class="muted">Esa ruta no existe en el panel.</p>
+
+<p><a href="#!/">Volver a la portada</a></p>`
+    },
+    { name: "portada/portada.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('PortadaController', PortadaController);
+
+  PortadaController.$inject = ['cursosService'];
+
+  function PortadaController(cursosService) {
+    var vm = this;
+
+    vm.cursos     = cursosService.getAll();
+    vm.totalHoras = cursosService.totalHoras();
+  }
+}());`
+    },
+    { name: "portada/portada.html", lang: "markup", code:
+`<h1>Panel de formación</h1>
+
+<div class="ficha">
+  <p><strong>{{ vm.cursos.length }}</strong> cursos en catálogo</p>
+  <p><strong>{{ vm.totalHoras }}</strong> horas activas</p>
+</div>
+
+<p><a href="#!/cursos">Ver el catálogo</a></p>`
+    },
+    { name: "cursos/lista.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('ListaController', ListaController);
+
+  ListaController.$inject = ['cursosService'];
+
+  function ListaController(cursosService) {
+    var vm = this;
+
+    vm.cursos      = cursosService.getAll();
+    vm.q           = '';
+    vm.soloActivos = false;
+
+    vm.esVisible = esVisible;
+
+    function esVisible(curso) {
+      return vm.soloActivos ? curso.activo : true;
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista.html", lang: "markup", code:
+`<h1>Cursos</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="vm.q">
+</label>
+
+<label class="muted">
+  <input type="checkbox" ng-model="vm.soloActivos" class="inline">
+  Sólo activos
+</label>
+
+<ul>
+  <li ng-repeat="c in vm.cursos | filter:{nombre: vm.q} | filter:vm.esVisible | orderBy:'nombre' as resultados">
+    <a ng-href="#!/cursos/{{ c.id }}">{{ c.nombre }}</a>
+    <span class="chip" ng-class="{activo: c.activo}">{{ c.area }}</span>
+    <span class="muted">{{ c.horas }} h</span>
+  </li>
+</ul>
+
+<p class="muted" ng-if="resultados.length === 0">
+  Ningún curso coincide con "{{ vm.q }}".
+</p>`
+    },
+    { name: "cursos/detalle.controller.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('panelApp')
+    .controller('DetalleController', DetalleController);
+
+  DetalleController.$inject = ['$routeParams', '$location', 'cursosService'];
+
+  function DetalleController($routeParams, $location, cursosService) {
+    var vm = this;
+
+    vm.id    = $routeParams.id;
+    vm.curso = cursosService.getById(vm.id);
+
+    vm.volver = volver;
+
+    function volver() {
+      $location.path('/cursos');
+    }
+  }
+}());`
+    },
+    { name: "cursos/detalle.html", lang: "markup", code:
+`<div ng-if="vm.curso">
+  <h1>{{ vm.curso.nombre }}</h1>
+
+  <div class="ficha">
+    <p><strong>Área:</strong> {{ vm.curso.area }}</p>
+    <p><strong>Duración:</strong> {{ vm.curso.horas }} horas</p>
+    <p>
+      <strong>Estado:</strong>
+      <span class="chip" ng-class="{activo: vm.curso.activo}">
+        {{ vm.curso.activo ? 'activo' : 'archivado' }}
+      </span>
+    </p>
+  </div>
+</div>
+
+<div ng-if="!vm.curso">
+  <h1>Curso no encontrado</h1>
+  <p class="muted">No hay ningún curso con id {{ vm.id }}.</p>
+</div>
+
+<button class="sec" ng-click="vm.volver()">Volver a la lista</button>`
+    }
+  ],
+  reto: `
+    <ul>
+      <li>Trastea libremente: rompe cosas y lee los errores en la consola de abajo. Es la mejor preparación para mañana.</li>
+      <li>Una pregunta para dormir: ¿cómo sabe AngularJS que has escrito en el input, si nadie ha llamado a ninguna función de refresco? Mañana empezamos por ahí.</li>
+    </ul>
+  `
+}
+
+];
+</script>
+
+
+<script>
+(function () {
+  "use strict";
+
+  // Ojo: en cdnjs, angular-route NO vive dentro del paquete angular.js;
+  // es una librería aparte. La ruta angular.js/1.8.3/angular-route.min.js da 404.
+  var NG_CORE  = "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js";
+  var NG_ROUTE = "https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.3/angular-route.min.js";
+  var FONTS    = "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap";
+  var STORE    = "ngrepl:dia1:v1";
+
+  /* ---------------------------------------------------------------- css de la vista previa */
+  var BASE_CSS = [
+    "*{box-sizing:border-box}",
+    "body{margin:0;padding:18px;font:15px/1.6 'IBM Plex Sans',system-ui,sans-serif;color:#1D1613;background:#fff}",
+    "h1{font-size:23px;margin:0 0 10px;letter-spacing:-.01em}",
+    "h2{font-size:18px;margin:20px 0 8px}",
+    "h3{font-size:15px;margin:0 0 6px}",
+    "p{margin:0 0 10px}",
+    "a{color:#B52E31}",
+    "nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #E0D6CF;padding-bottom:10px;margin-bottom:14px}",
+    "nav a{text-decoration:none;padding:5px 11px;border:1px solid #E0D6CF;border-radius:999px;font-size:13.5px;color:#5A4D46}",
+    "nav a:hover{border-color:#B52E31;color:#B52E31}",
+    "label{display:block;margin:0 0 10px;font-size:13px;color:#5A4D46}",
+    "input,select,textarea{display:block;width:100%;max-width:340px;font:inherit;font-size:14px;padding:7px 9px;border:1px solid #CFC3BB;border-radius:5px;margin-top:4px;background:#fff;color:#1D1613}",
+    "input.inline,input[type=checkbox]{display:inline-block;width:auto;margin:0 6px 0 0;padding:0}",
+    "button{font:inherit;font-size:13.5px;padding:6px 13px;border:1px solid #B52E31;background:#B52E31;color:#fff;border-radius:5px;cursor:pointer;margin:0 6px 10px 0}",
+    "button.sec{background:#fff;color:#B52E31}",
+    "button[disabled]{opacity:.45;cursor:not-allowed}",
+    "ul{padding-left:20px;margin:0 0 10px}",
+    "li{margin-bottom:6px}",
+    "table{border-collapse:collapse;width:100%;font-size:14px;margin-bottom:10px}",
+    "th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #EDE5DF}",
+    "th{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#8B7B72}",
+    ".ficha{border:1px solid #E0D6CF;border-radius:8px;padding:14px 16px;margin-bottom:10px;background:#FDFBFA}",
+    ".chip{display:inline-block;font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid #E0D6CF;border-radius:999px;padding:1px 8px;color:#8B7B72;vertical-align:middle}",
+    ".chip.activo{border-color:#0E6A60;color:#0E6A60;background:#E2F0ED}",
+    ".muted{color:#8B7B72;font-size:13px}",
+    "code{font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#F0E9E4;padding:1px 4px;border-radius:3px}",
+    ".ng-cloak{display:none}"
+  ].join("");
+
+  /* ---------------------------------------------------------------- construir el documento */
+  var S = "<scr" + "ipt", E = "</scr" + "ipt>";
+
+  function harness(templates) {
+    var json = JSON.stringify(templates).replace(/</g, "\\u003c");
+    return [
+      "(function(){",
+      "var TPL=" + json + ";",
+      "function post(k,t){try{parent.postMessage({__ngrepl:1,kind:k,text:t},'*');}catch(e){}}",
+      "function fmt(a){if(typeof a==='string')return a;try{return JSON.stringify(a);}catch(e){return String(a);}}",
+      "if(window.__ngFails&&window.__ngFails.length){",
+      "  post('error','No se han podido descargar: '+window.__ngFails.join(', ')+'. Comprueba la conexión.');}",
+      "['log','info','warn','error'].forEach(function(m){var o=console[m];console[m]=function(){",
+      "  post(m,Array.prototype.slice.call(arguments).map(fmt).join(' '));if(o)try{o.apply(console,arguments);}catch(e){}};});",
+      "window.onerror=function(msg,src,line){post('error',msg+(line?' (línea '+line+')':''));};",
+      "window.addEventListener('unhandledrejection',function(e){post('error','Promesa sin capturar: '+fmt(e.reason));});",
+      "if(!window.angular){post('error','No se ha podido cargar angular.js. ¿Hay conexión?');return;}",
+      "var base=angular.module;",
+      "angular.module=function(name,requires){var m=base.apply(angular,arguments);",
+      "  if(requires){m.run(['$templateCache',function(tc){for(var k in TPL){tc.put(k,TPL[k]);}}]);}",
+      "  return m;};",
+      "function route(){post('route',location.hash||'#!/');}",
+      "window.addEventListener('hashchange',route);",
+      "window.addEventListener('message',function(e){var d=e.data;",
+      "  if(d&&d.__ngrepl_go!=null){var h=String(d.__ngrepl_go);location.hash=h.charAt(0)==='#'?h.slice(1):h;}});",
+      "angular.element(document).ready(function(){route();post('ready','');});",
+      "}());"
+    ].join("\n");
+  }
+
+  var BOOTCHECK = [
+    "(function(){setTimeout(function(){",
+    "if(!window.angular)return;",
+    "var el=document.querySelector('[ng-app],[data-ng-app],[x-ng-app]');if(!el)return;",
+    "if(el.className&&String(el.className).indexOf('ng-scope')>-1)return;",
+    "try{if(angular.element(el).scope())return;}catch(e){}",
+    "try{var n=el.getAttribute('ng-app')||el.getAttribute('data-ng-app');angular.bootstrap(el,n?[n]:[]);}",
+    "catch(e){if(window.console)console.error(e.message||String(e));}",
+    "},0);}());"
+  ].join("\n");
+
+  function buildPayload(files) {
+    var index = "", js = [], css = [], tpl = {};
+
+    files.forEach(function (f) {
+      if (f.name === "index.html") { index = f.code; }
+      else if (/\.html?$/i.test(f.name)) { tpl[f.name] = f.code; }
+      else if (/\.css$/i.test(f.name)) { css.push(f.code); }
+      else { js.push(f.code); }
+    });
+
+    var out = "";
+    out += '<link rel="stylesheet" href="' + FONTS + '">';
+    out += "<style>" + BASE_CSS + css.join("\n") + "</style>";
+    out += index;
+    out += S + ">window.__ngFail=function(n){(window.__ngFails=window.__ngFails||[]).push(n);};" + E;
+    out += S + ' src="' + NG_CORE + '" onerror="__ngFail(\'angular.js\')">' + E;
+    out += S + ' src="' + NG_ROUTE + '" onerror="__ngFail(\'angular-route.js\')">' + E;
+    out += S + ">" + harness(tpl) + E;
+    js.forEach(function (code) { out += S + ">" + code + E; });
+    out += S + ">" + BOOTCHECK + E;
+    return out;
+  }
+
+  /* ---------------------------------------------------------------- estado */
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch (e) { saved = {}; }
+
+  function persist() {
+    try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  function clone(files) {
+    return files.map(function (f) { return { name: f.name, lang: f.lang, code: f.code }; });
+  }
+
+  function filesFor(step) {
+    if (!step.files) { return null; }
+    var s = saved[step.id];
+    if (s && s.files && s.files.length) { return s.files; }
+    return clone(step.files);
+  }
+
+  function saveFiles(step, files) {
+    saved[step.id] = saved[step.id] || {};
+    saved[step.id].files = files;
+    persist();
+  }
+
+  function resetFiles(step) {
+    if (saved[step.id]) { delete saved[step.id].files; persist(); }
+    return clone(step.files);
+  }
+
+  /* ---------------------------------------------------------------- utilidades */
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text != null) { n.textContent = text; }
+    return n;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function highlight(code, lang) {
+    var P = window.Prism;
+    if (P && P.languages && P.languages[lang]) {
+      try { return P.highlight(code, P.languages[lang], lang); } catch (e) {}
+    }
+    return esc(code);
+  }
+
+  /* Los errores de AngularJS llegan como una URL de 2.000 caracteres con los
+     mensajes anidados y codificados. Los desenrollamos para que se lean. */
+  var HINTS = {
+    nomod:    "Ese módulo no existe todavía. ¿Falta su <script>, o le sobran/faltan los corchetes al definirlo?",
+    unpr:     "Dependencia desconocida: revisa el nombre del servicio y el $inject.",
+    areq:     "Angular esperaba una función y ha recibido otra cosa. Suele ser un nombre de controlador mal escrito.",
+    ctrlreq:  "Falta el controlador: no está registrado en el módulo.",
+    strictdi: "Con ng-strict-di hay que declarar $inject en todas las funciones inyectadas.",
+    dupes:    "ng-repeat ha encontrado valores repetidos. Añade track by."
+  };
+
+  function prettyNg(text) {
+    var s = String(text);
+    if (s.indexOf("errors.angularjs.org") === -1) { return s; }
+    var out = [], cur = s, guard = 0, code = "";
+    while (cur.indexOf("errors.angularjs.org") > -1 && guard++ < 8) {
+      var m = /errors\.angularjs\.org\/[^/]+\/([^/]+)\/([^?\s]+)\?([^\s"']*)/.exec(cur);
+      if (!m) { break; }
+      code = m[2];
+      var args = m[3].split("&").map(function (kv) {
+        var i = kv.indexOf("=");
+        try { return decodeURIComponent(kv.slice(i + 1)); } catch (e) { return kv.slice(i + 1); }
+      });
+      out.push("[" + m[1] + ":" + code + "] " + args[0]);
+      cur = args.slice(1).join(" ");
+    }
+    if (!out.length) { return s; }
+    var txt = out.join("  →  ");
+    if (HINTS[code]) { txt += "\n" + HINTS[code]; }
+    return txt;
+  }
+
+  function langOf(name) {
+    if (/\.html?$/i.test(name)) { return "markup"; }
+    if (/\.css$/i.test(name)) { return "css"; }
+    return "javascript";
+  }
+
+  function minutesNow() {
+    var d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }
+
+  function toMinutes(hhmm) {
+    var p = hhmm.split(":");
+    return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+  }
+
+  /* ---------------------------------------------------------------- agenda */
+  var agendaEl = document.getElementById("agenda");
+  var current = 0;
+
+  function buildAgenda() {
+    agendaEl.innerHTML = "";
+    STEPS.forEach(function (step, i) {
+      var li = el("li");
+      var b = el("button", "ai" + (step.break ? " is-break" : "") +
+                 (step.kind === "Reto" ? " is-reto" : "") +
+                 (step.kind === "Cierre" ? " is-cierre" : ""));
+      b.type = "button";
+      b.appendChild(el("span", "t", step.time));
+      var box = el("span");
+      box.appendChild(el("span", "ttl", step.title));
+      box.appendChild(el("span", "kind", step.kind + " · " + step.dur + " min"));
+      b.appendChild(box);
+      b.addEventListener("click", function () { go(i); });
+      li.appendChild(b);
+      agendaEl.appendChild(li);
+    });
+  }
+
+  function markAgenda() {
+    var items = agendaEl.querySelectorAll(".ai");
+    for (var i = 0; i < items.length; i++) {
+      items[i].setAttribute("aria-current", i === current ? "true" : "false");
+    }
+  }
+
+  /* ---------------------------------------------------------------- lección */
+  var lessonEl = document.getElementById("lesson");
+  var mainEl = document.getElementById("main");
+  var runTimer = null;
+  var live = null;   // { files, frame, consoleEl, urlEl, dot, step }
+
+  function go(i, skipHash) {
+    if (i < 0 || i >= STEPS.length) { return; }
+    current = i;
+    markAgenda();
+    if (!skipHash) {
+      try { history.replaceState(null, "", "#" + STEPS[i].id); } catch (e) { location.hash = STEPS[i].id; }
+    }
+    renderLesson(STEPS[i]);
+    mainEl.scrollTop = 0;
+    if (window.innerWidth <= 900) { setRail(false); }
+  }
+
+  function renderLesson(step) {
+    live = null;
+    lessonEl.innerHTML = "";
+
+    /* cabecera */
+    var head = el("header", "lhead");
+    var meta = el("div", "lmeta");
+    if (step.modulo) { meta.appendChild(el("span", "pill mod", step.modulo)); }
+    meta.appendChild(el("span", "pill hour", step.time + " – " + step.end));
+    meta.appendChild(el("span", "pill", step.dur + " min"));
+    meta.appendChild(el("span", "pill", step.kind));
+    head.appendChild(meta);
+    head.appendChild(el("h2", null, step.title));
+    if (step.goal) { head.appendChild(el("p", "goal", step.goal)); }
+    lessonEl.appendChild(head);
+
+    if (step.break) {
+      var bc = el("div", "breakcard");
+      bc.appendChild(el("div", "big", step.time + " – " + step.end));
+      bc.appendChild(el("p", null, step.breakText));
+      lessonEl.appendChild(bc);
+      lessonEl.appendChild(navBlock());
+      return;
+    }
+
+    /* notas */
+    if (step.notes) {
+      var note = el("section", "note");
+      note.innerHTML = step.notes;
+      lessonEl.appendChild(note);
+    }
+
+    /* repl */
+    if (step.files) { lessonEl.appendChild(buildRepl(step)); }
+
+    /* reto */
+    if (step.reto) {
+      var r = el("section", "reto");
+      r.appendChild(el("h3", null, step.kind === "Reto" ? "Manos a la obra" : "Prueba a…"));
+      var body = el("div");
+      body.innerHTML = step.reto;
+      r.appendChild(body);
+      lessonEl.appendChild(r);
+    }
+
+    lessonEl.appendChild(navBlock());
+  }
+
+  function navBlock() {
+    var nav = el("nav", "lnav");
+    var prev = document.createElement("a");
+    prev.className = "pv"; prev.href = "#";
+    prev.innerHTML = '<span class="dir">Anterior</span><span class="nm"></span>';
+    var next = document.createElement("a");
+    next.className = "nx"; next.href = "#";
+    next.innerHTML = '<span class="dir">Siguiente</span><span class="nm"></span>';
+
+    if (current > 0) {
+      prev.querySelector(".nm").textContent = STEPS[current - 1].title;
+      prev.addEventListener("click", function (e) { e.preventDefault(); go(current - 1); });
+    } else { prev.setAttribute("aria-disabled", "true"); }
+
+    if (current < STEPS.length - 1) {
+      next.querySelector(".nm").textContent = STEPS[current + 1].title;
+      next.addEventListener("click", function (e) { e.preventDefault(); go(current + 1); });
+    } else { next.setAttribute("aria-disabled", "true"); }
+
+    nav.appendChild(prev);
+    nav.appendChild(next);
+    return nav;
+  }
+
+  /* ---------------------------------------------------------------- repl */
+  function buildRepl(step) {
+    var files = filesFor(step);
+    var activeName = files[0].name;
+
+    var repl = el("section", "repl");
+    repl.setAttribute("data-pane", "code");
+
+    /* barra superior */
+    var bar = el("div", "repl-bar");
+    bar.appendChild(el("span", "label", "Editor en vivo"));
+
+    var seg = el("div", "segbtn");
+    var bCode = el("button", null, "Código");
+    var bOut = el("button", null, "Resultado");
+    bCode.type = bOut.type = "button";
+    bCode.setAttribute("aria-pressed", "true");
+    bOut.setAttribute("aria-pressed", "false");
+    bCode.addEventListener("click", function () {
+      repl.setAttribute("data-pane", "code");
+      bCode.setAttribute("aria-pressed", "true"); bOut.setAttribute("aria-pressed", "false");
+    });
+    bOut.addEventListener("click", function () {
+      repl.setAttribute("data-pane", "out");
+      bOut.setAttribute("aria-pressed", "true"); bCode.setAttribute("aria-pressed", "false");
+    });
+    seg.appendChild(bCode); seg.appendChild(bOut);
+    bar.appendChild(seg);
+
+    bar.appendChild(el("span", "spacer"));
+
+    var addBtn = el("button", "btn", "+ archivo"); addBtn.type = "button";
+    var delBtn = el("button", "btn", "− archivo"); delBtn.type = "button";
+    var resetBtn = el("button", "btn", "Reiniciar"); resetBtn.type = "button";
+    var runBtn = el("button", "btn run", "Ejecutar"); runBtn.type = "button";
+    bar.appendChild(addBtn); bar.appendChild(delBtn);
+    if (step.solution) {
+      var solBtn = el("button", "btn sol", "Solución"); solBtn.type = "button";
+      solBtn.addEventListener("click", function () {
+        if (!confirm("Se sustituye tu código por la solución de referencia. ¿Seguir?")) { return; }
+        files = clone(step.solution);
+        activeName = files[0].name;
+        saveFiles(step, files);
+        renderTabs(); renderEditor(); run();
+      });
+      bar.appendChild(solBtn);
+    }
+    bar.appendChild(resetBtn); bar.appendChild(runBtn);
+    repl.appendChild(bar);
+
+    /* paneles */
+    var panes = el("div", "panes");
+    var codePane = el("div", "pane code");
+    var tabs = el("div", "tabs");
+    var edit = el("div", "edit");
+    var inner = el("div", "inner");
+    var pre = el("pre", "layer");
+    var ta = document.createElement("textarea");
+    ta.className = "layer";
+    ta.spellcheck = false;
+    ta.setAttribute("autocapitalize", "off");
+    ta.setAttribute("autocomplete", "off");
+    ta.setAttribute("aria-label", "Editor de código");
+    inner.appendChild(pre); inner.appendChild(ta);
+    edit.appendChild(inner);
+    codePane.appendChild(tabs); codePane.appendChild(edit);
+
+    var outPane = el("div", "pane out");
+    var outbar = el("div", "outbar");
+    var dot = el("span", "dot");
+    var urlEl = document.createElement("input");
+    urlEl.className = "urlbar"; urlEl.value = "#!/";
+    urlEl.setAttribute("aria-label", "URL de la aplicación");
+    var reloadBtn = el("button", "btn", "Recargar"); reloadBtn.type = "button";
+    outbar.appendChild(dot); outbar.appendChild(urlEl); outbar.appendChild(reloadBtn);
+
+    var outbody = el("div", "outbody");
+    var frame = document.createElement("iframe");
+    frame.className = "frame";
+    frame.title = "Resultado de la aplicación";
+    var cons = el("div", "console");
+    cons.hidden = true;
+    outbody.appendChild(frame); outbody.appendChild(cons);
+    outPane.appendChild(outbar); outPane.appendChild(outbody);
+
+    panes.appendChild(codePane); panes.appendChild(outPane);
+    repl.appendChild(panes);
+
+    /* --- comportamiento --- */
+    function fileByName(n) {
+      for (var i = 0; i < files.length; i++) { if (files[i].name === n) { return files[i]; } }
+      return files[0];
+    }
+
+    function renderTabs() {
+      tabs.innerHTML = "";
+      files.forEach(function (f) {
+        var t = el("button", null, f.name);
+        t.type = "button";
+        t.setAttribute("aria-selected", f.name === activeName ? "true" : "false");
+        t.addEventListener("click", function () { activeName = f.name; renderTabs(); renderEditor(); });
+        tabs.appendChild(t);
+      });
+    }
+
+    function renderEditor() {
+      var f = fileByName(activeName);
+      ta.value = f.code;
+      paint();
+    }
+
+    function paint() {
+      var f = fileByName(activeName);
+      var code = ta.value;
+      pre.innerHTML = "<code>" + highlight(code.slice(-1) === "\n" ? code + " " : code, f.lang || langOf(f.name)) + "</code>";
+    }
+
+    ta.addEventListener("input", function () {
+      var f = fileByName(activeName);
+      f.code = ta.value;
+      paint();
+      saveFiles(step, files);
+      clearTimeout(runTimer);
+      runTimer = setTimeout(run, 750);
+    });
+
+    ta.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        var s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + "  " + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + 2;
+        ta.dispatchEvent(new Event("input"));
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        clearTimeout(runTimer);
+        run();
+      }
+    });
+
+    addBtn.addEventListener("click", function () {
+      var name = prompt("Nombre del archivo (por ejemplo core/404.html o cursos/detalle.controller.js)");
+      if (!name) { return; }
+      name = name.trim();
+      if (!name) { return; }
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].name === name) { alert("Ya existe un archivo con ese nombre."); return; }
+      }
+      files.push({ name: name, lang: langOf(name), code: "" });
+      activeName = name;
+      saveFiles(step, files);
+      renderTabs(); renderEditor(); run();
+      ta.focus();
+    });
+
+    delBtn.addEventListener("click", function () {
+      if (activeName === "index.html") { alert("index.html no se puede borrar."); return; }
+      if (!confirm("¿Borrar " + activeName + "?")) { return; }
+      files = files.filter(function (f) { return f.name !== activeName; });
+      activeName = files[0].name;
+      saveFiles(step, files);
+      renderTabs(); renderEditor(); run();
+    });
+
+    resetBtn.addEventListener("click", function () {
+      if (!confirm("Se descartan tus cambios en este ejercicio. ¿Seguir?")) { return; }
+      files = resetFiles(step);
+      activeName = files[0].name;
+      renderTabs(); renderEditor(); run();
+    });
+
+    runBtn.addEventListener("click", function () { clearTimeout(runTimer); run(); });
+    reloadBtn.addEventListener("click", function () { clearTimeout(runTimer); run(); });
+
+    urlEl.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") { return; }
+      e.preventDefault();
+      try { frame.contentWindow.postMessage({ __ngrepl_go: urlEl.value }, "*"); } catch (err) {}
+    });
+
+    function logLine(kind, text) {
+      cons.hidden = false;
+      var ln = el("div", "ln" + (kind === "error" ? " error" : kind === "warn" ? " warn" : ""));
+      ln.appendChild(el("span", "tag", kind === "error" ? "error" : kind === "warn" ? "aviso" : "log"));
+      var t = kind === "log" ? String(text) : prettyNg(text);
+      if (t.length > 900) { t = t.slice(0, 900) + "…"; }
+      ln.appendChild(document.createTextNode(t));
+      cons.appendChild(ln);
+      while (cons.children.length > 60) { cons.removeChild(cons.firstChild); }
+      cons.scrollTop = cons.scrollHeight;
+      if (kind === "error") { dot.classList.add("err"); }
+    }
+
+    function run() {
+      cons.innerHTML = "";
+      cons.hidden = true;
+      dot.classList.remove("err");
+      var payload = buildPayload(files);
+      live = { frame: frame, log: logLine, url: urlEl, dot: dot, payload: payload };
+      mount(live);
+    }
+
+    renderTabs();
+    renderEditor();
+    setTimeout(run, 0);
+
+    return repl;
+  }
+
+  /* ---------------------------------------------------------------- montaje del iframe */
+  var mode = "file";          // "file" usa preview.html; "srcdoc" es el plan B
+  var readyOk = false;
+  var pending = null;
+
+  function mount(ctx) {
+    pending = ctx;
+    if (mode === "file") {
+      var stored = false;
+      try { localStorage.setItem("ngrepl:payload", ctx.payload); stored = true; } catch (e) {}
+      if (stored) {
+        ctx.frame.removeAttribute("srcdoc");
+        ctx.frame.src = "preview.html?r=" + Date.now();
+        if (!readyOk) { setTimeout(checkFallback, 2600); }
+        return;
+      }
+      mode = "srcdoc";
+    }
+    ctx.frame.removeAttribute("src");
+    ctx.frame.srcdoc = ctx.payload;
+  }
+
+  function checkFallback() {
+    if (readyOk || mode !== "file" || !pending) { return; }
+    mode = "srcdoc";
+    pending.frame.removeAttribute("src");
+    pending.frame.srcdoc = pending.payload;
+  }
+
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.__ngrepl !== 1 || !live) { return; }
+    if (d.kind === "ready") { readyOk = true; return; }
+    if (d.kind === "route") { live.url.value = d.text; return; }
+    live.log(d.kind, d.text);
+  });
+
+  /* ---------------------------------------------------------------- cabecera y rail */
+  var railEl = document.getElementById("rail");
+  var railBtn = document.getElementById("railToggle");
+
+  function setRail(open) {
+    railEl.hidden = !open;
+    railBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  railBtn.addEventListener("click", function () {
+    setRail(railEl.hidden);
+  });
+
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute("data-theme") === "dark" ||
+      (!root.getAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+    try { localStorage.setItem("ngrepl:theme", dark ? "light" : "dark"); } catch (e) {}
+  });
+
+  try {
+    var th = localStorage.getItem("ngrepl:theme");
+    if (th) { document.documentElement.setAttribute("data-theme", th); }
+  } catch (e) {}
+
+  /* reloj de la sesión */
+  var clockEl = document.querySelector(".rail-head .clock");
+  function tick() {
+    var now = minutesNow();
+    var ini = toMinutes(SESSION.desde), fin = toMinutes(SESSION.hasta);
+    if (now >= ini && now <= fin) {
+      var queda = fin - now;
+      clockEl.textContent = "quedan " + Math.floor(queda / 60) + " h " + (queda % 60) + " min";
+    } else {
+      clockEl.textContent = SESSION.desde + "–" + SESSION.hasta;
+    }
+  }
+
+  function stepNow() {
+    var now = minutesNow();
+    for (var i = STEPS.length - 1; i >= 0; i--) {
+      if (now >= toMinutes(STEPS[i].time)) { return i; }
+    }
+    return -1;
+  }
+
+  /* ---------------------------------------------------------------- arranque */
+  buildAgenda();
+  tick();
+  setInterval(tick, 30000);
+
+  if (window.innerWidth <= 900) { setRail(false); }
+
+  var start = 0;
+  var hash = (location.hash || "").replace(/^#/, "");
+  for (var i = 0; i < STEPS.length; i++) { if (STEPS[i].id === hash) { start = i; } }
+  if (!hash) {
+    var n = stepNow();
+    if (n >= 0 && minutesNow() <= toMinutes(SESSION.hasta)) { start = n; }
+  }
+  go(start, true);
+
+  window.addEventListener("hashchange", function () {
+    var h = (location.hash || "").replace(/^#/, "");
+    for (var j = 0; j < STEPS.length; j++) {
+      if (STEPS[j].id === h && j !== current) { go(j, true); return; }
+    }
+  });
+
+}());
+</script>
+

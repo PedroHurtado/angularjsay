@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview</title>
+</head>
+<body>
+<script>
+(function () {
+  var raw = null;
+  try { raw = window.localStorage.getItem('ngrepl:payload'); } catch (e) { raw = null; }
+  if (raw) {
+    document.write(raw);
+  } else {
+    document.write('<p style="font:14px system-ui,sans-serif;padding:16px;color:#8A7B73">Sin codigo que ejecutar.</p>');
+  }
+}());
+</script>
+</body>
+</html>

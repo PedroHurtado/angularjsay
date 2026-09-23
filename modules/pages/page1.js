@@ -1,5 +1,6 @@
-const outlet = document.getElementById('outlet')
 
+
+const outlet = document.getElementById('outlet')
 
 function drawData(data){
     

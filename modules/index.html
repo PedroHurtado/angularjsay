@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+       .list{
+         display: grid;
+         grid-template-columns: repeat(2,1fr);
+         gap: 0.5rem;
+         color:blue
+       }
+    </style>
 </head>
 <body>
     <ul>
@@ -11,6 +19,8 @@
         <li><a href="" data-page="2">pagina2</a></li>
         <li><a href="" data-page="3">pagina3</a></li>
     </ul>
+    <div id="outlet"></div>
+    
     <script src="main.js" type="module"></script>
     <script nomodule="" src="old.js"></script>
 </body>

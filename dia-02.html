@@ -1,0 +1,3818 @@
+<title>AngularJS Día 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --ground:#F7F3F0;
+  --surface:#FFFFFF;
+  --surface-2:#F0E9E4;
+  --line:#E0D6CF;
+  --line-soft:#EDE5DF;
+  --ink:#1D1613;
+  --ink-2:#5A4D46;
+  --ink-3:#8B7B72;
+  --accent:#B52E31;
+  --accent-soft:#F9E9E8;
+  --live:#0E6A60;
+  --live-soft:#E2F0ED;
+  --warn:#9A6410;
+  --warn-soft:#F8EEDC;
+  --shadow:0 1px 2px rgba(29,22,19,.06), 0 8px 24px -16px rgba(29,22,19,.28);
+
+  --code-bg:#1E1917;
+  --code-bg-2:#272120;
+  --code-line:#3A312D;
+  --code-ink:#EDE4DF;
+  --c-comment:#7E6F68;
+  --c-key:#F2777A;
+  --c-str:#9CC48B;
+  --c-num:#E3B155;
+  --c-fn:#7FB4CE;
+  --c-attr:#D7A162;
+  --c-punct:#9C8D86;
+
+  --sans:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --cond:"IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --rail:274px;
+  --repl-h:clamp(430px, 60vh, 700px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141010;
+    --surface:#1C1716;
+    --surface-2:#251E1C;
+    --line:#352B28;
+    --line-soft:#2A2321;
+    --ink:#F3EBE6;
+    --ink-2:#C2B4AC;
+    --ink-3:#8D7D75;
+    --accent:#E8595B;
+    --accent-soft:#391E1F;
+    --live:#55C0AE;
+    --live-soft:#0F312C;
+    --warn:#D9A249;
+    --warn-soft:#332614;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141010;
+  --surface:#1C1716;
+  --surface-2:#251E1C;
+  --line:#352B28;
+  --line-soft:#2A2321;
+  --ink:#F3EBE6;
+  --ink-2:#C2B4AC;
+  --ink-3:#8D7D75;
+  --accent:#E8595B;
+  --accent-soft:#391E1F;
+  --live:#55C0AE;
+  --live-soft:#0F312C;
+  --warn:#D9A249;
+  --warn-soft:#332614;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-rows:auto minmax(0,1fr);height:100%}
+
+.masthead{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:9px 18px;padding-top:calc(9px + env(safe-area-inset-top,0px));
+  background:var(--surface);border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.shield{
+  font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:.06em;
+  color:#fff;background:var(--accent);padding:4px 9px 11px;
+  clip-path:polygon(0 0,100% 0,100% 68%,50% 100%,0 68%);line-height:1;
+}
+.brand h1{font-family:var(--cond);font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.brand .sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.02em;white-space:nowrap}
+.spacer{flex:1 1 auto}
+.daystrip{display:flex;gap:4px;align-items:center;overflow-x:auto;max-width:100%}
+.daystrip .d{
+  font-family:var(--mono);font-size:10.5px;padding:3px 8px;border:1px solid var(--line);
+  border-radius:999px;color:var(--ink-3);white-space:nowrap;
+}
+a.d{text-decoration:none}
+a.d:hover{border-color:var(--accent);color:var(--accent)}
+.daystrip .d.now{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:500}
+.tbtn{
+  font:inherit;font-size:11.5px;font-family:var(--mono);cursor:pointer;
+  background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
+  border-radius:4px;padding:4px 9px;white-space:nowrap;
+}
+.tbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+
+.body{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:0}
+
+/* ---------- agenda rail ---------- */
+.rail{
+  border-right:1px solid var(--line);background:var(--surface);
+  overflow:auto;min-height:0;padding:14px 0 calc(24px + env(safe-area-inset-bottom,0px));
+}
+.rail-head{padding:0 16px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.rail-head .eyebrow{font-family:var(--cond);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.rail-head .clock{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.agenda{list-style:none;margin:0;padding:0 8px;display:flex;flex-direction:column;gap:1px}
+.ai{
+  display:grid;grid-template-columns:44px minmax(0,1fr);gap:9px;align-items:start;
+  width:100%;text-align:left;background:none;border:0;border-radius:6px;
+  padding:8px;cursor:pointer;font:inherit;color:inherit;position:relative;
+}
+.ai:hover{background:var(--surface-2)}
+.ai .t{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding-top:2px;font-variant-numeric:tabular-nums}
+.ai .ttl{font-size:13.5px;line-height:1.35;color:var(--ink-2)}
+.ai .kind{
+  display:block;font-family:var(--cond);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);margin-top:3px;
+}
+.ai[aria-current="true"]{background:var(--accent-soft)}
+.ai[aria-current="true"] .ttl{color:var(--ink);font-weight:600}
+.ai[aria-current="true"] .t{color:var(--accent)}
+.ai[aria-current="true"]::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2px;background:var(--accent);border-radius:2px}
+.ai.is-break{opacity:.7}
+.ai.is-break .ttl{font-style:italic}
+.ai.is-reto .kind,.ai.is-cierre .kind{color:var(--accent)}
+.rail-foot{padding:14px 16px 0;margin:10px 8px 0;border-top:1px solid var(--line-soft);font-size:12px;color:var(--ink-3)}
+.rail-foot b{color:var(--ink-2);font-weight:600;font-family:var(--cond);letter-spacing:.04em}
+
+/* ---------- main ---------- */
+.main{overflow:auto;min-height:0;padding:0 0 calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 0}
+
+.lhead{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.lmeta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.lmeta .pill{border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.lmeta .pill.mod{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.lmeta .pill.hour{font-variant-numeric:tabular-nums}
+.lhead h2{
+  font-family:var(--cond);font-weight:700;font-size:clamp(25px,4vw,33px);line-height:1.12;
+  letter-spacing:-.015em;margin:2px 0 0;text-wrap:balance;
+}
+.goal{font-size:15.5px;color:var(--ink-2);max-width:68ch;margin:0}
+
+.note{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.note > :first-child{margin-top:0}
+.note > :last-child{margin-bottom:0}
+.note h3{
+  font-family:var(--cond);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:20px 0 8px;font-weight:600;
+}
+.note h4{font-size:15px;font-weight:600;margin:16px 0 4px}
+.note p{margin:0 0 10px;max-width:74ch}
+.note ul,.note ol{margin:0 0 10px;padding-left:20px;max-width:74ch}
+.note li{margin-bottom:5px}
+.note li::marker{color:var(--ink-3)}
+.note strong{font-weight:600}
+code{
+  font-family:var(--mono);font-size:.875em;background:var(--surface-2);
+  border:1px solid var(--line-soft);border-radius:3px;padding:.5px 4px;color:var(--ink);
+}
+.note a{color:var(--accent)}
+
+.tblwrap{overflow-x:auto;margin:0 0 12px;border:1px solid var(--line);border-radius:6px}
+table.tbl{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+table.tbl th,table.tbl td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+table.tbl thead th{
+  font-family:var(--cond);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+table.tbl tbody tr:last-child td{border-bottom:0}
+table.tbl td:first-child{font-weight:500}
+
+.callout{
+  border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:10px 14px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:14px;
+}
+.callout b{font-family:var(--cond);letter-spacing:.07em;text-transform:uppercase;font-size:10.5px;color:var(--warn);display:block;margin-bottom:2px}
+.callout.ok{border-left-color:var(--live);background:var(--live-soft)}
+.callout.ok b{color:var(--live)}
+.callout p{margin:0 0 8px;max-width:74ch}
+.callout p:last-child{margin-bottom:0}
+
+/* ---------- repl ---------- */
+.repl{
+  border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface);
+  box-shadow:var(--shadow);margin-bottom:16px;
+}
+.repl-bar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:7px 10px;background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+.repl-bar .label{
+  font-family:var(--cond);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+}
+.segbtn{display:none;gap:0;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.segbtn button{
+  font:inherit;font-family:var(--mono);font-size:11.5px;padding:4px 12px;border:0;cursor:pointer;
+  background:var(--surface);color:var(--ink-3);
+}
+.segbtn button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.btn{
+  font:inherit;font-family:var(--mono);font-size:11.5px;cursor:pointer;border-radius:5px;
+  padding:4px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+}
+.btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.btn.run{background:var(--live);border-color:var(--live);color:#fff;font-weight:500}
+.btn.run:hover{filter:brightness(1.08);color:#fff}
+.btn.sol{border-color:var(--accent);color:var(--accent)}
+.btn.sol:hover{background:var(--accent-soft);color:var(--accent)}
+
+.panes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);height:var(--repl-h)}
+.pane{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0}
+.pane.code{border-right:1px solid var(--line);background:var(--code-bg)}
+
+.tabs{display:flex;gap:0;overflow-x:auto;background:var(--code-bg-2);border-bottom:1px solid var(--code-line)}
+.tabs button{
+  font:inherit;font-family:var(--mono);font-size:11.5px;white-space:nowrap;cursor:pointer;
+  background:none;border:0;border-right:1px solid var(--code-line);border-bottom:2px solid transparent;
+  padding:7px 12px;color:#8E807A;
+}
+.tabs button:hover{color:var(--code-ink)}
+.tabs button[aria-selected="true"]{color:var(--code-ink);background:var(--code-bg);border-bottom-color:var(--c-key)}
+
+.edit{overflow:auto;min-height:0;background:var(--code-bg)}
+.edit .inner{position:relative;min-height:100%}
+.edit .layer{
+  margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.62;
+  padding:12px 14px;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;
+  tab-size:2;border:0;letter-spacing:0;
+}
+.edit pre.layer{color:var(--code-ink);pointer-events:none;min-height:100%}
+.edit pre.layer code{background:none;border:0;padding:0;font-size:inherit;color:inherit;font-family:inherit;line-height:inherit}
+.edit textarea.layer{
+  position:absolute;top:0;right:0;bottom:0;left:0;resize:none;overflow:hidden;
+  background:transparent;color:transparent;caret-color:#F6B99B;outline:none;display:block;
+}
+.edit textarea.layer::selection{background:rgba(242,119,122,.32)}
+
+.pane.out{background:var(--surface)}
+.outbar{
+  display:flex;align-items:center;gap:8px;padding:6px 10px;
+  background:var(--surface-2);border-bottom:1px solid var(--line);min-width:0;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);flex:none}
+.dot.err{background:var(--accent)}
+.urlbar{
+  flex:1 1 auto;min-width:0;font-family:var(--mono);font-size:11.5px;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  padding:3px 8px;color:var(--ink-2);
+}
+.urlbar:focus{outline:none;border-color:var(--live);color:var(--ink)}
+/* Flex y no grid: un max-height en % dentro de una fila "auto" no tiene contra
+   qué resolverse y la consola quedaba aplastada a media línea. */
+.outbody{display:flex;flex-direction:column;min-height:0}
+.frame{flex:1 1 auto;min-height:120px;width:100%;border:0;background:#fff;display:block}
+.console{
+  flex:0 0 auto;min-height:96px;max-height:45%;overflow:auto;
+  border-top:2px solid var(--line);background:var(--surface);
+  font-family:var(--mono);font-size:12.5px;line-height:1.5;padding:0;
+}
+.console[hidden]{display:none!important}
+.console .ln{padding:6px 12px;border-bottom:1px solid var(--line-soft);color:var(--ink);white-space:pre-wrap;overflow-wrap:break-word}
+.console .ln:last-child{border-bottom:0}
+.console .ln.error{color:var(--accent);background:var(--accent-soft);font-weight:500}
+.console .ln.warn{color:var(--warn);background:var(--warn-soft);font-weight:500}
+.console .ln .tag{
+  display:inline-block;min-width:44px;margin-right:8px;font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600;
+}
+.console .ln.error .tag,.console .ln.warn .tag{color:inherit}
+@media (max-width: 900px){
+  .console{max-height:40%}
+}
+
+/* ---------- challenge ---------- */
+.reto{
+  border:1px solid var(--accent);border-radius:8px;background:var(--surface);
+  padding:14px 18px;margin-bottom:16px;
+}
+.reto h3{
+  font-family:var(--cond);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 8px;font-weight:700;
+}
+.reto ol,.reto ul{margin:0;padding-left:20px;max-width:74ch}
+.reto li{margin-bottom:6px}
+.reto li:last-child{margin-bottom:0}
+.reto li::marker{color:var(--accent)}
+
+/* ---------- nav ---------- */
+.lnav{display:flex;gap:10px;justify-content:space-between;align-items:stretch;margin:22px 0 0}
+.lnav a{
+  flex:1 1 0;min-width:0;text-decoration:none;color:inherit;border:1px solid var(--line);
+  border-radius:8px;padding:10px 14px;background:var(--surface);display:block;
+}
+.lnav a:hover{border-color:var(--ink-3)}
+.lnav a[aria-disabled="true"]{opacity:.35;pointer-events:none}
+.lnav .dir{font-family:var(--cond);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);display:block}
+.lnav .nx{text-align:right}
+.lnav .nm{font-size:14px;color:var(--ink-2);display:block;margin-top:2px}
+
+.breakcard{
+  border:1px dashed var(--line);border-radius:9px;background:var(--surface);
+  padding:28px 22px;text-align:center;margin-bottom:16px;
+}
+.breakcard .big{font-family:var(--cond);font-size:34px;font-weight:700;color:var(--ink-3);letter-spacing:-.01em}
+.breakcard p{margin:6px auto 0;max-width:50ch;color:var(--ink-2)}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px){
+  :root{--rail:240px}
+}
+@media (max-width: 900px){
+  .body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .rail{
+    border-right:0;border-bottom:1px solid var(--line);max-height:38vh;
+    padding:10px 0;
+  }
+  .rail[hidden]{display:none!important}
+  .railtoggle{display:inline-flex!important}
+  .panes{grid-template-columns:minmax(0,1fr);height:auto}
+  .pane{height:var(--repl-h)}
+  .pane.code{border-right:0;border-bottom:1px solid var(--line)}
+  .segbtn{display:flex}
+  .repl[data-pane="code"] .pane.out{display:none}
+  .repl[data-pane="out"] .pane.code{display:none}
+  .wrap{padding:16px 16px 0}
+  .brand .sub{display:none}
+}
+@media (max-width: 560px){
+  .lnav{flex-direction:column}
+  .daystrip{display:none}
+}
+</style>
+
+
+<div class="shell">
+  <header class="masthead">
+    <div class="brand">
+      <span class="shield">JS</span>
+      <h1>AngularJS 1.8</h1>
+      <span class="sub">Idexa · Ayesa · Pedro Hurtado</span>
+    </div>
+    <div class="spacer"></div>
+    <nav class="daystrip" id="daystrip" aria-label="Sesiones del curso">
+      <a class="d" data-n="1" href="dia-01.html">S1 lun 21</a>
+      <a class="d" data-n="2" href="dia-02.html">S2 jue 24</a>
+      <a class="d" data-n="3" href="dia-03.html">S3 lun 28</a>
+    </nav>
+    <button class="tbtn railtoggle" id="railToggle" aria-expanded="true">Agenda</button>
+    <button class="tbtn" id="themeToggle" title="Cambiar tema">Tema</button>
+  </header>
+
+  <div class="body">
+    <aside class="rail" id="rail" aria-label="Agenda de la sesión">
+      <div class="rail-head">
+        <span class="eyebrow" id="railEyebrow">Sesión</span>
+        <span class="clock">15:30–19:30</span>
+      </div>
+      <ul class="agenda" id="agenda"></ul>
+      <div class="rail-foot">
+        <b>Hoy cubrimos</b><br>
+        <span id="railFoot"></span>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <div class="wrap" id="lesson"></div>
+    </main>
+  </div>
+</div>
+
+
+<script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<style>
+.token.comment{color:var(--c-comment);font-style:italic}
+.token.tag,.token.keyword,.token.boolean,.token.null{color:var(--c-key)}
+.token.attr-name{color:var(--c-attr)}
+.token.attr-value,.token.string{color:var(--c-str)}
+.token.number{color:var(--c-num)}
+.token.function,.token.class-name{color:var(--c-fn)}
+.token.punctuation,.token.operator{color:var(--c-punct)}
+.token.tag .token.punctuation{color:var(--c-punct)}
+.token.tag .token.attr-name{color:var(--c-attr)}
+</style>
+
+<script>
+"use strict";
+
+var SESSION = {
+  n: 2,
+  fecha: "jueves 24 de septiembre",
+  desde: "15:30",
+  hasta: "19:30",
+  eyebrow: "Sesión 2 · 4 h",
+  cubrimos: "Módulo 3 · Enlace de datos<br>Módulo 4 · Directivas avanzadas<br>Módulo 5 · Servicios y DI<br><span style=\"color:var(--ink-3)\">+ angular.component, el puente a Angular 2+</span>"
+};
+
+var STEPS = [
+
+/* ------------------------------------------------------------------ 1 */
+{
+  id: "enlace-datos",
+  time: "15:30", end: "16:05", dur: 35,
+  kind: "Teoría + lab",
+  modulo: "Módulo 3",
+  title: "Enlace de datos: en las dos direcciones, en una y una sola vez",
+  goal: "Responder a la pregunta con la que cerramos el lunes, distinguir los tres tipos de enlace y saber qué se puede escribir —y qué no— dentro de unas llaves.",
+  notes: `
+    <h3>La pregunta del lunes</h3>
+    <p>¿Cómo sabe AngularJS que has escrito en el input, si nadie ha llamado a ninguna función de refresco? No hay magia, hay tres pasos:</p>
+    <ol>
+      <li><code>ng-model</code> se suscribe al evento <code>input</code> del campo (igual que harías tú con <code>addEventListener</code>).</li>
+      <li>Cuando el evento salta, copia el valor al modelo y llama a <code>$scope.$apply()</code>.</li>
+      <li><code>$apply</code> lanza el ciclo <strong><code>$digest</code></strong>: Angular recorre todas las expresiones que la vista está vigilando, compara cada una con su valor anterior y repinta las que han cambiado.</li>
+    </ol>
+    <p>A esas expresiones vigiladas se les llama <strong>watchers</strong>. Cada <code>{{ }}</code>, cada <code>ng-show</code>, cada <code>ng-class</code> es un watcher. En el siguiente bloque abrimos ese bucle por dentro; de momento, quédate con la idea: <em>Angular no sabe lo que cambia, lo comprueba</em>.</p>
+
+    <h3>Tres formas de enlazar</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Sentido</th><th>Sintaxis</th><th>Cuándo</th></tr></thead>
+      <tbody>
+        <tr><td>Bidireccional (vista ⇄ modelo)</td><td><code>ng-model</code> en <code>input</code>, <code>select</code>, <code>textarea</code>, checkbox, radio</td><td>Todo lo que el usuario edita</td></tr>
+        <tr><td>Unidireccional (modelo → vista)</td><td><code>{{ expr }}</code>, <code>ng-bind</code>, <code>ng-class</code>, <code>ng-show</code>...</td><td>Todo lo que sólo se muestra</td></tr>
+        <tr><td>Una sola vez</td><td><code>{{ ::expr }}</code>, <code>ng-repeat="x in ::lista"</code></td><td>Datos que no van a cambiar: etiquetas, catálogos, textos</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>ng-model, algo más que un input</h3>
+    <ul>
+      <li>Convierte tipos: con <code>type="number"</code> el modelo es un número (o <code>null</code> si el campo está vacío), con checkbox un booleano.</li>
+      <li><code>ng-model-options</code> decide <em>cuándo</em> se actualiza el modelo: <code>{ updateOn: 'blur' }</code> al salir del campo, <code>{ debounce: 500 }</code> medio segundo después de dejar de escribir. Oro para buscadores que llaman a una API.</li>
+      <li>La expresión de <code>ng-model</code> tiene que ser <strong>asignable</strong>: <code>vm.alumno.nombre</code> sí, <code>vm.getNombre()</code> no.</li>
+      <li>Siempre con punto: <code>vm.alumno.nombre</code>, nunca <code>nombre</code> a secas. En el siguiente bloque verás por qué.</li>
+    </ul>
+
+    <h3>{{ }} frente a ng-bind</h3>
+    <p>Hacen lo mismo. La diferencia es estética: mientras Angular carga, el navegador enseña las llaves tal cual (el famoso <em>parpadeo</em>). <code>ng-bind</code> no, porque es un atributo. Si usas llaves en el <code>index.html</code>, añade la clase <code>ng-cloak</code> a la raíz.</p>
+
+    <h3>One-time binding: <code>::</code></h3>
+    <p>Con <code>::</code> Angular vigila la expresión <strong>hasta que deja de ser <code>undefined</code></strong>, pinta el valor y retira el watcher. Menos watchers, <code>$digest</code> más rápido. En una tabla de 500 filas con 6 columnas pasas de 3.000 watchers a casi cero.</p>
+    <div class="callout"><b>El precio</b>
+      <p>Si luego el dato cambia, la vista no se entera. Úsalo para lo que de verdad es estable, no como optimización a ciegas.</p>
+    </div>
+
+    <h3>Expresiones: JavaScript recortado</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Permitido</th><th>Prohibido</th></tr></thead>
+      <tbody>
+        <tr><td>Propiedades y llamadas: <code>vm.alumno.nombre</code>, <code>vm.total()</code></td><td><code>if</code>, <code>for</code>, <code>while</code> (salvo el ternario)</td></tr>
+        <tr><td>Aritmética y comparaciones: <code>vm.horas * 45</code>, <code>a === b</code></td><td>Declarar funciones</td></tr>
+        <tr><td>Ternario: <code>vm.becado ? 'sí' : 'no'</code></td><td><code>new</code>, expresiones regulares literales</td></tr>
+        <tr><td>Literales: <code>{activo: true}</code>, <code>[1, 2]</code></td><td>Operadores de bits, coma y <code>void</code></td></tr>
+        <tr><td>Filtros: <code>vm.precio | currency</code></td><td>Globales: <code>window</code>, <code>Math</code>, <code>alert</code>, <code>console</code></td></tr>
+        <tr><td>Asignaciones en eventos: <code>ng-click="vm.x = 1"</code></td><td><code>document</code> y cualquier cosa que no esté en el ámbito</td></tr>
+      </tbody>
+    </table></div>
+    <p>Dos diferencias con JavaScript que conviene tener muy presentes:</p>
+    <ul>
+      <li><strong>Se evalúan contra el ámbito, no contra <code>window</code>.</strong> <code>{{ Math.round(x) }}</code> no pinta nada, porque <code>Math</code> no es una propiedad de <code>vm</code>. Si lo necesitas, crea una función en el controlador.</li>
+      <li><strong>Perdonan.</strong> <code>{{ vm.noExiste.ni.esto }}</code> en JavaScript lanzaría <em>Cannot read properties of undefined</em>; en una expresión, pinta una cadena vacía. Es cómodo con datos que llegan tarde... y traicionero con las erratas: un nombre mal escrito no da error, simplemente no sale nada.</li>
+    </ul>
+    <p>En las directivas de evento (<code>ng-click</code>, <code>ng-keyup</code>, <code>ng-submit</code>...) tienes además <code>$event</code>, el evento del DOM que las ha disparado.</p>
+    <div class="callout ok"><b>Regla práctica</b>
+      <p>Si una expresión no cabe en una línea o necesitas pensarla dos veces, es una función del controlador con un nombre que explique lo que hace.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="enlaceApp" ng-strict-di>
+  <section ng-controller="FichaController as vm">
+
+    <!-- ng-bind: igual que {{ }}, pero sin parpadeo al cargar -->
+    <h1 ng-bind="vm.titulo"></h1>
+    <p class="muted">Con one-time binding: {{ ::vm.titulo }}</p>
+
+    <h2>Bidireccional: ng-model</h2>
+
+    <label>
+      Nombre
+      <input type="text" ng-model="vm.alumno.nombre">
+    </label>
+
+    <label>
+      Horas (type="number": el modelo es un número)
+      <input type="number" min="0" ng-model="vm.alumno.horas">
+    </label>
+
+    <label>
+      <input type="checkbox" ng-model="vm.alumno.becado">
+      Becado
+    </label>
+
+    <label>
+      Nivel
+      <select ng-model="vm.alumno.nivel" ng-options="n for n in ::vm.niveles"></select>
+    </label>
+
+    <label>
+      Comentario (el modelo cambia al SALIR del campo)
+      <input type="text" ng-model="vm.alumno.comentario"
+             ng-model-options="{ updateOn: 'blur' }">
+    </label>
+
+    <label>
+      Búsqueda (debounce de 500 ms)
+      <input type="text" ng-model="vm.busqueda"
+             ng-model-options="{ debounce: 500 }">
+    </label>
+
+    <h2>Unidireccional: del modelo a la vista</h2>
+
+    <div class="ficha">
+      <p>
+        {{ vm.alumno.nombre }} · nivel {{ vm.alumno.nivel }} ·
+        {{ vm.alumno.becado ? 'con beca' : 'sin beca' }}
+      </p>
+      <!-- Aritmética + filtro en la misma expresión -->
+      <p>Coste: {{ vm.alumno.horas * vm.precioHora | currency:'€ ':2 }}</p>
+      <p>Búsqueda: "<span ng-bind="vm.busqueda"></span>"</p>
+      <!-- Expresiones que perdonan: esto no existe y no rompe nada -->
+      <p class="muted">No existe: [{{ vm.noExiste.ni.esto }}]</p>
+    </div>
+
+    <h2>$event en las directivas de evento</h2>
+
+    <button ng-click="vm.cambiarTitulo()">Cambiar título</button>
+    <button class="sec" ng-click="vm.registrar($event)">¿Quién me ha pulsado?</button>
+    <p class="muted">{{ vm.ultimoEvento }}</p>
+
+    <h2>El modelo en crudo</h2>
+    <pre class="muted">{{ vm.alumno | json }}</pre>
+
+  </section>
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('enlaceApp', [])
+    .controller('FichaController', FichaController);
+
+  FichaController.$inject = [];
+
+  function FichaController() {
+    var vm = this;
+
+    vm.titulo       = 'Ficha de matrícula';
+    vm.precioHora   = 45;
+    vm.niveles      = ['Inicial', 'Medio', 'Avanzado'];
+    vm.busqueda     = '';
+    vm.ultimoEvento = 'Todavía no has pulsado nada.';
+
+    // Un objeto, no variables sueltas: la "regla del punto".
+    vm.alumno = {
+      nombre:     'Ana',
+      horas:      20,
+      becado:     false,
+      nivel:      'Inicial',
+      comentario: ''
+    };
+
+    vm.cambiarTitulo = cambiarTitulo;
+    vm.registrar     = registrar;
+
+    function cambiarTitulo() {
+      vm.titulo = 'Ficha actualizada a las ' + new Date().toLocaleTimeString();
+    }
+
+    // $event es el evento del DOM que ha disparado el ng-click.
+    function registrar(evento) {
+      vm.ultimoEvento = 'Evento "' + evento.type + '" sobre un ' +
+                        evento.target.tagName + ' en x=' + evento.clientX +
+                        ', y=' + evento.clientY;
+    }
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Pulsa <em>Cambiar título</em>. El <code>h1</code> cambia; la línea con <code>::</code> no. Quita los <code>::</code> y repite.</li>
+      <li>Añade <code>{{ Math.round(vm.alumno.horas / 3) }}</code> a la ficha. No pinta nada y no hay error en la consola. Sácalo a una función <code>vm.sesiones()</code> en el controlador y funcionará.</li>
+      <li>Cambia <code>ng-model="vm.alumno.nombre"</code> por <code>ng-model="vm.alumno.nombre.toUpperCase()"</code>. Lee el error: <em>Non-assignable model expression</em>. <code>ng-model</code> necesita un sitio donde escribir.</li>
+      <li>Escribe en <em>Comentario</em> y observa que el JSON no cambia hasta que sales del campo. Cambia las opciones por <code>{ debounce: 1000 }</code>.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 2 */
+{
+  id: "digest",
+  time: "16:05", end: "16:40", dur: 35,
+  kind: "Teoría + lab",
+  modulo: "Módulos 3 y 7",
+  title: "El ciclo $digest por dentro",
+  goal: "Entender qué es un ámbito, por qué a veces la vista 'no se entera' de un cambio, y saber arreglarlo sin llenar el código de $apply a ciegas.",
+  notes: `
+    <h3>$scope y controllerAs son lo mismo por debajo</h3>
+    <p><code>ng-controller="PadreController as vm"</code> no hace nada misterioso: crea un ámbito nuevo y ejecuta <code>$scope.vm = this</code>. Todo lo que ves en una plantilla vive en algún <code>$scope</code>; <code>controllerAs</code> sólo decide con qué nombre lo publicas.</p>
+    <p>Por eso en código de empresa verás las dos cosas mezcladas: <code>vm</code> para exponer datos y funciones, y <code>$scope</code> inyectado <strong>sólo</strong> cuando hace falta algo que únicamente él sabe hacer: <code>$watch</code>, <code>$on</code>, <code>$apply</code>.</p>
+
+    <h3>Un árbol de ámbitos</h3>
+    <p>Los ámbitos forman un árbol que copia la forma del HTML: arriba del todo, <code>$rootScope</code>; debajo, uno por cada <code>ng-controller</code>, <code>ng-if</code>, <code>ng-repeat</code> (uno por fila), <code>ng-include</code> y <code>ng-view</code>.</p>
+    <p>Los ámbitos hijos heredan de su padre con la <strong>herencia prototípica</strong> de JavaScript, y esa herencia es asimétrica:</p>
+    <ul>
+      <li><strong>Leer</strong> sube por la cadena: si el hijo no tiene <code>nombre</code>, lo busca en el padre.</li>
+      <li><strong>Escribir</strong> no sube: <code>nombre = 'Luis'</code> en el hijo crea una propiedad nueva en el hijo que tapa la del padre.</li>
+    </ul>
+    <p>Con un objeto en medio el problema desaparece, porque <code>datos.nombre = 'Luis'</code> primero <em>lee</em> <code>datos</code> (sube hasta el padre) y luego escribe dentro de ese objeto compartido. Eso es la <strong>regla del punto</strong>: en un <code>ng-model</code> siempre tiene que haber al menos un punto. <code>controllerAs</code> te la regala: <code>vm.nombre</code> ya lleva punto.</p>
+
+    <h3>El bucle, paso a paso</h3>
+    <ol>
+      <li>Algo ocurre <strong>dentro de Angular</strong>: un <code>ng-click</code>, un <code>ng-model</code>, una respuesta de <code>$http</code>, un <code>$timeout</code>.</li>
+      <li>Angular llama a <code>$rootScope.$apply()</code>, que lanza <code>$digest</code>.</li>
+      <li><code>$digest</code> recorre <strong>todos</strong> los watchers: evalúa cada expresión y la compara con el último valor que guardó.</li>
+      <li>Si alguno ha cambiado, ejecuta su función y <strong>vuelve a empezar</strong>, porque esa función puede haber cambiado otra cosa. A esto se le llama <em>dirty checking</em>.</li>
+      <li>Cuando una vuelta completa sale limpia, repinta. Si tras 10 vueltas sigue cambiando algo, se rinde con el error <code>$rootScope:infdig</code>.</li>
+    </ol>
+
+    <h3>Lo que ocurre fuera de Angular</h3>
+    <p>Si el cambio llega por un camino que Angular no controla, el modelo cambia pero nadie lanza el <code>$digest</code>, así que la vista no se entera... hasta que cualquier otra cosa lance uno.</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Origen del cambio</th><th>¿Refresca la vista?</th><th>La alternativa</th></tr></thead>
+      <tbody>
+        <tr><td><code>setTimeout</code> / <code>setInterval</code></td><td>No</td><td><code>$timeout</code> / <code>$interval</code></td></tr>
+        <tr><td><code>addEventListener</code>, <code>$(...).on()</code></td><td>No</td><td>Una directiva que llame a <code>scope.$apply</code></td></tr>
+        <tr><td><code>fetch</code>, <code>XMLHttpRequest</code>, promesas nativas</td><td>No</td><td><code>$http</code> y <code>$q</code> (lunes)</td></tr>
+        <tr><td>Librerías externas: mapas, gráficas, websockets</td><td>No</td><td>Envolver su callback en <code>$scope.$apply(fn)</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>$apply dentro de $apply</b>
+      <p>Llamar a <code>$apply</code> cuando ya hay un <code>$digest</code> en marcha lanza <code>$rootScope:inprog</code>. Si no sabes desde dónde te van a llamar, usa <code>$scope.$evalAsync(fn)</code> o <code>$timeout(fn)</code>: se encolan y se ejecutan en el siguiente ciclo. Y si ves un <code>if (!$scope.$$phase)</code> en código heredado, es el síntoma de que alguien no sabía qué estaba pasando.</p>
+    </div>
+
+    <h3>$watch en tres sabores</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Llamada</th><th>Qué compara</th><th>Úsala para</th></tr></thead>
+      <tbody>
+        <tr><td><code>$scope.$watch('vm.texto', fn)</code></td><td>Por referencia (<code>===</code>)</td><td>Primitivos, u objetos que se sustituyen enteros</td></tr>
+        <tr><td><code>$scope.$watch('vm.filtro', fn, true)</code></td><td>Por valor, en profundidad (<code>angular.equals</code>)</td><td>Objetos pequeños que se mutan. Caro: guarda una copia completa</td></tr>
+        <tr><td><code>$scope.$watchCollection('vm.lista', fn)</code></td><td>Un nivel: altas, bajas y reordenaciones</td><td>Arrays a los que se hace <code>push</code> o <code>splice</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>La función recibe <code>(nuevo, viejo)</code>. La primera llamada es la inicialización y en ella <code>nuevo === viejo</code>: por eso casi todos los watchers empiezan con <code>if (nuevo === viejo) { return; }</code>.</p>
+    <p><code>$watch</code> <strong>devuelve una función</strong>: llamarla quita el watcher. Úsalo cuando sólo necesitas vigilar algo hasta que ocurre una vez.</p>
+
+    <h3>$destroy: limpiar al salir</h3>
+    <p>Cuando un ámbito muere (un <code>ng-if</code> pasa a falso, cambias de ruta), Angular retira sus watchers solo. Lo que <strong>no</strong> retira es lo que tú hayas enganchado fuera: un <code>$interval</code>, un listener en <code>document</code> o <code>window</code>, una suscripción a una librería. Para eso está <code>$scope.$on('$destroy', limpiar)</code>. Si no lo haces, esos restos siguen vivos consumiendo memoria y ejecutándose: los <em>zombis</em> que verás en el reto.</p>
+    <div class="callout ok"><b>En los componentes</b>
+      <p>Lo mismo se escribe con el método <code>$onDestroy</code>, sin inyectar <code>$scope</code>. Lo vemos a las 17:35.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="digestApp" ng-strict-di>
+  <section ng-controller="PadreController as vm">
+
+    <h1>El ciclo $digest por dentro</h1>
+
+    <!-- ============================================ 1 -->
+    <h2>1. La regla del punto</h2>
+    <p class="muted">
+      En el PADRE: nombre = "{{ nombre }}" · datos.nombre = "{{ datos.nombre }}"
+    </p>
+
+    <!-- ng-if crea un ámbito HIJO -->
+    <div class="ficha" ng-if="true">
+      <p class="muted">Dentro de un ng-if (ámbito hijo)</p>
+      <label>
+        ng-model="nombre" (sin punto)
+        <input type="text" ng-model="nombre">
+      </label>
+      <label>
+        ng-model="datos.nombre" (con punto)
+        <input type="text" ng-model="datos.nombre">
+      </label>
+    </div>
+
+    <!-- ============================================ 2 -->
+    <h2>2. Cambios que llegan desde fuera de Angular</h2>
+    <p>Contador: <strong>{{ vm.contador }}</strong> · Teclas nativas: <strong>{{ vm.teclas }}</strong></p>
+
+    <button ng-click="vm.conSetTimeout()">setTimeout</button>
+    <button ng-click="vm.conTimeout()">$timeout</button>
+    <button ng-click="vm.conApply()">setTimeout + $apply</button>
+    <button class="sec" ng-click="vm.noHacerNada()">Refrescar (no hace nada)</button>
+
+    <p class="muted">
+      Los tres botones suman 1 al cabo de un segundo. Para las teclas: haz clic
+      en una zona vacía de la vista y pulsa cualquier tecla.
+    </p>
+
+    <!-- ============================================ 3 -->
+    <h2>3. $watch en tres sabores</h2>
+
+    <label>
+      Texto
+      <input type="text" ng-model="vm.filtro.texto">
+    </label>
+    <label>
+      <input type="checkbox" ng-model="vm.filtro.soloActivos">
+      Sólo activos
+    </label>
+    <button class="sec" ng-click="vm.anadirEtiqueta()">Añadir etiqueta</button>
+    <button class="sec" ng-click="vm.dejarDeVigilar()" ng-disabled="!vm.vigilando">
+      Quitar el $watch simple
+    </button>
+
+    <table>
+      <thead><tr><th>Watcher</th><th>Veces que ha saltado</th></tr></thead>
+      <tbody>
+        <tr><td>$watch('vm.filtro.texto')</td><td>{{ vm.cuentas.simple }}</td></tr>
+        <tr><td>$watch('vm.filtro') por referencia</td><td>{{ vm.cuentas.referencia }}</td></tr>
+        <tr><td>$watch('vm.filtro', fn, true) profundo</td><td>{{ vm.cuentas.profundo }}</td></tr>
+        <tr><td>$watchCollection('vm.etiquetas')</td><td>{{ vm.cuentas.coleccion }}</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">Etiquetas: {{ vm.etiquetas.join(', ') }}</p>
+
+    <!-- ============================================ 4 -->
+    <h2>4. Un panel que nace y muere</h2>
+    <button ng-click="vm.verPanel = !vm.verPanel">
+      {{ vm.verPanel ? 'Cerrar' : 'Abrir' }} panel
+    </button>
+
+    <!-- ng-if destruye el ámbito (y el controlador) al pasar a falso -->
+    <div class="ficha" ng-if="vm.verPanel" ng-controller="PanelController as panel">
+      <p><strong>Panel {{ panel.numero }}</strong> · abierto hace {{ panel.segundos }} s</p>
+      <p class="muted">
+        Mientras está abierto, el $interval lanza un $digest cada segundo.
+        Vuelve a probar el botón "setTimeout" del apartado 2...
+      </p>
+    </div>
+
+  </section>
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  var paneles = 0;   // sólo para numerar los paneles de la demo
+
+  angular
+    .module('digestApp', [])
+    .controller('PadreController', PadreController)
+    .controller('PanelController', PanelController);
+
+  // $scope sólo se inyecta cuando hace falta: $watch, $on, $apply.
+  PadreController.$inject = ['$scope', '$timeout', '$document'];
+
+  function PadreController($scope, $timeout, $document) {
+    var vm = this;
+
+    // ---------------------------------------------- 1. regla del punto
+    // Dos propiedades puestas "a pelo" en el $scope, sin vm:
+    $scope.nombre = 'Ana';                 // primitivo: peligro en ámbitos hijos
+    $scope.datos  = { nombre: 'Ana' };     // objeto: seguro
+
+    // ---------------------------------------------- 2. fuera de Angular
+    vm.contador = 0;
+    vm.teclas   = 0;
+
+    vm.conSetTimeout = conSetTimeout;
+    vm.conTimeout    = conTimeout;
+    vm.conApply      = conApply;
+    vm.noHacerNada   = noHacerNada;
+
+    // Simula una librería externa: un listener nativo que Angular no conoce.
+    // (En una aplicación real esto iría en una directiva: bloque de las 16:40.)
+    $document.on('keydown', alPulsarTecla);
+    $scope.$on('$destroy', function () {
+      $document.off('keydown', alPulsarTecla);
+    });
+
+    // ---------------------------------------------- 3. $watch
+    vm.filtro     = { texto: '', soloActivos: false };
+    vm.etiquetas  = ['angularjs'];
+    vm.cuentas    = { simple: 0, referencia: 0, profundo: 0, coleccion: 0 };
+    vm.vigilando  = true;
+
+    vm.anadirEtiqueta = anadirEtiqueta;
+    vm.dejarDeVigilar = dejarDeVigilar;
+
+    // $watch devuelve la función que lo desregistra.
+    var quitarWatchSimple = $scope.$watch('vm.filtro.texto', function (nuevo, viejo) {
+      if (nuevo === viejo) { return; }     // primera llamada = inicialización
+      vm.cuentas.simple++;
+    });
+
+    // Por referencia: el objeto vm.filtro es siempre el mismo -> nunca salta.
+    $scope.$watch('vm.filtro', function (nuevo, viejo) {
+      if (nuevo === viejo) { return; }
+      vm.cuentas.referencia++;
+    });
+
+    // Profundo (tercer argumento true): compara el contenido.
+    $scope.$watch('vm.filtro', function (nuevo, viejo) {
+      if (nuevo === viejo) { return; }
+      vm.cuentas.profundo++;
+    }, true);
+
+    // Colección: detecta push, splice, reordenaciones.
+    $scope.$watchCollection('vm.etiquetas', function (nuevo, viejo) {
+      if (nuevo === viejo) { return; }
+      vm.cuentas.coleccion++;
+    });
+
+    // ---------------------------------------------- funciones
+    function conSetTimeout() {
+      setTimeout(function () {
+        vm.contador++;
+        console.log('setTimeout: vm.contador ya vale ' + vm.contador + '... ¿y la vista?');
+      }, 1000);
+    }
+
+    // $timeout = setTimeout + $apply. Es lo que hay que usar.
+    function conTimeout() {
+      $timeout(function () {
+        vm.contador++;
+      }, 1000);
+    }
+
+    // Lo que hace $timeout por dentro, escrito a mano.
+    function conApply() {
+      setTimeout(function () {
+        $scope.$apply(function () {
+          vm.contador++;
+        });
+      }, 1000);
+    }
+
+    // Cualquier ng-click lanza un $digest, aunque la función esté vacía.
+    function noHacerNada() {}
+
+    function alPulsarTecla() {
+      vm.teclas++;                                   // el modelo cambia...
+      console.log('Tecla nativa: vm.teclas = ' + vm.teclas);
+      // ...pero nadie avisa a Angular. Prueba a envolverlo en $scope.$apply.
+    }
+
+    function anadirEtiqueta() {
+      vm.etiquetas.push('etiqueta ' + (vm.etiquetas.length + 1));
+    }
+
+    function dejarDeVigilar() {
+      quitarWatchSimple();
+      vm.vigilando = false;
+    }
+  }
+
+  PanelController.$inject = ['$scope', '$interval'];
+
+  function PanelController($scope, $interval) {
+    var vm = this;
+
+    vm.numero   = ++paneles;
+    vm.segundos = 0;
+
+    var reloj = $interval(tic, 1000);
+    console.log('Panel ' + vm.numero + ' creado');
+
+    // Al destruirse el ámbito, limpiamos lo que Angular no limpia solo.
+    $scope.$on('$destroy', limpiar);
+
+    function tic() {
+      vm.segundos++;
+      if (vm.segundos % 5 === 0) {
+        console.log('Reloj del panel ' + vm.numero + ': ' + vm.segundos + ' s');
+      }
+    }
+
+    function limpiar() {
+      $interval.cancel(reloj);
+      console.log('Panel ' + vm.numero + ' destruido: reloj cancelado');
+    }
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Pulsa <em>setTimeout</em>. La consola dice que el contador ha subido; la vista, no. Pulsa <em>Refrescar (no hace nada)</em> y aparece de golpe. El modelo estaba bien: faltaba un <code>$digest</code>.</li>
+      <li>En el apartado 1, escribe primero en el campo <em>con punto</em> y luego en el <em>sin punto</em>. El segundo deja de estar conectado con el padre para siempre: acaba de crear su propia <code>nombre</code> en el ámbito hijo.</li>
+      <li>Arregla las teclas nativas envolviendo el <code>vm.teclas++</code> en <code>$scope.$apply(function () { ... })</code>.</li>
+      <li>Abre el panel del apartado 4 y vuelve a probar <em>setTimeout</em>: ahora parece funcionar. ¿Por qué? Después, en <code>limpiar()</code>, comenta la línea <code>$interval.cancel(reloj)</code>, abre y cierra el panel tres veces y mira la consola: relojes zombis de paneles que ya no existen.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 3 */
+{
+  id: "directivas-propias",
+  time: "16:40", end: "17:20", dur: 40,
+  kind: "Teoría + lab",
+  modulo: "Módulo 4",
+  title: "Directivas propias: el único sitio donde se toca el DOM",
+  goal: "Escribir los tres tipos de directiva que aparecen en cualquier proyecto —de elemento con ámbito aislado, de atributo con comportamiento y estructural— y saber leer su objeto de definición.",
+  notes: `
+    <h3>Cuándo hace falta una directiva</h3>
+    <p>La regla que ya conoces, completada: el controlador prepara datos; <strong>el DOM se toca en una directiva</strong>. Hay tres motivos para escribir una:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Tipo</th><th>Ejemplo integrado</th><th>Ejemplo de hoy</th></tr></thead>
+      <tbody>
+        <tr><td>Elemento: un trozo de interfaz reutilizable</td><td><code>&lt;ng-view&gt;</code></td><td><code>&lt;ficha-curso&gt;</code></td></tr>
+        <tr><td>Atributo: comportamiento sobre un elemento que ya existe</td><td><code>ng-click</code>, <code>ng-class</code></td><td><code>resaltar</code>, <code>confirmar-click</code></td></tr>
+        <tr><td>Estructural: pone y quita trozos de DOM</td><td><code>ng-if</code>, <code>ng-repeat</code></td><td><code>si-rol</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>El objeto de definición</h3>
+    <p>Una directiva es una función que devuelve un objeto de configuración. Las propiedades que vas a encontrar:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Propiedad</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><code>restrict</code></td><td>Dónde puede usarse: <code>'E'</code> elemento, <code>'A'</code> atributo, <code>'C'</code> clase. Por defecto <code>'EA'</code>. (Existe <code>'M'</code>, comentario: no la uses.)</td></tr>
+        <tr><td><code>template</code> / <code>templateUrl</code></td><td>El HTML que pinta.</td></tr>
+        <tr><td><code>scope</code></td><td><code>false</code> (por defecto, usa el del padre), <code>true</code> (hijo que hereda) o <code>{...}</code> (<strong>aislado</strong>).</td></tr>
+        <tr><td><code>link</code></td><td>La función que se ejecuta por cada instancia, con el DOM ya creado.</td></tr>
+        <tr><td><code>controller</code>, <code>controllerAs</code>, <code>bindToController</code></td><td>Un controlador propio para la directiva. Es el estilo John Papa... y lo que <code>.component()</code> hace por defecto.</td></tr>
+        <tr><td><code>transclude</code></td><td>Recibir el contenido que el usuario escribe dentro de la etiqueta.</td></tr>
+        <tr><td><code>priority</code>, <code>terminal</code></td><td>Orden entre varias directivas del mismo elemento.</td></tr>
+        <tr><td><code>require</code></td><td>Pedir el controlador de otra directiva (del mismo elemento o de un antecesor).</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Nombres: camelCase en JS, guiones en HTML</h3>
+    <p>Registras <code>.directive('fichaCurso', ...)</code> y la usas como <code>&lt;ficha-curso&gt;</code>. Angular <em>normaliza</em> el nombre del HTML: quita los prefijos <code>data-</code> y <code>x-</code>, y convierte <code>-</code>, <code>:</code> y <code>_</code> en camelCase. Así que <code>data-ficha-curso</code> también funciona.</p>
+    <div class="callout"><b>El error silencioso</b>
+      <p>Si registras <code>.directive('ficha-curso', ...)</code>, con guion, no hay ningún error: la directiva nunca encaja con nada y la etiqueta queda vacía. Y no uses el prefijo <code>ng</code> para las tuyas: está reservado.</p>
+    </div>
+
+    <h3>Ámbito aislado: los cuatro símbolos</h3>
+    <p>Con <code>scope: {...}</code> la directiva no ve nada del padre salvo lo que declaras. Cada entrada dice cómo llega el dato:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Símbolo</th><th>Qué recibe</th><th>En el HTML</th><th>Sentido</th></tr></thead>
+      <tbody>
+        <tr><td><code>'@'</code></td><td>Texto (admite <code>{{ }}</code>). Siempre string.</td><td><code>titulo="Curso {{ $index + 1 }}"</code></td><td>Padre → directiva</td></tr>
+        <tr><td><code>'&lt;'</code></td><td>El valor de una expresión (1.5+)</td><td><code>curso="c"</code></td><td>Padre → directiva</td></tr>
+        <tr><td><code>'='</code></td><td>Una expresión asignable</td><td><code>seleccionado="c.elegido"</code></td><td>En los dos sentidos</td></tr>
+        <tr><td><code>'&amp;'</code></td><td>Una expresión para ejecutar más tarde</td><td><code>on-borrar="vm.borrar(curso)"</code></td><td>Directiva → padre (eventos)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Con <code>'&amp;'</code> la directiva llama a <code>scope.onBorrar({ curso: x })</code>: el objeto son las variables que la expresión del padre puede usar. Por eso en el HTML el parámetro <strong>se tiene que llamar</strong> <code>curso</code>.</p>
+    <p>Añadir <code>?</code> (<code>'&lt;?'</code>, <code>'=?'</code>) marca el atributo como opcional. <code>'='</code> cuesta dos watchers y hace difícil saber quién cambió qué: en código nuevo, <code>'&lt;'</code> para entrar y <code>'&amp;'</code> para salir.</p>
+
+    <h3>link(scope, element, attrs)</h3>
+    <ul>
+      <li>Los parámetros son <strong>posicionales</strong>, no se inyectan: importa el orden, no el nombre. Si necesitas servicios, se inyectan en la función que registra la directiva.</li>
+      <li><code>element</code> es el elemento envuelto en <strong>jqLite</strong>, un jQuery en miniatura: <code>on</code>, <code>off</code>, <code>css</code>, <code>addClass</code>, <code>toggleClass</code>, <code>text</code>, <code>after</code>, <code>remove</code>...</li>
+      <li><code>attrs</code> tiene los atributos ya normalizados: <code>confirmar-mensaje</code> se lee como <code>attrs.confirmarMensaje</code>.</li>
+      <li>Si en un evento del DOM cambias el modelo, <strong>tú</strong> avisas a Angular con <code>scope.$apply(...)</code>: es exactamente el caso del bloque anterior.</li>
+      <li>Lo que enganches fuera de Angular se suelta en <code>scope.$on('$destroy', ...)</code>.</li>
+    </ul>
+    <p><strong>compile frente a link</strong>: <code>compile</code> se ejecuta una vez por plantilla, antes de que exista ningún ámbito, y sirve para transformar el HTML; <code>link</code>, una vez por instancia. Un <code>ng-repeat</code> de 100 filas: 1 compile, 100 links. En el 99 % de los casos sólo necesitas <code>link</code>.</p>
+
+    <h3>Directivas estructurales: transclude 'element'</h3>
+    <p><code>si-rol</code> copia la técnica de <code>ng-if</code>. Con <code>transclude: 'element'</code> Angular <strong>quita el elemento entero</strong> del DOM, deja un comentario en su sitio y entrega a <code>link</code> un quinto parámetro, <code>$transclude</code>, que sabe fabricar copias del original. La directiva decide cuándo insertar una copia y cuándo retirarla, y cada copia trae su propio ámbito, que hay que destruir al quitarla. <code>priority: 600</code> y <code>terminal: true</code> son los mismos valores que usa <code>ng-if</code>.</p>
+    <div class="callout ok"><b>¿Directiva o componente?</b>
+      <p>Si tiene plantilla y es un trozo de interfaz, a partir de 1.5 se escribe como <strong>componente</strong> (después del descanso). Las directivas quedan para los atributos con comportamiento y las estructurales.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="directivasApp" ng-strict-di>
+  <section ng-controller="CatalogoController as vm">
+
+    <!-- Atributo sin valor: resaltar usa su color por defecto -->
+    <h1 resaltar>Directivas propias</h1>
+
+    <label>
+      Rol de la sesión
+      <select ng-model="vm.sesion.rol" ng-options="r for r in vm.roles"></select>
+    </label>
+
+    <!-- Estructural: el bloque existe o no según el rol, como ng-if -->
+    <div class="ficha" si-rol="admin">
+      <strong>Zona de administración</strong>
+      <p class="muted">Sólo existe en el DOM con el rol admin.</p>
+      <button confirmar-click="vm.vaciar()">Vaciar catálogo</button>
+    </div>
+
+    <p class="muted">{{ vm.seleccionados() }} de {{ vm.cursos.length }} cursos seleccionados</p>
+
+    <!-- Elemento con ámbito aislado: @, <, = y & -->
+    <ficha-curso ng-repeat="c in vm.cursos track by c.id"
+                 titulo="Curso {{ $index + 1 }}"
+                 curso="c"
+                 seleccionado="c.elegido"
+                 on-borrar="vm.borrar(curso)">
+    </ficha-curso>
+
+    <p class="muted" ng-if="vm.cursos.length === 0">
+      Catálogo vacío.
+      <button class="sec" ng-click="vm.restaurar()">Restaurar</button>
+    </p>
+
+  </section>
+</div>`
+    },
+    { name: "app.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('directivasApp', [])
+    .factory('sesionService', sesionService)
+    .controller('CatalogoController', CatalogoController);
+
+  sesionService.$inject = [];
+
+  // El rol del usuario conectado. Lo leen el controlador y la directiva si-rol.
+  function sesionService() {
+    return { rol: 'admin' };
+  }
+
+  CatalogoController.$inject = ['sesionService'];
+
+  function CatalogoController(sesionService) {
+    var vm = this;
+
+    vm.sesion = sesionService;       // la vista edita sesionService.rol
+    vm.roles  = ['admin', 'docente', 'alumno'];
+    vm.cursos = [];
+
+    vm.borrar        = borrar;
+    vm.vaciar        = vaciar;
+    vm.restaurar     = restaurar;
+    vm.seleccionados = seleccionados;
+
+    restaurar();
+
+    function restaurar() {
+      vm.cursos = [
+        { id: 1, nombre: 'AngularJS',   horas: 20 },
+        { id: 2, nombre: 'Java 21',     horas: 30 },
+        { id: 3, nombre: 'Angular 19',  horas: 40 }
+      ];
+    }
+
+    function borrar(curso) {
+      var i = vm.cursos.indexOf(curso);
+      if (i > -1) { vm.cursos.splice(i, 1); }
+    }
+
+    function vaciar() {
+      vm.cursos = [];
+    }
+
+    function seleccionados() {
+      return vm.cursos.filter(function (c) { return c.elegido; }).length;
+    }
+  }
+}());`
+    },
+    { name: "directivas/ficha-curso.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('directivasApp')
+    .directive('fichaCurso', fichaCurso);   // camelCase aquí, ficha-curso en el HTML
+
+  fichaCurso.$inject = [];
+
+  function fichaCurso() {
+    return {
+      restrict:    'E',
+      templateUrl: 'directivas/ficha-curso.html',
+      scope: {
+        titulo:       '@',   // texto
+        curso:        '<',   // dato que entra
+        seleccionado: '=',   // dato en los dos sentidos
+        onBorrar:     '&'    // evento que sale hacia el padre
+      },
+      link: link
+    };
+
+    // Una vez por cada ficha. Los parámetros van por POSICIÓN.
+    function link(scope, element, attrs) {
+      console.log('link de <ficha-curso>: ' + scope.curso.nombre +
+                  ' (atributo titulo = "' + attrs.titulo + '")');
+    }
+  }
+}());`
+    },
+    { name: "directivas/ficha-curso.html", lang: "markup", code:
+`<!-- Dentro sólo existe lo declarado en scope: {...} -->
+<div class="ficha" resaltar="#FFF4DC">
+  <h3>
+    {{ titulo }} · {{ curso.nombre }}
+    <span class="chip" ng-class="{activo: seleccionado}">
+      {{ seleccionado ? 'elegido' : 'libre' }}
+    </span>
+  </h3>
+
+  <p class="muted">{{ curso.horas }} h</p>
+
+  <label class="muted">
+    <input type="checkbox" ng-model="seleccionado">
+    Seleccionar (vuelve al padre gracias a '=')
+  </label>
+
+  <!-- El & se llama con un objeto: sus claves son las variables del padre -->
+  <button class="sec" confirmar-click="onBorrar({ curso: curso })">Borrar</button>
+</div>`
+    },
+    { name: "directivas/resaltar.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('directivasApp')
+    .directive('resaltar', resaltar);
+
+  resaltar.$inject = [];
+
+  // Atributo: añade comportamiento a un elemento que ya existe.
+  function resaltar() {
+    return {
+      restrict: 'A',
+      link: link
+    };
+
+    function link(scope, element, attrs) {
+      element.on('mouseenter', encender);
+      element.on('mouseleave', apagar);
+
+      // Soltamos los listeners al destruirse el elemento.
+      scope.$on('$destroy', function () {
+        element.off('mouseenter', encender);
+        element.off('mouseleave', apagar);
+      });
+
+      // Sin $apply: sólo tocamos el DOM, el modelo no cambia.
+      function encender() {
+        element.css('background-color', attrs.resaltar || '#FDECEC');
+      }
+
+      function apagar() {
+        element.css('background-color', '');
+      }
+    }
+  }
+}());`
+    },
+    { name: "directivas/confirmar-click.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('directivasApp')
+    .directive('confirmarClick', confirmarClick);
+
+  // Los servicios se inyectan en la función que registra la directiva.
+  confirmarClick.$inject = ['$timeout'];
+
+  // Uso: <button confirmar-click="vm.borrar()" confirmar-mensaje="¿Seguro?">
+  // Primer clic: pide confirmación. Segundo clic (antes de 3 s): ejecuta.
+  function confirmarClick($timeout) {
+    return {
+      restrict: 'A',
+      link: link
+    };
+
+    function link(scope, element, attrs) {
+      var armado        = false;
+      var textoOriginal = element.text();
+      var temporizador  = null;
+
+      element.on('click', alPulsar);
+
+      scope.$on('$destroy', function () {
+        element.off('click', alPulsar);
+        $timeout.cancel(temporizador);
+      });
+
+      function alPulsar() {
+        if (!armado) {
+          armado = true;
+          element.text(attrs.confirmarMensaje || '¿Seguro? Pulsa otra vez');
+          temporizador = $timeout(desarmar, 3000);
+          return;
+        }
+        $timeout.cancel(temporizador);
+        desarmar();
+        // Evento nativo -> avisamos a Angular y evaluamos la expresión.
+        scope.$apply(attrs.confirmarClick);
+      }
+
+      function desarmar() {
+        armado = false;
+        element.text(textoOriginal);
+      }
+    }
+  }
+}());`
+    },
+    { name: "directivas/si-rol.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('directivasApp')
+    .directive('siRol', siRol);
+
+  siRol.$inject = ['sesionService'];
+
+  // Estructural, como ng-if: el elemento existe o no existe.
+  function siRol(sesionService) {
+    return {
+      restrict:   'A',
+      transclude: 'element',   // se lleva el elemento ENTERO y deja un comentario
+      priority:   600,         // mismos valores que ng-if
+      terminal:   true,
+      link: link
+    };
+
+    // Quinto parámetro: $transclude, la "fotocopiadora" del elemento original.
+    function link(scope, element, attrs, ctrl, $transclude) {
+      var copia       = null;
+      var ambitoCopia = null;
+
+      scope.$watch(tienePermiso, actualizar);
+
+      function tienePermiso() {
+        return sesionService.rol === attrs.siRol;
+      }
+
+      function actualizar(permitido) {
+        if (permitido && !copia) {
+          $transclude(function (clon, nuevoAmbito) {
+            copia       = clon;
+            ambitoCopia = nuevoAmbito;
+            element.after(clon);            // lo insertamos tras el comentario
+          });
+        } else if (!permitido && copia) {
+          copia.remove();
+          ambitoCopia.$destroy();            // sin esto, sus watchers siguen vivos
+          copia       = null;
+          ambitoCopia = null;
+        }
+      }
+    }
+  }
+}());`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>En <code>ficha-curso.directive.js</code>, registra la directiva como <code>'ficha-curso'</code> (con guion). Ni un error, y ninguna ficha. Vuelve a dejarla en camelCase.</li>
+      <li>Cambia <code>curso: '&lt;'</code> por <code>curso: '@'</code>. Ahora la directiva recibe el <em>texto</em> <code>"c"</code>, no el objeto, y <code>curso.nombre</code> no existe. Mira también el <code>link</code> en la consola.</li>
+      <li>En <code>confirmar-click</code>, sustituye <code>scope.$apply(attrs.confirmarClick)</code> por <code>scope.$eval(attrs.confirmarClick)</code>. La ficha se borra del modelo... pero la vista no se entera hasta el siguiente clic en otra parte. Ya sabes por qué.</li>
+      <li>Añade un segundo bloque con <code>si-rol="docente"</code> y comprueba que cambiar el rol intercambia los dos bloques. Extra: haz que acepte varios roles separados por comas.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 4 */
+{
+  id: "descanso",
+  time: "17:20", end: "17:35", dur: 15,
+  kind: "Descanso",
+  modulo: "",
+  title: "Descanso",
+  goal: "",
+  break: true,
+  breakText: "Volvemos a las 17:35 con angular.component: la forma de escribir AngularJS que se parece a Angular 2+."
+},
+
+/* ------------------------------------------------------------------ 5 */
+{
+  id: "componentes",
+  time: "17:35", end: "18:20", dur: 45,
+  kind: "Teoría + lab",
+  modulo: "Módulo 4 · extra",
+  title: "angular.component: el puente a Angular 2+",
+  goal: "Escribir la interfaz como un árbol de componentes con datos que bajan y eventos que suben, dominar su ciclo de vida y reconocer en cada pieza su equivalente en Angular moderno.",
+  notes: `
+    <h3>Por qué apareció .component()</h3>
+    <p>En 2016 llega Angular 2 y cambia el modelo por completo: ya no hay controladores sueltos ni <code>$scope</code>, sólo <strong>componentes</strong> organizados en árbol. AngularJS 1.5 responde añadiendo <code>.component()</code>: una directiva simplificada que <em>impone</em> esa arquitectura dentro de 1.x.</p>
+    <ul>
+      <li>Toda la interfaz es un árbol de componentes. Se acabaron <code>ng-controller</code> y los controladores sin plantilla.</li>
+      <li>Ámbito <strong>siempre aislado</strong>: un componente sólo ve lo que recibe.</li>
+      <li><code>controllerAs</code> por defecto (<code>$ctrl</code>) y <code>bindToController</code> implícito: nada de <code>$scope</code>.</li>
+      <li>Flujo de datos <strong>unidireccional</strong>: los datos bajan con <code>'&lt;'</code> y los eventos suben con <code>'&amp;'</code>.</li>
+      <li>Ciclo de vida con los mismos nombres que Angular, con <code>$</code> delante: <code>$onInit</code>, <code>$onChanges</code>, <code>$onDestroy</code>...</li>
+    </ul>
+    <p>La consecuencia práctica: una aplicación 1.x escrita con componentes se migra a Angular pieza a pieza (incluso conviviendo las dos, con <em>ngUpgrade</em>). Una escrita con <code>ng-controller</code> y <code>$scope</code> hay que reescribirla.</p>
+
+    <h3>El objeto de configuración</h3>
+    <p>Ya no es una función que devuelve un objeto: es directamente el objeto.</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Propiedad</th><th>Para qué</th><th>Por defecto</th></tr></thead>
+      <tbody>
+        <tr><td><code>template</code> / <code>templateUrl</code></td><td>La vista</td><td>—</td></tr>
+        <tr><td><code>controller</code></td><td>La clase (función) que gobierna la vista</td><td>Una vacía</td></tr>
+        <tr><td><code>controllerAs</code></td><td>Nombre del controlador en la plantilla</td><td><code>$ctrl</code></td></tr>
+        <tr><td><code>bindings</code></td><td>Entradas y salidas</td><td><code>{}</code></td></tr>
+        <tr><td><code>transclude</code></td><td>Recibir contenido proyectado con <code>&lt;ng-transclude&gt;</code></td><td><code>false</code></td></tr>
+        <tr><td><code>require</code></td><td>Acceder al controlador de un componente padre: <code>{ pestanas: '^^listaPestanas' }</code>, disponible desde <code>$onInit</code></td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <p>Siempre <code>restrict: 'E'</code>. En el JavaScript seguimos llamando <code>vm</code> a <code>this</code>; en la plantilla es <code>$ctrl</code>.</p>
+
+    <h3>bindings</h3>
+    <ul>
+      <li><code>'&lt;'</code> — datos que <strong>entran</strong>. El caso normal.</li>
+      <li><code>'@'</code> — textos fijos: <code>titulo="Catálogo"</code>.</li>
+      <li><code>'&amp;'</code> — eventos que <strong>salen</strong>. Por convención, con prefijo <code>on</code>: <code>onInscribir</code>.</li>
+      <li><code>'='</code> — existe, pero rompe el flujo unidireccional. En componentes, evítalo.</li>
+    </ul>
+    <div class="callout"><b>Desde 1.7, los bindings NO están en el constructor</b>
+      <p>El constructor se ejecuta <strong>antes</strong> de asignar los bindings: ahí <code>vm.curso</code> es <code>undefined</code>. Todo lo que dependa de ellos va en <code>$onInit</code>. Es la causa número uno de "funcionaba en 1.5 y al actualizar dejó de funcionar".</p>
+    </div>
+
+    <h3>Ciclo de vida</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Hook</th><th>Cuándo</th><th>Para qué</th><th>En Angular 2+</th></tr></thead>
+      <tbody>
+        <tr><td><code>$onChanges(cambios)</code></td><td>Primero con los valores iniciales (antes que <code>$onInit</code>) y luego cada vez que un <code>'&lt;'</code> o <code>'@'</code> cambia</td><td>Recalcular estado derivado, copiar entradas</td><td><code>ngOnChanges</code></td></tr>
+        <tr><td><code>$onInit()</code></td><td>Una vez, con los bindings ya puestos</td><td>Cargar datos, inicializar</td><td><code>ngOnInit</code></td></tr>
+        <tr><td><code>$doCheck()</code></td><td>En cada vuelta del <code>$digest</code></td><td>Detectar a mano mutaciones profundas. Con cuidado: es caro</td><td><code>ngDoCheck</code></td></tr>
+        <tr><td><code>$postLink()</code></td><td>Cuando su DOM y el de sus hijos está enlazado</td><td>Tocar el DOM propio (un <code>focus</code>)</td><td><code>ngAfterViewInit</code></td></tr>
+        <tr><td><code>$onDestroy()</code></td><td>Al destruirse</td><td>Cancelar <code>$interval</code>, soltar listeners</td><td><code>ngOnDestroy</code></td></tr>
+      </tbody>
+    </table></div>
+    <p><code>cambios</code> es un objeto con una entrada por binding que ha cambiado: <code>cambios.destacado.currentValue</code>, <code>cambios.destacado.previousValue</code> y <code>cambios.destacado.isFirstChange()</code>.</p>
+    <div class="callout"><b>'&lt;' es unidireccional para la referencia, no para el contenido</b>
+      <p><code>$onChanges</code> sólo salta cuando el padre pone un valor <strong>distinto</strong>: otro número, otro texto u <strong>otro objeto</strong>. Si el padre muta el mismo objeto (<code>curso.plazas--</code>), el hijo lo ve —comparten el objeto— pero <code>$onChanges</code> no se entera. Y si el hijo muta el objeto, también lo cambia en el padre. Para protegerte, copia en <code>$onChanges</code> con <code>angular.copy</code>, y en el padre sustituye objetos en lugar de mutarlos.</p>
+    </div>
+
+    <h3>Contenedor y presentación</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th></th><th>Contenedor (<em>smart</em>)</th><th>Presentación (<em>dumb</em>)</th></tr></thead>
+      <tbody>
+        <tr><td>Ejemplo</td><td><code>catalogoCursos</code></td><td><code>tarjetaCurso</code></td></tr>
+        <tr><td>Inyecta servicios</td><td>Sí</td><td>Nunca</td></tr>
+        <tr><td>Recibe datos</td><td>De los servicios</td><td>Por <code>'&lt;'</code></td></tr>
+        <tr><td>Toma decisiones</td><td>Sí: qué pasa al inscribirse</td><td>No: avisa con <code>'&amp;'</code> y el padre decide</td></tr>
+        <tr><td>Reutilizable</td><td>Poco, es una pantalla</td><td>Mucho</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Directiva frente a componente</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th></th><th><code>.directive()</code></th><th><code>.component()</code></th></tr></thead>
+      <tbody>
+        <tr><td>Definición</td><td>Función que devuelve un objeto</td><td>Objeto directamente</td></tr>
+        <tr><td>Uso</td><td>Elemento, atributo, clase</td><td>Sólo elemento</td></tr>
+        <tr><td>Ámbito</td><td>A elegir</td><td>Siempre aislado</td></tr>
+        <tr><td>Controlador</td><td>Opcional, con <code>controllerAs</code> y <code>bindToController</code> a mano</td><td>Siempre, como <code>$ctrl</code></td></tr>
+        <tr><td>link / compile</td><td>Sí</td><td>No (usa <code>$postLink</code>)</td></tr>
+        <tr><td>Ciclo de vida</td><td>Posible, pero poco habitual</td><td>El modo normal de trabajar</td></tr>
+        <tr><td>Úsala para</td><td>Comportamiento en atributos, estructurales</td><td>Todo lo que tenga plantilla</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>El mismo componente en AngularJS y en Angular</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>AngularJS 1.5+</th><th>Angular 2+</th></tr></thead>
+      <tbody>
+        <tr><td><code>.component('tarjetaCurso', {...})</code></td><td><code>@Component({ selector: 'app-tarjeta-curso' })</code> sobre una clase</td></tr>
+        <tr><td><code>bindings: { curso: '&lt;' }</code></td><td><code>@Input() curso</code> / <code>input()</code></td></tr>
+        <tr><td><code>bindings: { onInscribir: '&amp;' }</code> + <code>vm.onInscribir({ curso: c })</code></td><td><code>@Output() inscribir = new EventEmitter()</code> + <code>this.inscribir.emit(c)</code></td></tr>
+        <tr><td><code>curso="c"</code></td><td><code>[curso]="c"</code></td></tr>
+        <tr><td><code>on-inscribir="$ctrl.inscribir(curso)"</code></td><td><code>(inscribir)="inscribir($event)"</code></td></tr>
+        <tr><td><code>{{ $ctrl.curso.nombre }}</code></td><td><code>{{ curso.nombre }}</code></td></tr>
+        <tr><td><code>$onInit</code>, <code>$onChanges</code>, <code>$onDestroy</code></td><td><code>ngOnInit</code>, <code>ngOnChanges</code>, <code>ngOnDestroy</code></td></tr>
+        <tr><td><code>transclude: true</code> + <code>&lt;ng-transclude&gt;</code></td><td><code>&lt;ng-content&gt;</code></td></tr>
+        <tr><td><code>Controller.$inject = ['cursosService']</code></td><td><code>constructor(private cursosService: CursosService)</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Rutas que pintan componentes</h3>
+    <p>Con componentes, la ruta ya no necesita <code>controller</code> ni <code>controllerAs</code>: su plantilla es simplemente la etiqueta del componente contenedor.</p>
+    <ul>
+      <li>ngRoute: <code>template: '&lt;catalogo-cursos&gt;&lt;/catalogo-cursos&gt;'</code>. Si la ruta tiene <code>resolve</code>, los datos llegan como <code>$resolve</code>: <code>'&lt;detalle-curso curso="$resolve.curso"&gt;'</code>.</li>
+      <li>ui-router (el lunes): <code>component: 'catalogoCursos'</code>, y los <code>resolve</code> se conectan solos con los bindings del mismo nombre.</li>
+    </ul>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="componentesApp" ng-strict-di>
+
+  <nav>
+    <a href="#!/catalogo">Catálogo</a>
+    <a href="#!/acerca">Acerca de</a>
+  </nav>
+
+  <!-- Ni un ng-controller: sólo el hueco del router -->
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('componentesApp', ['ngRoute']);
+
+  angular
+    .module('componentesApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      // La ruta pinta el componente CONTENEDOR. Sin controller ni controllerAs.
+      .when('/catalogo', {
+        template: '<catalogo-cursos></catalogo-cursos>'
+      })
+      .when('/acerca', {
+        template: '<h1>Acerca de</h1>' +
+                  '<p class="muted">Al entrar aquí, el catálogo y sus tarjetas se destruyen: ' +
+                  'mira los $onDestroy en la consola.</p>'
+      })
+      .otherwise({ redirectTo: '/catalogo' });
+  }
+}());`
+    },
+    { name: "cursos/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('componentesApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',   horas: 20, plazas: 4 },
+      { id: 2, nombre: 'Angular 19',  horas: 40, plazas: 2 },
+      { id: 3, nombre: 'Java 21',     horas: 30, plazas: 6 },
+      { id: 4, nombre: 'Spring Boot', horas: 35, plazas: 3 }
+    ];
+
+    return {
+      getAll:        getAll,
+      reservarPlaza: reservarPlaza
+    };
+
+    function getAll() {
+      return cursos;
+    }
+
+    // Muta el objeto: la tarjeta lo verá (es el mismo objeto),
+    // pero su $onChanges NO saltará (la referencia no cambia).
+    function reservarPlaza(curso) {
+      if (curso.plazas === 0) { return false; }
+      curso.plazas--;
+      return true;
+    }
+  }
+}());`
+    },
+    { name: "cursos/catalogo-cursos.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // CONTENEDOR (smart): habla con los servicios y toma las decisiones.
+  angular
+    .module('componentesApp')
+    .component('catalogoCursos', {
+      templateUrl: 'cursos/catalogo-cursos.html',
+      controller:  CatalogoCursosController
+      // controllerAs: '$ctrl'  <- por defecto, no hace falta escribirlo
+    });
+
+  CatalogoCursosController.$inject = ['cursosService'];
+
+  function CatalogoCursosController(cursosService) {
+    var vm = this;
+
+    vm.$onInit = onInit;
+
+    vm.inscribir         = inscribir;
+    vm.destacarSiguiente = destacarSiguiente;
+
+    function onInit() {
+      vm.cursos        = cursosService.getAll();
+      vm.inscripciones = [];
+      vm.destacadoId   = vm.cursos[0].id;
+    }
+
+    // Llega desde la tarjeta a través del binding '&'.
+    function inscribir(curso) {
+      if (cursosService.reservarPlaza(curso)) {
+        vm.inscripciones.push(curso.nombre + ' · ' + new Date().toLocaleTimeString());
+      }
+    }
+
+    function destacarSiguiente() {
+      var actual = 0;
+      for (var i = 0; i < vm.cursos.length; i++) {
+        if (vm.cursos[i].id === vm.destacadoId) { actual = i; }
+      }
+      vm.destacadoId = vm.cursos[(actual + 1) % vm.cursos.length].id;
+    }
+  }
+}());`
+    },
+    { name: "cursos/catalogo-cursos.html", lang: "markup", code:
+`<h1>
+  Catálogo
+  <span class="chip">{{ $ctrl.inscripciones.length }} inscripciones</span>
+</h1>
+
+<p class="muted">
+  Contenedor: tiene el servicio y decide. Las tarjetas sólo pintan y avisan.
+</p>
+
+<button class="sec" ng-click="$ctrl.destacarSiguiente()">Destacar otro curso</button>
+
+<!-- Los datos BAJAN por '<'; el evento SUBE por '&' -->
+<tarjeta-curso ng-repeat="c in $ctrl.cursos track by c.id"
+               curso="c"
+               destacado="c.id === $ctrl.destacadoId"
+               on-inscribir="$ctrl.inscribir(curso)">
+
+  <!-- Contenido proyectado (transclude): se evalúa en el ámbito del CATÁLOGO -->
+  <span class="chip" ng-if="c.plazas > 0 && c.plazas < 3">últimas plazas</span>
+
+</tarjeta-curso>
+
+<h2>Registro</h2>
+<ul>
+  <li ng-repeat="linea in $ctrl.inscripciones track by $index">{{ linea }}</li>
+</ul>
+<p class="muted" ng-if="$ctrl.inscripciones.length === 0">Todavía no hay inscripciones.</p>`
+    },
+    { name: "cursos/tarjeta-curso.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // PRESENTACIÓN (dumb): no inyecta servicios. Recibe y avisa.
+  angular
+    .module('componentesApp')
+    .component('tarjetaCurso', {
+      templateUrl: 'cursos/tarjeta-curso.html',
+      controller:  TarjetaCursoController,
+      transclude:  true,
+      bindings: {
+        curso:       '<',   // entra
+        destacado:   '<',   // entra
+        onInscribir: '&'    // sale
+      }
+    });
+
+  TarjetaCursoController.$inject = [];
+
+  function TarjetaCursoController() {
+    var vm = this;
+
+    // OJO: aquí vm.curso todavía es undefined (desde 1.7).
+    vm.cambios = 0;
+
+    vm.$onChanges = onChanges;
+    vm.$onInit    = onInit;
+    vm.$onDestroy = onDestroy;
+
+    vm.inscribir = inscribir;
+
+    // Se llama ANTES que $onInit con los valores iniciales,
+    // y después cada vez que un '<' cambia de valor o de referencia.
+    function onChanges(cambios) {
+      vm.cambios++;
+      Object.keys(cambios).forEach(function (nombre) {
+        var cambio = cambios[nombre];
+        if (cambio.isFirstChange()) { return; }
+        console.log('$onChanges en "' + vm.curso.nombre + '": ' + nombre +
+                    ' pasa de ' + cambio.previousValue + ' a ' + cambio.currentValue);
+      });
+    }
+
+    function onInit() {
+      console.log('$onInit: ' + vm.curso.nombre + ' (los bindings ya están)');
+    }
+
+    function onDestroy() {
+      console.log('$onDestroy: ' + vm.curso.nombre);
+    }
+
+    // La tarjeta no decide nada: avisa al padre y le pasa el curso.
+    function inscribir() {
+      vm.onInscribir({ curso: vm.curso });
+    }
+  }
+}());`
+    },
+    { name: "cursos/tarjeta-curso.html", lang: "markup", code:
+`<div class="ficha">
+  <h3>
+    {{ $ctrl.curso.nombre }}
+    <span class="chip activo" ng-if="$ctrl.destacado">destacado</span>
+    <!-- Aquí aparece lo que el padre escriba entre las etiquetas -->
+    <ng-transclude></ng-transclude>
+  </h3>
+
+  <p class="muted">
+    {{ $ctrl.curso.horas }} h · {{ $ctrl.curso.plazas }} plazas libres ·
+    $onChanges ha saltado {{ $ctrl.cambios }} veces
+  </p>
+
+  <button ng-click="$ctrl.inscribir()" ng-disabled="$ctrl.curso.plazas === 0">
+    Inscribirme
+  </button>
+</div>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>En el constructor de <code>TarjetaCursoController</code> añade <code>console.log(vm.curso);</code>. Sale <code>undefined</code> cuatro veces. Muévelo a <code>onInit</code> y sale el curso.</li>
+      <li>Pulsa <em>Inscribirme</em>: las plazas bajan en la tarjeta, pero el contador de <code>$onChanges</code> no sube (es el mismo objeto). Pulsa <em>Destacar otro curso</em>: ahora sí sube en dos tarjetas, porque <code>destacado</code> es un booleano nuevo.</li>
+      <li>En <code>inscribir()</code> de la tarjeta añade <code>vm.curso.nombre = vm.curso.nombre.toUpperCase();</code> antes de avisar. El registro del <em>padre</em> sale en mayúsculas: <code>'&lt;'</code> protege la referencia, no el contenido. Arréglalo en <code>onChanges</code> con <code>if (cambios.curso) { vm.curso = angular.copy(cambios.curso.currentValue); }</code>... y observa que ahora las plazas de la tarjeta ya no bajan. ¿Por qué?</li>
+      <li>Añade un binding <code>onDestacar: '&amp;'</code> y un botón en la tarjeta que pida al catálogo que la destaque. El evento sube; quien cambia <code>destacadoId</code> es el padre.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 6 */
+{
+  id: "servicios-di",
+  time: "18:20", end: "18:55", dur: 35,
+  kind: "Teoría + lab",
+  modulo: "Módulo 5",
+  title: "Servicios e inyección de dependencias en serio",
+  goal: "Conocer las seis recetas para registrar servicios, elegir la adecuada en cada caso, configurar un provider antes de arrancar y escribir inyecciones que sobrevivan a la minificación.",
+  notes: `
+    <h3>Qué es la inyección de dependencias</h3>
+    <p>Nada se crea con <code>new</code>. Una función <em>declara</em> lo que necesita por su nombre y el <strong>inyector</strong> se lo entrega. El inyector crea cada servicio la primera vez que alguien lo pide, lo guarda, y a partir de ahí entrega <strong>siempre la misma instancia</strong>: todos los servicios son <em>singletons</em>.</p>
+    <p>Por eso el estado compartido vive en servicios. Los controladores y componentes nacen y mueren con cada ruta; los servicios duran lo que dura la aplicación.</p>
+
+    <h3>Las seis recetas</h3>
+    <ul>
+      <li><strong><code>constant</code></strong> — un valor fijo. El único, junto con los providers, que existe en <code>.config()</code>.</li>
+      <li><strong><code>value</code></strong> — un valor inyectable, pero no en <code>.config()</code>.</li>
+      <li><strong><code>factory</code></strong> — una función que <em>devuelve</em> el servicio. La más usada.</li>
+      <li><strong><code>service</code></strong> — una función constructora: Angular hace <code>new</code> y el servicio es <code>this</code>.</li>
+      <li><strong><code>provider</code></strong> — la receta madre; las demás son atajos de ella. Tiene una parte configurable en <code>.config()</code> y un método <code>$get</code> que fabrica el servicio.</li>
+      <li><strong><code>decorator</code></strong> — no crea: <em>envuelve</em> un servicio que ya existe (incluidos los de Angular) para modificar su comportamiento.</li>
+    </ul>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Receta</th><th>¿En .config()?</th><th>¿Inyectable?</th><th>Cómo se crea</th><th>Úsala para</th></tr></thead>
+      <tbody>
+        <tr><td><code>constant</code></td><td>Sí</td><td>Sí</td><td>Tal cual</td><td>Configuración, claves, versiones</td></tr>
+        <tr><td><code>value</code></td><td>No</td><td>Sí</td><td>Tal cual</td><td>Valores que se podrían decorar</td></tr>
+        <tr><td><code>factory</code></td><td>No</td><td>Sí</td><td>Lo que <code>return</code>a la función</td><td>Casi todo: datos, lógica, APIs</td></tr>
+        <tr><td><code>service</code></td><td>No</td><td>Sí</td><td><code>new Funcion()</code></td><td>Estilo clase; migración a Angular</td></tr>
+        <tr><td><code>provider</code></td><td>Sí, como <code>nombreProvider</code></td><td>Sí (lo que devuelve <code>$get</code>)</td><td><code>new Provider()</code> y luego <code>$get()</code></td><td>Servicios que otros configuran antes de arrancar</td></tr>
+        <tr><td><code>decorator</code></td><td>Se registra en <code>.config()</code></td><td>—</td><td>Recibe <code>$delegate</code> y lo devuelve modificado</td><td>Cambiar servicios ajenos sin tocarlos</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Dos fases: config y run</h3>
+    <p>Una aplicación AngularJS arranca en dos fases. En la de <strong>configuración</strong> todavía no existe ningún servicio: sólo los <em>providers</em> (<code>$routeProvider</code>, <code>$locationProvider</code>, el tuyo <code>apiConfigProvider</code>) y las <code>constant</code>. Por eso <code>$routeProvider</code> se usa en <code>.config()</code>, y por eso <code>$http</code> o <code>$log</code> no se pueden inyectar ahí. Después viene la fase de <strong>ejecución</strong>, donde ya todo es inyectable.</p>
+
+    <h3>Las tres formas de anotar dependencias</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Estilo</th><th>Código</th><th>¿Sobrevive al minificador?</th></tr></thead>
+      <tbody>
+        <tr><td>Implícito</td><td><code>function Ctrl(carritoService) {...}</code></td><td><strong>No.</strong> El minificador renombra el parámetro a <code>a</code> y Angular busca un servicio llamado <code>a</code></td></tr>
+        <tr><td>Array en línea</td><td><code>['carritoService', function (c) {...}]</code></td><td>Sí. Frecuente en código antiguo; se desalinea con facilidad</td></tr>
+        <tr><td><code>$inject</code></td><td><code>Ctrl.$inject = ['carritoService'];</code></td><td>Sí. El estilo que usamos (John Papa)</td></tr>
+      </tbody>
+    </table></div>
+    <p><code>ng-strict-di</code> en el <code>ng-app</code> hace que el implícito falle <em>en desarrollo</em>, con un error claro, en vez de en producción con un <em>Unknown provider: aProvider</em> imposible de rastrear. En proyectos con build existe además <em>ng-annotate</em>, que añade las anotaciones solo.</p>
+
+    <h3>El ejemplo de la derecha</h3>
+    <ul>
+      <li><code>APP</code> e <code>IVA</code> son <code>constant</code>; <code>moneda</code> es un <code>value</code>.</li>
+      <li><code>apiConfig</code> es un <code>provider</code> que se configura en <code>.config()</code> con <code>setBaseUrl</code>.</li>
+      <li><code>calculadora</code> es un <code>service</code> (constructor con <code>this</code>).</li>
+      <li><code>carritoService</code> es un <code>factory</code> que usan <strong>dos componentes distintos</strong>: es la misma instancia, fíjate en el número.</li>
+      <li><code>$log</code> está <strong>decorado</strong>: todo <code>$log.info</code> sale en la consola con la hora delante, sin haber tocado ni una llamada.</li>
+    </ul>
+    <div class="callout"><b>La trampa del singleton</b>
+      <p>El carrito expone su array <code>items</code> y los componentes guardan esa referencia. Si el servicio hiciera <code>items = []</code> para vaciarlo, los componentes seguirían mirando el array viejo. Se vacía con <code>items.length = 0</code>, o mejor, se expone con una función <code>getItems()</code>.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="tiendaApp" ng-strict-di>
+
+  <h1>Servicios y DI</h1>
+  <info-app></info-app>
+
+  <!-- Dos componentes independientes que piden el mismo servicio -->
+  <div class="columnas">
+    <mini-catalogo></mini-catalogo>
+    <mini-carrito></mini-carrito>
+  </div>
+
+</div>`
+    },
+    { name: "estilos.css", lang: "markup", code:
+`.columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .columnas { grid-template-columns: 1fr; } }`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('tiendaApp', []);
+
+  angular
+    .module('tiendaApp')
+    // constant: disponible en TODAS partes, también en .config()
+    .constant('APP', { nombre: 'Tienda de cursos', version: 2 })
+    .constant('IVA', 0.21)
+    // value: inyectable, pero NO disponible en .config()
+    .value('moneda', '€')
+    .config(configurarApi)
+    .config(decorarLog);
+
+  // En .config() sólo entran providers (nombre + 'Provider') y constants.
+  configurarApi.$inject = ['apiConfigProvider', 'APP'];
+
+  function configurarApi(apiConfigProvider, APP) {
+    apiConfigProvider.setBaseUrl('/api/v' + APP.version);
+  }
+
+  // Un decorator envuelve un servicio que ya existe, aunque sea de Angular.
+  decorarLog.$inject = ['$provide'];
+
+  function decorarLog($provide) {
+    $provide.decorator('$log', logConHora);
+  }
+
+  // $delegate es el servicio original. Lo modificamos y lo devolvemos.
+  logConHora.$inject = ['$delegate'];
+
+  function logConHora($delegate) {
+    var infoOriginal = $delegate.info;
+
+    $delegate.info = function () {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift('[' + new Date().toLocaleTimeString() + ']');
+      infoOriginal.apply($delegate, args);
+    };
+
+    return $delegate;
+  }
+}());`
+    },
+    { name: "core/api-config.provider.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('tiendaApp')
+    .provider('apiConfig', ApiConfigProvider);
+
+  // Un provider es un constructor con un método $get.
+  //   - Lo que cuelga de "this" se usa en .config() como apiConfigProvider.
+  //   - Lo que devuelve $get es el servicio apiConfig de toda la vida.
+  function ApiConfigProvider() {
+    var baseUrl = '/api';                // valor por defecto
+
+    this.setBaseUrl = setBaseUrl;        // fase config
+    this.$get       = apiConfigFactory;  // fase run
+
+    function setBaseUrl(url) {
+      baseUrl = url;
+    }
+
+    apiConfigFactory.$inject = [];
+
+    function apiConfigFactory() {
+      return {
+        baseUrl: baseUrl,
+        url:     url
+      };
+
+      function url(recurso) {
+        return baseUrl + '/' + recurso;
+      }
+    }
+  }
+}());`
+    },
+    { name: "core/calculadora.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('tiendaApp')
+    .service('calculadora', Calculadora);
+
+  Calculadora.$inject = ['IVA'];
+
+  // .service: Angular hace "new Calculadora(IVA)".
+  // Lo público se cuelga de this, como en una clase.
+  function Calculadora(IVA) {
+    this.iva    = IVA;
+    this.conIva = conIva;
+
+    function conIva(base) {
+      return Math.round(base * (1 + IVA) * 100) / 100;
+    }
+  }
+}());`
+    },
+    { name: "core/carrito.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('tiendaApp')
+    .factory('carritoService', carritoService);
+
+  carritoService.$inject = ['$log', 'calculadora'];
+
+  // .factory: la función DEVUELVE el servicio. Se ejecuta una sola vez.
+  function carritoService($log, calculadora) {
+    var items     = [];
+    var instancia = Math.floor(Math.random() * 1000);
+
+    $log.info('carritoService creado: instancia #' + instancia);
+
+    return {
+      items:     items,
+      instancia: instancia,
+      anadir:    anadir,
+      vaciar:    vaciar,
+      total:     total
+    };
+
+    function anadir(curso) {
+      items.push(curso);
+      $log.info('Añadido al carrito:', curso.nombre);
+    }
+
+    // length = 0 vacía el MISMO array que ven los componentes.
+    function vaciar() {
+      items.length = 0;
+      $log.info('Carrito vaciado');
+    }
+
+    function total() {
+      return items.reduce(function (suma, c) {
+        return suma + calculadora.conIva(c.precio);
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "componentes.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('tiendaApp')
+    .component('infoApp', {
+      template: '<p class="muted">{{ $ctrl.app.nombre }} v{{ $ctrl.app.version }} · ' +
+                'API de cursos: <code>{{ $ctrl.urlCursos }}</code></p>',
+      controller: InfoAppController
+    })
+    .component('miniCatalogo', {
+      templateUrl: 'mini-catalogo.html',
+      controller:  MiniCatalogoController
+    })
+    .component('miniCarrito', {
+      templateUrl: 'mini-carrito.html',
+      // Estilo 2, array en línea: los nombres en strings, en el MISMO orden.
+      controller: ['carritoService', 'moneda', MiniCarritoController]
+    });
+
+  // Estilo 3, $inject: el que usamos en todo el curso.
+  InfoAppController.$inject = ['APP', 'apiConfig'];
+
+  function InfoAppController(APP, apiConfig) {
+    var vm = this;
+    vm.app       = APP;
+    vm.urlCursos = apiConfig.url('cursos');
+  }
+
+  MiniCatalogoController.$inject = ['carritoService', 'moneda'];
+
+  function MiniCatalogoController(carritoService, moneda) {
+    var vm = this;
+
+    vm.moneda    = moneda;
+    vm.instancia = carritoService.instancia;
+    vm.anadir    = carritoService.anadir;
+    vm.cursos    = [
+      { id: 1, nombre: 'AngularJS',   precio: 390 },
+      { id: 2, nombre: 'Angular 19',  precio: 690 },
+      { id: 3, nombre: 'Git a fondo', precio: 150 }
+    ];
+  }
+
+  function MiniCarritoController(carritoService, moneda) {
+    var vm = this;
+
+    vm.moneda    = moneda;
+    vm.instancia = carritoService.instancia;
+    vm.items     = carritoService.items;    // la MISMA referencia que el servicio
+    vm.total     = carritoService.total;
+    vm.vaciar    = carritoService.vaciar;
+  }
+}());`
+    },
+    { name: "mini-catalogo.html", lang: "markup", code:
+`<div class="ficha">
+  <h3>Catálogo <span class="chip">carrito #{{ $ctrl.instancia }}</span></h3>
+
+  <p ng-repeat="c in $ctrl.cursos track by c.id">
+    {{ c.nombre }} · {{ c.precio }} {{ $ctrl.moneda }}
+    <button class="sec" ng-click="$ctrl.anadir(c)">Añadir</button>
+  </p>
+</div>`
+    },
+    { name: "mini-carrito.html", lang: "markup", code:
+`<div class="ficha">
+  <h3>Carrito <span class="chip">carrito #{{ $ctrl.instancia }}</span></h3>
+
+  <p class="muted" ng-if="$ctrl.items.length === 0">Vacío.</p>
+  <ul>
+    <li ng-repeat="c in $ctrl.items track by $index">{{ c.nombre }}</li>
+  </ul>
+
+  <p><strong>Total con IVA: {{ $ctrl.total() | number:2 }} {{ $ctrl.moneda }}</strong></p>
+
+  <button class="sec" ng-click="$ctrl.vaciar()" ng-disabled="$ctrl.items.length === 0">
+    Vaciar
+  </button>
+</div>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Borra la línea <code>MiniCatalogoController.$inject = [...]</code>. Lee el error: <em>is not using explicit annotation and cannot be invoked in strict mode</em>. Quita ahora <code>ng-strict-di</code> del HTML: vuelve a funcionar. Por último, renombra el parámetro <code>carritoService</code> a <code>c</code> (lo que haría el minificador): <em>Unknown provider: cProvider</em>.</li>
+      <li>Añade <code>'moneda'</code> a las dependencias de <code>configurarApi</code>. Error: los <code>value</code> no existen en la fase de configuración. Conviértelo en <code>constant</code> y funciona.</li>
+      <li>En <code>carritoService</code>, cambia <code>items.length = 0</code> por <code>items = []</code>. Añade cursos y vacía: el total pasa a 0, pero la lista sigue llena. Dos verdades distintas: acabas de romper el singleton por referencia.</li>
+      <li>Cambia el <code>setBaseUrl</code> de la configuración y mira cómo cambia la URL de la cabecera sin tocar ni el provider ni el componente. Extra: decora también <code>$log.warn</code>.</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 7 */
+{
+  id: "reto-inscripciones",
+  time: "18:55", end: "19:25", dur: 30,
+  kind: "Reto",
+  modulo: "Módulos 3, 4 y 5",
+  title: "Reto: Inscripciones, una aplicación hecha de componentes",
+  goal: "Montar una aplicación completa sin un solo ng-controller: componentes contenedor y de presentación, un servicio compartido, una directiva de atributo y rutas que pintan componentes.",
+  notes: `
+    <h3>Qué hay que entregar</h3>
+    <p>Una aplicación para inscribirse en cursos con un resumen del carrito siempre visible:</p>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Pieza</th><th>Tipo</th><th>Responsabilidad</th></tr></thead>
+      <tbody>
+        <tr><td><code>carritoService</code></td><td>factory</td><td>Guarda los cursos elegidos: añadir sin duplicados, quitar, saber si está, total.</td></tr>
+        <tr><td><code>&lt;lista-cursos&gt;</code></td><td>Componente contenedor</td><td>Pide los cursos al servicio, filtra y decide qué pasa al inscribirse.</td></tr>
+        <tr><td><code>&lt;tarjeta-curso&gt;</code></td><td>Componente de presentación</td><td>Pinta un curso. Recibe <code>curso</code> e <code>inscrito</code> por <code>'&lt;'</code> y avisa con <code>onInscribir</code> por <code>'&amp;'</code>.</td></tr>
+        <tr><td><code>&lt;resumen-carrito&gt;</code></td><td>Componente</td><td>Número de cursos y total. Con <code>detalle="true"</code>, además, la tabla con botón de quitar.</td></tr>
+        <tr><td><code>resaltar-si</code></td><td>Directiva de atributo</td><td>Añade la clase <code>resaltado</code> cuando su expresión es verdadera.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Ruta</th><th>Pinta</th></tr></thead>
+      <tbody>
+        <tr><td><code>#!/cursos</code></td><td><code>&lt;lista-cursos&gt;</code></td></tr>
+        <tr><td><code>#!/carrito</code></td><td><code>&lt;resumen-carrito detalle="true"&gt;</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Requisitos</h3>
+    <ul>
+      <li>Ni un <code>ng-controller</code>: sólo componentes.</li>
+      <li>La tarjeta <strong>no inyecta servicios</strong>: todo le llega por bindings.</li>
+      <li>El texto del botón de la tarjeta (<em>Inscribirme</em> / <em>Ya inscrito</em>) se calcula en <code>$onChanges</code>.</li>
+      <li>El resumen de la cabecera vive fuera del <code>ng-view</code>: no se destruye al cambiar de ruta, y aun así está siempre al día porque lee del servicio.</li>
+      <li><code>$inject</code> en todo; <code>ng-strict-di</code> está activado.</li>
+    </ul>
+
+    <h3>Punto de partida</h3>
+    <p>El esqueleto arranca sin errores, pero no hace nada útil. Los huecos están numerados del <code>TODO 1</code> al <code>TODO 8</code>: resuélvelos en ese orden: primero el servicio, después la tarjeta y la lista, y al final la directiva, la ruta y el botón de quitar. El botón <em>Solución</em> carga una versión completa.</p>
+    <div class="callout ok"><b>Pista para el TODO 3</b>
+      <p><code>$onChanges</code> recibe sólo los bindings que han cambiado. Pregunta primero si existe: <code>if (cambios.inscrito) { ... cambios.inscrito.currentValue ... }</code>.</p>
+    </div>
+    <div class="callout"><b>Pista para el TODO 6</b>
+      <p><code>scope.$watch</code> acepta un string con una expresión, y la expresión es justo el valor del atributo: <code>attrs.resaltarSi</code>. jqLite tiene <code>element.toggleClass('resaltado', condicion)</code>.</p>
+    </div>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="inscripcionesApp" ng-strict-di>
+
+  <nav>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/carrito">Mi carrito</a>
+  </nav>
+
+  <!-- Fuera del ng-view: no se destruye al cambiar de ruta -->
+  <resumen-carrito></resumen-carrito>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "estilos.css", lang: "markup", code:
+`.resaltado { border-color: #0E6A60; background: #E2F0ED; }
+.resumen   { font-size: 14px; }`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('inscripcionesApp', ['ngRoute']);
+
+  angular
+    .module('inscripcionesApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/cursos', {
+        template: '<lista-cursos></lista-cursos>'
+      })
+
+      // TODO 7: ruta '/carrito' que pinte un título <h1>Mi carrito</h1>
+      //         y el componente resumen-carrito con detalle="true"
+
+      .otherwise({ redirectTo: '/cursos' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',   area: 'Frontend',     horas: 20, precio: 390 },
+      { id: 2, nombre: 'Angular 19',  area: 'Frontend',     horas: 40, precio: 690 },
+      { id: 3, nombre: 'Java 21',     area: 'Backend',      horas: 30, precio: 540 },
+      { id: 4, nombre: 'Spring Boot', area: 'Backend',      horas: 35, precio: 590 },
+      { id: 5, nombre: 'Git a fondo', area: 'Herramientas', horas: 8,  precio: 150 }
+    ];
+
+    return {
+      getAll: getAll
+    };
+
+    function getAll() {
+      return cursos;
+    }
+  }
+}());`
+    },
+    { name: "core/carrito.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .factory('carritoService', carritoService);
+
+  carritoService.$inject = [];
+
+  function carritoService() {
+    var items = [];
+
+    return {
+      getItems: getItems,
+      anadir:   anadir,
+      quitar:   quitar,
+      contiene: contiene,
+      cantidad: cantidad,
+      total:    total
+    };
+
+    function getItems() {
+      return items;
+    }
+
+    function cantidad() {
+      return items.length;
+    }
+
+    // TODO 1: completa estas cuatro funciones.
+    //   anadir(curso)   -> lo mete en items, pero sólo si no está ya
+    //   quitar(curso)   -> lo saca de items (indexOf + splice)
+    //   contiene(curso) -> true si está en items
+    //   total()         -> suma de los precios (reduce)
+
+    function anadir(curso) {
+    }
+
+    function quitar(curso) {
+    }
+
+    function contiene(curso) {
+      return false;
+    }
+
+    function total() {
+      return 0;
+    }
+  }
+}());`
+    },
+    { name: "core/resaltar-si.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .directive('resaltarSi', resaltarSi);
+
+  resaltarSi.$inject = [];
+
+  // Uso: <div resaltar-si="$ctrl.inscrito">
+  function resaltarSi() {
+    return {
+      restrict: 'A',
+      link: link
+    };
+
+    function link(scope, element, attrs) {
+      // TODO 6: vigila la expresión del atributo (attrs.resaltarSi)
+      //         con scope.$watch y, cada vez que cambie, pon o quita
+      //         la clase 'resaltado' con element.toggleClass(...)
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista-cursos.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // CONTENEDOR: habla con los servicios y decide.
+  angular
+    .module('inscripcionesApp')
+    .component('listaCursos', {
+      templateUrl: 'cursos/lista-cursos.html',
+      controller:  ListaCursosController
+    });
+
+  ListaCursosController.$inject = ['cursosService', 'carritoService'];
+
+  function ListaCursosController(cursosService, carritoService) {
+    var vm = this;
+
+    vm.$onInit = onInit;
+
+    vm.inscribir    = inscribir;
+    vm.estaInscrito = estaInscrito;
+
+    function onInit() {
+      vm.cursos = cursosService.getAll();
+      vm.q      = '';
+    }
+
+    function inscribir(curso) {
+      carritoService.anadir(curso);
+    }
+
+    function estaInscrito(curso) {
+      return carritoService.contiene(curso);
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista-cursos.html", lang: "markup", code:
+`<h1>Cursos disponibles</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="$ctrl.q" placeholder="angular, java...">
+</label>
+
+<!-- TODO 5: pasa a cada tarjeta sus tres bindings:
+       curso        -> c
+       inscrito     -> $ctrl.estaInscrito(c)
+       on-inscribir -> $ctrl.inscribir(curso)   (¡el parámetro se llama curso!) -->
+<tarjeta-curso ng-repeat="c in $ctrl.cursos | filter:{nombre: $ctrl.q} track by c.id">
+</tarjeta-curso>`
+    },
+    { name: "cursos/tarjeta-curso.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // PRESENTACIÓN: no inyecta servicios. Recibe por '<' y avisa por '&'.
+  angular
+    .module('inscripcionesApp')
+    .component('tarjetaCurso', {
+      templateUrl: 'cursos/tarjeta-curso.html',
+      controller:  TarjetaCursoController,
+      // TODO 2: declara los bindings:
+      //   curso       -> dato que entra
+      //   inscrito    -> dato que entra
+      //   onInscribir -> evento que sale
+      bindings: {}
+    });
+
+  TarjetaCursoController.$inject = [];
+
+  function TarjetaCursoController() {
+    var vm = this;
+
+    vm.etiqueta = 'Inscribirme';
+
+    // TODO 3: asigna vm.$onChanges a una función que, cuando cambie
+    //         "inscrito", ponga vm.etiqueta a 'Ya inscrito' o 'Inscribirme'.
+
+    vm.inscribir = inscribir;
+
+    function inscribir() {
+      // TODO 4: avisa al padre con vm.onInscribir(...) pasándole { curso: vm.curso }
+    }
+  }
+}());`
+    },
+    { name: "cursos/tarjeta-curso.html", lang: "markup", code:
+`<div class="ficha" resaltar-si="$ctrl.inscrito">
+  <h3>
+    {{ $ctrl.curso.nombre }}
+    <span class="chip">{{ $ctrl.curso.area }}</span>
+  </h3>
+
+  <p class="muted">
+    {{ $ctrl.curso.horas }} h · {{ $ctrl.curso.precio | currency:'€ ':0 }}
+  </p>
+
+  <button ng-click="$ctrl.inscribir()" ng-disabled="$ctrl.inscrito">
+    {{ $ctrl.etiqueta }}
+  </button>
+</div>`
+    },
+    { name: "carrito/resumen-carrito.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .component('resumenCarrito', {
+      templateUrl: 'carrito/resumen-carrito.html',
+      controller:  ResumenCarritoController,
+      bindings: {
+        detalle: '<?'      // opcional: sin el atributo, es undefined
+      }
+    });
+
+  ResumenCarritoController.$inject = ['carritoService'];
+
+  function ResumenCarritoController(carritoService) {
+    var vm = this;
+
+    // Funciones, no valores: así la vista pregunta al servicio en cada $digest.
+    vm.cantidad = carritoService.cantidad;
+    vm.total    = carritoService.total;
+    vm.items    = carritoService.getItems;
+
+    // TODO 8: expón vm.quitar(curso) que lo saque del carrito
+  }
+}());`
+    },
+    { name: "carrito/resumen-carrito.html", lang: "markup", code:
+`<div class="ficha resumen">
+  <strong>{{ $ctrl.cantidad() }}</strong> curso(s) en el carrito ·
+  total <strong>{{ $ctrl.total() | currency:'€ ':0 }}</strong>
+  <a href="#!/carrito" ng-if="!$ctrl.detalle">· ver detalle</a>
+
+  <table ng-if="$ctrl.detalle && $ctrl.cantidad() > 0">
+    <thead>
+      <tr><th>Curso</th><th>Precio</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="c in $ctrl.items() track by c.id">
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.precio | currency:'€ ':0 }}</td>
+        <td><button class="sec" ng-click="$ctrl.quitar(c)">Quitar</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="muted" ng-if="$ctrl.detalle && $ctrl.cantidad() === 0">
+    Todavía no te has inscrito en nada. <a href="#!/cursos">Ver cursos</a>
+  </p>
+</div>`
+    }
+  ],
+  solution: [
+    { name: "index.html", lang: "markup", code:
+`<div ng-app="inscripcionesApp" ng-strict-di>
+
+  <nav>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/carrito">Mi carrito</a>
+  </nav>
+
+  <!-- Fuera del ng-view: no se destruye al cambiar de ruta -->
+  <resumen-carrito></resumen-carrito>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "estilos.css", lang: "markup", code:
+`.resaltado { border-color: #0E6A60; background: #E2F0ED; }
+.resumen   { font-size: 14px; }`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('inscripcionesApp', ['ngRoute']);
+
+  angular
+    .module('inscripcionesApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/cursos', {
+        template: '<lista-cursos></lista-cursos>'
+      })
+      .when('/carrito', {
+        template: '<h1>Mi carrito</h1>' +
+                  '<resumen-carrito detalle="true"></resumen-carrito>'
+      })
+      .otherwise({ redirectTo: '/cursos' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',   area: 'Frontend',     horas: 20, precio: 390 },
+      { id: 2, nombre: 'Angular 19',  area: 'Frontend',     horas: 40, precio: 690 },
+      { id: 3, nombre: 'Java 21',     area: 'Backend',      horas: 30, precio: 540 },
+      { id: 4, nombre: 'Spring Boot', area: 'Backend',      horas: 35, precio: 590 },
+      { id: 5, nombre: 'Git a fondo', area: 'Herramientas', horas: 8,  precio: 150 }
+    ];
+
+    return {
+      getAll: getAll
+    };
+
+    function getAll() {
+      return cursos;
+    }
+  }
+}());`
+    },
+    { name: "core/carrito.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .factory('carritoService', carritoService);
+
+  carritoService.$inject = [];
+
+  function carritoService() {
+    var items = [];
+
+    return {
+      getItems: getItems,
+      anadir:   anadir,
+      quitar:   quitar,
+      contiene: contiene,
+      cantidad: cantidad,
+      total:    total
+    };
+
+    function getItems() {
+      return items;
+    }
+
+    function cantidad() {
+      return items.length;
+    }
+
+    function anadir(curso) {
+      if (!contiene(curso)) {
+        items.push(curso);
+      }
+    }
+
+    function quitar(curso) {
+      var i = items.indexOf(curso);
+      if (i > -1) {
+        items.splice(i, 1);
+      }
+    }
+
+    function contiene(curso) {
+      return items.indexOf(curso) > -1;
+    }
+
+    function total() {
+      return items.reduce(function (suma, c) {
+        return suma + c.precio;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "core/resaltar-si.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .directive('resaltarSi', resaltarSi);
+
+  resaltarSi.$inject = [];
+
+  // Uso: <div resaltar-si="$ctrl.inscrito">
+  function resaltarSi() {
+    return {
+      restrict: 'A',
+      link: link
+    };
+
+    function link(scope, element, attrs) {
+      // La expresión se evalúa en el ámbito donde está el atributo.
+      scope.$watch(attrs.resaltarSi, function (activo) {
+        element.toggleClass('resaltado', !!activo);
+      });
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista-cursos.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // CONTENEDOR: habla con los servicios y decide.
+  angular
+    .module('inscripcionesApp')
+    .component('listaCursos', {
+      templateUrl: 'cursos/lista-cursos.html',
+      controller:  ListaCursosController
+    });
+
+  ListaCursosController.$inject = ['cursosService', 'carritoService'];
+
+  function ListaCursosController(cursosService, carritoService) {
+    var vm = this;
+
+    vm.$onInit = onInit;
+
+    vm.inscribir    = inscribir;
+    vm.estaInscrito = estaInscrito;
+
+    function onInit() {
+      vm.cursos = cursosService.getAll();
+      vm.q      = '';
+    }
+
+    function inscribir(curso) {
+      carritoService.anadir(curso);
+    }
+
+    function estaInscrito(curso) {
+      return carritoService.contiene(curso);
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista-cursos.html", lang: "markup", code:
+`<h1>Cursos disponibles</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="$ctrl.q" placeholder="angular, java...">
+</label>
+
+<tarjeta-curso ng-repeat="c in $ctrl.cursos | filter:{nombre: $ctrl.q} track by c.id"
+               curso="c"
+               inscrito="$ctrl.estaInscrito(c)"
+               on-inscribir="$ctrl.inscribir(curso)">
+</tarjeta-curso>`
+    },
+    { name: "cursos/tarjeta-curso.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // PRESENTACIÓN: no inyecta servicios. Recibe por '<' y avisa por '&'.
+  angular
+    .module('inscripcionesApp')
+    .component('tarjetaCurso', {
+      templateUrl: 'cursos/tarjeta-curso.html',
+      controller:  TarjetaCursoController,
+      bindings: {
+        curso:       '<',
+        inscrito:    '<',
+        onInscribir: '&'
+      }
+    });
+
+  TarjetaCursoController.$inject = [];
+
+  function TarjetaCursoController() {
+    var vm = this;
+
+    vm.etiqueta = 'Inscribirme';
+
+    vm.$onChanges = onChanges;
+    vm.inscribir  = inscribir;
+
+    // "inscrito" es un booleano: cada vez que cambia, llega aquí.
+    function onChanges(cambios) {
+      if (cambios.inscrito) {
+        vm.etiqueta = cambios.inscrito.currentValue ? 'Ya inscrito' : 'Inscribirme';
+      }
+    }
+
+    function inscribir() {
+      vm.onInscribir({ curso: vm.curso });
+    }
+  }
+}());`
+    },
+    { name: "cursos/tarjeta-curso.html", lang: "markup", code:
+`<div class="ficha" resaltar-si="$ctrl.inscrito">
+  <h3>
+    {{ $ctrl.curso.nombre }}
+    <span class="chip">{{ $ctrl.curso.area }}</span>
+  </h3>
+
+  <p class="muted">
+    {{ $ctrl.curso.horas }} h · {{ $ctrl.curso.precio | currency:'€ ':0 }}
+  </p>
+
+  <button ng-click="$ctrl.inscribir()" ng-disabled="$ctrl.inscrito">
+    {{ $ctrl.etiqueta }}
+  </button>
+</div>`
+    },
+    { name: "carrito/resumen-carrito.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .component('resumenCarrito', {
+      templateUrl: 'carrito/resumen-carrito.html',
+      controller:  ResumenCarritoController,
+      bindings: {
+        detalle: '<?'      // opcional: sin el atributo, es undefined
+      }
+    });
+
+  ResumenCarritoController.$inject = ['carritoService'];
+
+  function ResumenCarritoController(carritoService) {
+    var vm = this;
+
+    // Funciones, no valores: así la vista pregunta al servicio en cada $digest.
+    vm.cantidad = carritoService.cantidad;
+    vm.total    = carritoService.total;
+    vm.items    = carritoService.getItems;
+
+    vm.quitar = quitar;
+
+    function quitar(curso) {
+      carritoService.quitar(curso);
+    }
+  }
+}());`
+    },
+    { name: "carrito/resumen-carrito.html", lang: "markup", code:
+`<div class="ficha resumen">
+  <strong>{{ $ctrl.cantidad() }}</strong> curso(s) en el carrito ·
+  total <strong>{{ $ctrl.total() | currency:'€ ':0 }}</strong>
+  <a href="#!/carrito" ng-if="!$ctrl.detalle">· ver detalle</a>
+
+  <table ng-if="$ctrl.detalle && $ctrl.cantidad() > 0">
+    <thead>
+      <tr><th>Curso</th><th>Precio</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="c in $ctrl.items() track by c.id">
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.precio | currency:'€ ':0 }}</td>
+        <td><button class="sec" ng-click="$ctrl.quitar(c)">Quitar</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="muted" ng-if="$ctrl.detalle && $ctrl.cantidad() === 0">
+    Todavía no te has inscrito en nada. <a href="#!/cursos">Ver cursos</a>
+  </p>
+</div>`
+    }
+  ],
+  reto: `
+    <ol>
+      <li>Completa los ocho <code>TODO</code> en orden. Las tarjetas salen vacías hasta que resuelvas el 2 y el 5; el botón no hace nada hasta el 4; y sin el 1 el carrito no se entera de nada.</li>
+      <li>Comprueba el flujo: inscríbete en un curso, ve a <em>Mi carrito</em>, quítalo, vuelve a <em>Cursos</em>. La tarjeta vuelve a decir <em>Inscribirme</em> sin que nadie se lo haya dicho: <code>inscrito</code> ha cambiado y <code>$onChanges</code> ha saltado.</li>
+      <li>Si acabas pronto: añade chips para filtrar por área (<code>Frontend</code>, <code>Backend</code>...) en <code>lista-cursos</code>, con <code>ng-class="{activo: ...}"</code> en el chip elegido.</li>
+      <li>Si acabas muy pronto: impide inscribirse en más de 3 cursos. ¿Dónde va esa regla: en la tarjeta, en la lista o en el servicio? (Respuesta: en el servicio, y la lista decide qué hacer si <code>anadir</code> devuelve <code>false</code>.)</li>
+    </ol>
+  `
+},
+
+/* ------------------------------------------------------------------ 8 */
+{
+  id: "cierre",
+  time: "19:25", end: "19:30", dur: 5,
+  kind: "Cierre",
+  modulo: "",
+  title: "Cierre y puente al lunes",
+  goal: "Repasar lo que ya sabes hacer y dejar planteada la última sesión: rutas avanzadas, formularios, APIs, pruebas y proyecto final.",
+  notes: `
+    <h3>Después de hoy sabes</h3>
+    <ul>
+      <li>Distinguir enlace bidireccional, unidireccional y de una sola vez, y qué se puede escribir dentro de una expresión.</li>
+      <li>Explicar el ciclo <code>$digest</code>, por qué un <code>setTimeout</code> no refresca la vista y cómo arreglarlo sin llenarlo todo de <code>$apply</code>.</li>
+      <li>Vigilar cambios con <code>$watch</code>, <code>$watchCollection</code> o en profundidad, y limpiar al destruirse.</li>
+      <li>Escribir directivas de elemento, de atributo y estructurales, con ámbito aislado y <code>link</code>.</li>
+      <li>Construir la interfaz con <code>.component()</code>: bindings <code>'&lt;'</code> y <code>'&amp;'</code>, ciclo de vida, contenedor y presentación. Y traducir cada pieza a Angular 2+.</li>
+      <li>Elegir entre <code>constant</code>, <code>value</code>, <code>factory</code>, <code>service</code>, <code>provider</code> y <code>decorator</code>, y anotar dependencias a prueba de minificador.</li>
+    </ul>
+
+    <h3>El lunes, sesión 3 y última</h3>
+    <div class="tblwrap"><table class="tbl">
+      <thead><tr><th>Bloque</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td>Módulo 6</td><td>Ruteo avanzado con <strong>ui-router</strong>: estados, rutas anidadas y vistas con nombre, <code>component:</code> en el estado, <code>resolve</code> y transiciones.</td></tr>
+        <tr><td>Módulo 7</td><td>Formularios: validación con <code>ng-model</code>, estados <code>$dirty</code>/<code>$touched</code>/<code>$invalid</code>, <code>ngMessages</code> y validadores propios.</td></tr>
+        <tr><td>Módulo 8</td><td>APIs: <code>$http</code>, promesas con <code>$q</code>, interceptores y manejo de errores.</td></tr>
+        <tr><td>Módulo 9</td><td>Pruebas con Jasmine y Karma: <code>ngMock</code>, probar servicios, componentes y llamadas HTTP con <code>$httpBackend</code>.</td></tr>
+        <tr><td>Módulo 10</td><td>Proyecto final: una aplicación completa con todo lo anterior.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Para llevarse</h3>
+    <div class="callout ok"><b>Repaso en cinco minutos</b>
+      <p>Si el lunes sólo recuerdas tres cosas, que sean estas: la vista se actualiza porque <strong>alguien lanza un <code>$digest</code></strong>; todo lo que tiene plantilla es un <strong>componente</strong> con datos que bajan por <code>'&lt;'</code> y eventos que suben por <code>'&amp;'</code>; y el estado compartido vive en un <strong>servicio</strong>, que es siempre la misma instancia.</p>
+    </div>
+    <p>El editor de la derecha tiene cargada la solución completa del reto. Toda la sesión queda guardada en tu navegador: puedes cerrar la pestaña y seguir donde lo dejaste.</p>
+  `,
+  files: [
+    { name: "index.html", lang: "markup", code:
+`<!-- Banco de pruebas libre: la solución del reto, lista para trastear.
+     Cambia lo que quieras; con "Reiniciar" vuelves a este punto. -->
+<div ng-app="inscripcionesApp" ng-strict-di>
+
+  <nav>
+    <a href="#!/cursos">Cursos</a>
+    <a href="#!/carrito">Mi carrito</a>
+  </nav>
+
+  <!-- Fuera del ng-view: no se destruye al cambiar de ruta -->
+  <resumen-carrito></resumen-carrito>
+
+  <main ng-view></main>
+
+</div>`
+    },
+    { name: "estilos.css", lang: "markup", code:
+`.resaltado { border-color: #0E6A60; background: #E2F0ED; }
+.resumen   { font-size: 14px; }`
+    },
+    { name: "app.module.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular.module('inscripcionesApp', ['ngRoute']);
+
+  angular
+    .module('inscripcionesApp')
+    .config(configurarRutas);
+
+  configurarRutas.$inject = ['$routeProvider'];
+
+  function configurarRutas($routeProvider) {
+    $routeProvider
+      .when('/cursos', {
+        template: '<lista-cursos></lista-cursos>'
+      })
+      .when('/carrito', {
+        template: '<h1>Mi carrito</h1>' +
+                  '<resumen-carrito detalle="true"></resumen-carrito>'
+      })
+      .otherwise({ redirectTo: '/cursos' });
+  }
+}());`
+    },
+    { name: "core/cursos.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .factory('cursosService', cursosService);
+
+  cursosService.$inject = [];
+
+  function cursosService() {
+
+    var cursos = [
+      { id: 1, nombre: 'AngularJS',   area: 'Frontend',     horas: 20, precio: 390 },
+      { id: 2, nombre: 'Angular 19',  area: 'Frontend',     horas: 40, precio: 690 },
+      { id: 3, nombre: 'Java 21',     area: 'Backend',      horas: 30, precio: 540 },
+      { id: 4, nombre: 'Spring Boot', area: 'Backend',      horas: 35, precio: 590 },
+      { id: 5, nombre: 'Git a fondo', area: 'Herramientas', horas: 8,  precio: 150 }
+    ];
+
+    return {
+      getAll: getAll
+    };
+
+    function getAll() {
+      return cursos;
+    }
+  }
+}());`
+    },
+    { name: "core/carrito.service.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .factory('carritoService', carritoService);
+
+  carritoService.$inject = [];
+
+  function carritoService() {
+    var items = [];
+
+    return {
+      getItems: getItems,
+      anadir:   anadir,
+      quitar:   quitar,
+      contiene: contiene,
+      cantidad: cantidad,
+      total:    total
+    };
+
+    function getItems() {
+      return items;
+    }
+
+    function cantidad() {
+      return items.length;
+    }
+
+    function anadir(curso) {
+      if (!contiene(curso)) {
+        items.push(curso);
+      }
+    }
+
+    function quitar(curso) {
+      var i = items.indexOf(curso);
+      if (i > -1) {
+        items.splice(i, 1);
+      }
+    }
+
+    function contiene(curso) {
+      return items.indexOf(curso) > -1;
+    }
+
+    function total() {
+      return items.reduce(function (suma, c) {
+        return suma + c.precio;
+      }, 0);
+    }
+  }
+}());`
+    },
+    { name: "core/resaltar-si.directive.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .directive('resaltarSi', resaltarSi);
+
+  resaltarSi.$inject = [];
+
+  // Uso: <div resaltar-si="$ctrl.inscrito">
+  function resaltarSi() {
+    return {
+      restrict: 'A',
+      link: link
+    };
+
+    function link(scope, element, attrs) {
+      // La expresión se evalúa en el ámbito donde está el atributo.
+      scope.$watch(attrs.resaltarSi, function (activo) {
+        element.toggleClass('resaltado', !!activo);
+      });
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista-cursos.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // CONTENEDOR: habla con los servicios y decide.
+  angular
+    .module('inscripcionesApp')
+    .component('listaCursos', {
+      templateUrl: 'cursos/lista-cursos.html',
+      controller:  ListaCursosController
+    });
+
+  ListaCursosController.$inject = ['cursosService', 'carritoService'];
+
+  function ListaCursosController(cursosService, carritoService) {
+    var vm = this;
+
+    vm.$onInit = onInit;
+
+    vm.inscribir    = inscribir;
+    vm.estaInscrito = estaInscrito;
+
+    function onInit() {
+      vm.cursos = cursosService.getAll();
+      vm.q      = '';
+    }
+
+    function inscribir(curso) {
+      carritoService.anadir(curso);
+    }
+
+    function estaInscrito(curso) {
+      return carritoService.contiene(curso);
+    }
+  }
+}());`
+    },
+    { name: "cursos/lista-cursos.html", lang: "markup", code:
+`<h1>Cursos disponibles</h1>
+
+<label>
+  Buscar
+  <input type="text" ng-model="$ctrl.q" placeholder="angular, java...">
+</label>
+
+<tarjeta-curso ng-repeat="c in $ctrl.cursos | filter:{nombre: $ctrl.q} track by c.id"
+               curso="c"
+               inscrito="$ctrl.estaInscrito(c)"
+               on-inscribir="$ctrl.inscribir(curso)">
+</tarjeta-curso>`
+    },
+    { name: "cursos/tarjeta-curso.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  // PRESENTACIÓN: no inyecta servicios. Recibe por '<' y avisa por '&'.
+  angular
+    .module('inscripcionesApp')
+    .component('tarjetaCurso', {
+      templateUrl: 'cursos/tarjeta-curso.html',
+      controller:  TarjetaCursoController,
+      bindings: {
+        curso:       '<',
+        inscrito:    '<',
+        onInscribir: '&'
+      }
+    });
+
+  TarjetaCursoController.$inject = [];
+
+  function TarjetaCursoController() {
+    var vm = this;
+
+    vm.etiqueta = 'Inscribirme';
+
+    vm.$onChanges = onChanges;
+    vm.inscribir  = inscribir;
+
+    // "inscrito" es un booleano: cada vez que cambia, llega aquí.
+    function onChanges(cambios) {
+      if (cambios.inscrito) {
+        vm.etiqueta = cambios.inscrito.currentValue ? 'Ya inscrito' : 'Inscribirme';
+      }
+    }
+
+    function inscribir() {
+      vm.onInscribir({ curso: vm.curso });
+    }
+  }
+}());`
+    },
+    { name: "cursos/tarjeta-curso.html", lang: "markup", code:
+`<div class="ficha" resaltar-si="$ctrl.inscrito">
+  <h3>
+    {{ $ctrl.curso.nombre }}
+    <span class="chip">{{ $ctrl.curso.area }}</span>
+  </h3>
+
+  <p class="muted">
+    {{ $ctrl.curso.horas }} h · {{ $ctrl.curso.precio | currency:'€ ':0 }}
+  </p>
+
+  <button ng-click="$ctrl.inscribir()" ng-disabled="$ctrl.inscrito">
+    {{ $ctrl.etiqueta }}
+  </button>
+</div>`
+    },
+    { name: "carrito/resumen-carrito.component.js", lang: "javascript", code:
+`(function () {
+  'use strict';
+
+  angular
+    .module('inscripcionesApp')
+    .component('resumenCarrito', {
+      templateUrl: 'carrito/resumen-carrito.html',
+      controller:  ResumenCarritoController,
+      bindings: {
+        detalle: '<?'      // opcional: sin el atributo, es undefined
+      }
+    });
+
+  ResumenCarritoController.$inject = ['carritoService'];
+
+  function ResumenCarritoController(carritoService) {
+    var vm = this;
+
+    // Funciones, no valores: así la vista pregunta al servicio en cada $digest.
+    vm.cantidad = carritoService.cantidad;
+    vm.total    = carritoService.total;
+    vm.items    = carritoService.getItems;
+
+    vm.quitar = quitar;
+
+    function quitar(curso) {
+      carritoService.quitar(curso);
+    }
+  }
+}());`
+    },
+    { name: "carrito/resumen-carrito.html", lang: "markup", code:
+`<div class="ficha resumen">
+  <strong>{{ $ctrl.cantidad() }}</strong> curso(s) en el carrito ·
+  total <strong>{{ $ctrl.total() | currency:'€ ':0 }}</strong>
+  <a href="#!/carrito" ng-if="!$ctrl.detalle">· ver detalle</a>
+
+  <table ng-if="$ctrl.detalle && $ctrl.cantidad() > 0">
+    <thead>
+      <tr><th>Curso</th><th>Precio</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="c in $ctrl.items() track by c.id">
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.precio | currency:'€ ':0 }}</td>
+        <td><button class="sec" ng-click="$ctrl.quitar(c)">Quitar</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="muted" ng-if="$ctrl.detalle && $ctrl.cantidad() === 0">
+    Todavía no te has inscrito en nada. <a href="#!/cursos">Ver cursos</a>
+  </p>
+</div>`
+    }
+  ],
+  reto: `
+    <ul>
+      <li>Trastea libremente: convierte <code>resumen-carrito</code> en contenedor y crea una <code>fila-carrito</code> de presentación, o añade una directiva <code>si-rol</code> para una zona de administración.</li>
+      <li>Una pregunta para el fin de semana: ahora mismo, al recargar la página, el carrito se vacía. ¿En qué pieza guardarías los datos para que no se pierdan, y qué pieza sería la única que tendría que cambiar cuando lleguen de una API de verdad? El lunes, con <code>$http</code>, lo hacemos.</li>
+    </ul>
+  `
+}
+
+];
+</script>
+
+
+<script>
+(function () {
+  "use strict";
+
+  // Ojo: en cdnjs, angular-route NO vive dentro del paquete angular.js;
+  // es una librería aparte. La ruta angular.js/1.8.3/angular-route.min.js da 404.
+  var NG_CORE  = "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js";
+  var NG_ROUTE = "https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.3/angular-route.min.js";
+  var FONTS    = "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap";
+  var STORE    = "ngrepl:dia" + SESSION.n + ":v1";
+
+  // Librerías opcionales por paso (step.libs). Todas verificadas en cdnjs.
+  var CDN = "https://cdnjs.cloudflare.com/ajax/libs/";
+  var LIBS = {
+    uirouter: CDN + "angular-ui-router/1.0.30/angular-ui-router.min.js",
+    messages: CDN + "angular-messages/1.8.3/angular-messages.min.js",
+    animate:  CDN + "angular-animate/1.8.3/angular-animate.min.js",
+    mocks:    CDN + "angular-mocks/1.8.3/angular-mocks.js"
+  };
+  var JASMINE = CDN + "jasmine/4.6.0/";
+
+  // Enlaces a las otras sesiones: las versiones publicadas. En local (http-server)
+  // se usan los archivos hermanos.
+  var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || location.protocol === "file:";
+  var DAY_LINKS = LOCAL ? { 1: "dia-01.html", 2: "dia-02.html", 3: "dia-03.html" } : {
+    1: "https://claude.ai/artifact/Q7huigsarBUs4VWfQsM7Cv",
+    2: "https://claude.ai/artifact/7fegGMYKf6baZLh3WS4nLd",
+    3: "https://claude.ai/artifact/2cz1Gqsncbrz4VBaCufMLU"
+  };
+
+  /* ---------------------------------------------------------------- css de la vista previa */
+  var BASE_CSS = [
+    "*{box-sizing:border-box}",
+    "body{margin:0;padding:18px;font:15px/1.6 'IBM Plex Sans',system-ui,sans-serif;color:#1D1613;background:#fff}",
+    "h1{font-size:23px;margin:0 0 10px;letter-spacing:-.01em}",
+    "h2{font-size:18px;margin:20px 0 8px}",
+    "h3{font-size:15px;margin:0 0 6px}",
+    "p{margin:0 0 10px}",
+    "a{color:#B52E31}",
+    "nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #E0D6CF;padding-bottom:10px;margin-bottom:14px}",
+    "nav a{text-decoration:none;padding:5px 11px;border:1px solid #E0D6CF;border-radius:999px;font-size:13.5px;color:#5A4D46}",
+    "nav a:hover{border-color:#B52E31;color:#B52E31}",
+    "label{display:block;margin:0 0 10px;font-size:13px;color:#5A4D46}",
+    "input,select,textarea{display:block;width:100%;max-width:340px;font:inherit;font-size:14px;padding:7px 9px;border:1px solid #CFC3BB;border-radius:5px;margin-top:4px;background:#fff;color:#1D1613}",
+    "input.inline,input[type=checkbox]{display:inline-block;width:auto;margin:0 6px 0 0;padding:0}",
+    "button{font:inherit;font-size:13.5px;padding:6px 13px;border:1px solid #B52E31;background:#B52E31;color:#fff;border-radius:5px;cursor:pointer;margin:0 6px 10px 0}",
+    "button.sec{background:#fff;color:#B52E31}",
+    "button[disabled]{opacity:.45;cursor:not-allowed}",
+    "ul{padding-left:20px;margin:0 0 10px}",
+    "li{margin-bottom:6px}",
+    "table{border-collapse:collapse;width:100%;font-size:14px;margin-bottom:10px}",
+    "th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #EDE5DF}",
+    "th{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#8B7B72}",
+    ".ficha{border:1px solid #E0D6CF;border-radius:8px;padding:14px 16px;margin-bottom:10px;background:#FDFBFA}",
+    ".chip{display:inline-block;font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid #E0D6CF;border-radius:999px;padding:1px 8px;color:#8B7B72;vertical-align:middle}",
+    ".chip.activo{border-color:#0E6A60;color:#0E6A60;background:#E2F0ED}",
+    ".muted{color:#8B7B72;font-size:13px}",
+    "code{font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#F0E9E4;padding:1px 4px;border-radius:3px}",
+    ".ng-cloak{display:none}"
+  ].join("");
+
+  /* ---------------------------------------------------------------- construir el documento */
+  var S = "<scr" + "ipt", E = "</scr" + "ipt>";
+
+  function harness(templates, data) {
+    var json = JSON.stringify(templates).replace(/</g, "\\u003c");
+    var djson = JSON.stringify(data).replace(/</g, "\\u003c");
+    return [
+      "(function(){",
+      "var TPL=" + json + ";",
+      "var DATA=" + djson + ";",
+      "function post(k,t){try{parent.postMessage({__ngrepl:1,kind:k,text:t},'*');}catch(e){}}",
+      "function fmt(a){if(typeof a==='string')return a;try{return JSON.stringify(a);}catch(e){return String(a);}}",
+      "if(window.__ngFails&&window.__ngFails.length){",
+      "  post('error','No se han podido descargar: '+window.__ngFails.join(', ')+'. Comprueba la conexión.');}",
+      "['log','info','warn','error'].forEach(function(m){var o=console[m];console[m]=function(){",
+      "  post(m,Array.prototype.slice.call(arguments).map(fmt).join(' '));if(o)try{o.apply(console,arguments);}catch(e){}};});",
+      "window.onerror=function(msg,src,line){post('error',msg+(line?' (línea '+line+')':''));};",
+      "window.addEventListener('unhandledrejection',function(e){post('error','Promesa sin capturar: '+fmt(e.reason));});",
+      "if(!window.angular){post('error','No se ha podido cargar angular.js. ¿Hay conexión?');return;}",
+      "var base=angular.module;",
+      "angular.module=function(name,requires){var m=base.apply(angular,arguments);",
+      "  if(requires){m.run(['$templateCache',function(tc){for(var k in TPL){tc.put(k,TPL[k]);}}]);",
+      "    if(!angular.mock){m.config(['$provide',function(p){p.decorator('$httpBackend',['$delegate',fakeApi]);}]);}}",
+      "  return m;};",
+      FAKE_API,
+      "function route(){post('route',location.hash||'#!/');}",
+      "window.addEventListener('hashchange',route);",
+      "window.addEventListener('message',function(e){var d=e.data;",
+      "  if(d&&d.__ngrepl_go!=null){var h=String(d.__ngrepl_go);location.hash=h.charAt(0)==='#'?h.slice(1):h;}});",
+      "angular.element(document).ready(function(){route();post('ready','');});",
+      "}());"
+    ].join("\n");
+  }
+
+  /* API REST simulada. Cada archivo .json del ejercicio es una colección en
+     memoria: api/cursos.json → GET/POST api/cursos, GET/PUT/PATCH/DELETE
+     api/cursos/3. Se serializa con toString() y corre dentro del iframe como
+     decorador de $httpBackend, así que $http, las promesas y los
+     interceptores funcionan exactamente igual que contra un servidor. */
+  function fakeApi($delegate) {
+    if ($delegate.__fake) { return $delegate; }
+    var DB = {};
+    for (var k in DATA) {
+      var key = k.replace(/\.json$/i, "");
+      try { DB[key] = JSON.parse(DATA[k]); } catch (e) { DB[key] = DATA[k]; }
+    }
+
+    function parse(b) {
+      if (typeof b !== "string") { return b || {}; }
+      try { return JSON.parse(b); } catch (e) { return {}; }
+    }
+
+    function indexOfId(list, id) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] && String(list[i].id) === String(id)) { return i; }
+      }
+      return -1;
+    }
+
+    function nextId(list) {
+      var max = 0;
+      list.forEach(function (x) { if (x && Number(x.id) > max) { max = Number(x.id); } });
+      return max + 1;
+    }
+
+    function resolve(url) {
+      var clean = String(url).split(/[?#]/)[0].replace(/^(\.?\/)+/, "").replace(/\.json$/i, "");
+      if (Object.prototype.hasOwnProperty.call(DB, clean)) { return { coll: clean, path: clean }; }
+      var m = /^(.*)\/([^\/]+)$/.exec(clean);
+      if (m && Array.isArray(DB[m[1]])) { return { coll: m[1], id: decodeURIComponent(m[2]), path: clean }; }
+      return { path: clean };
+    }
+
+    function handle(method, r, body) {
+      var list = DB[r.coll], i, item;
+      if (r.id === undefined) {
+        if (method === "GET") { return [200, list]; }
+        if (method === "POST" && Array.isArray(list)) {
+          item = parse(body);
+          if (item.id == null) { item.id = nextId(list); }
+          list.push(item);
+          return [201, item];
+        }
+        return [405, { error: "Método " + method + " no permitido sobre " + r.path }];
+      }
+      i = indexOfId(list, r.id);
+      if (i < 0) { return [404, { error: "No existe " + r.path }]; }
+      if (method === "GET") { return [200, list[i]]; }
+      if (method === "PUT") {
+        item = parse(body); item.id = list[i].id; list[i] = item;
+        return [200, item];
+      }
+      if (method === "PATCH") { angular.extend(list[i], parse(body)); return [200, list[i]]; }
+      if (method === "DELETE") { list.splice(i, 1); return [204, null]; }
+      return [405, { error: "Método " + method + " no permitido" }];
+    }
+
+    var TEXT = { 200: "OK", 201: "Created", 204: "No Content", 404: "Not Found", 405: "Method Not Allowed", 500: "Internal Server Error" };
+
+    function fake(method, url, body, callback) {
+      var r = resolve(url), res;
+      method = String(method).toUpperCase();
+      if (/error500/.test(url)) { res = [500, { error: "Error interno simulado" }]; }
+      else if (r.coll) { res = handle(method, r, body); }
+      else if (/^api\//.test(r.path)) { res = [404, { error: "No existe " + r.path }]; }
+      else { return $delegate.apply(this, arguments); }
+
+      setTimeout(function () {
+        post(res[0] >= 400 ? "warn" : "log", "[api] " + method + " " + r.path + " → " + res[0]);
+        callback(res[0], res[1] == null ? "" : JSON.stringify(res[1]),
+                 "Content-Type: application/json", TEXT[res[0]] || "", "complete");
+      }, 400);
+    }
+    fake.__fake = true;
+    return fake;
+  }
+
+  var FAKE_API = "var fakeApi=" + fakeApi.toString() + ";";
+
+  var BOOTCHECK = [
+    // Plan B por si Angular no arrancó solo. Espera a 'load': antes de eso el
+    // auto-bootstrap de DOMContentLoaded aún no ha corrido y arrancaríamos dos veces.
+    "(function(){window.addEventListener('load',function(){setTimeout(function(){",
+    "if(!window.angular)return;",
+    "var el=document.querySelector('[ng-app],[data-ng-app],[x-ng-app]');if(!el)return;",
+    "if(el.className&&String(el.className).indexOf('ng-scope')>-1)return;",
+    "try{if(angular.element(el).scope())return;}catch(e){}",
+    "try{var n=el.getAttribute('ng-app')||el.getAttribute('data-ng-app');angular.bootstrap(el,n?[n]:[]);}",
+    "catch(e){if(window.console)console.error(e.message||String(e));}",
+    "},0);});}());"
+  ].join("\n");
+
+  function buildPayload(files, libs) {
+    var index = "", js = [], css = [], tpl = {}, data = {};
+    libs = libs || [];
+    var jasmine = libs.indexOf("jasmine") > -1;
+
+    files.forEach(function (f) {
+      if (f.name === "index.html") { index = f.code; }
+      else if (/\.html?$/i.test(f.name)) { tpl[f.name] = f.code; }
+      else if (/\.css$/i.test(f.name)) { css.push(f.code); }
+      else if (/\.json$/i.test(f.name)) { data[f.name.replace(/^\.?\//, "")] = f.code; }
+      else if (/(^|\/)karma\.conf\.js$/i.test(f.name)) { /* se enseña, no se ejecuta */ }
+      else { js.push(f.code); }
+    });
+
+    var out = "";
+    out += '<link rel="stylesheet" href="' + FONTS + '">';
+    if (jasmine) { out += '<link rel="stylesheet" href="' + JASMINE + 'jasmine.min.css">'; }
+    out += "<style>" + BASE_CSS + css.join("\n") + "</style>";
+    out += index;
+    out += S + ">window.__ngFail=function(n){(window.__ngFails=window.__ngFails||[]).push(n);};" + E;
+    // Jasmine antes que angular-mocks: ngMock sólo publica module() e inject()
+    // si encuentra window.jasmine al cargarse.
+    if (jasmine) {
+      ["jasmine.min.js", "jasmine-html.min.js", "boot0.min.js", "boot1.min.js"].forEach(function (n) {
+        out += S + ' src="' + JASMINE + n + '" onerror="__ngFail(\'' + n + '\')">' + E;
+      });
+    }
+    out += S + ' src="' + NG_CORE + '" onerror="__ngFail(\'angular.js\')">' + E;
+    out += S + ' src="' + NG_ROUTE + '" onerror="__ngFail(\'angular-route.js\')">' + E;
+    libs.forEach(function (k) {
+      if (LIBS[k]) { out += S + ' src="' + LIBS[k] + '" onerror="__ngFail(\'' + k + '\')">' + E; }
+    });
+    out += S + ">" + harness(tpl, data) + E;
+    js.forEach(function (code) { out += S + ">" + code + E; });
+    out += S + ">" + BOOTCHECK + E;
+    return out;
+  }
+
+  /* ---------------------------------------------------------------- estado */
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch (e) { saved = {}; }
+
+  function persist() {
+    try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  function clone(files) {
+    return files.map(function (f) { return { name: f.name, lang: f.lang, code: f.code }; });
+  }
+
+  function filesFor(step) {
+    if (!step.files) { return null; }
+    var s = saved[step.id];
+    if (s && s.files && s.files.length) { return s.files; }
+    return clone(step.files);
+  }
+
+  function saveFiles(step, files) {
+    saved[step.id] = saved[step.id] || {};
+    saved[step.id].files = files;
+    persist();
+  }
+
+  function resetFiles(step) {
+    if (saved[step.id]) { delete saved[step.id].files; persist(); }
+    return clone(step.files);
+  }
+
+  /* ---------------------------------------------------------------- utilidades */
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text != null) { n.textContent = text; }
+    return n;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function highlight(code, lang) {
+    var P = window.Prism;
+    if (P && P.languages && P.languages[lang]) {
+      try { return P.highlight(code, P.languages[lang], lang); } catch (e) {}
+    }
+    return esc(code);
+  }
+
+  /* Los errores de AngularJS llegan como una URL de 2.000 caracteres con los
+     mensajes anidados y codificados. Los desenrollamos para que se lean. */
+  var HINTS = {
+    nomod:    "Ese módulo no existe todavía. ¿Falta su <script>, o le sobran/faltan los corchetes al definirlo?",
+    unpr:     "Dependencia desconocida: revisa el nombre del servicio y el $inject.",
+    areq:     "Angular esperaba una función y ha recibido otra cosa. Suele ser un nombre de controlador mal escrito.",
+    ctrlreq:  "Falta el controlador: no está registrado en el módulo.",
+    strictdi: "Con ng-strict-di hay que declarar $inject en todas las funciones inyectadas.",
+    dupes:    "ng-repeat ha encontrado valores repetidos. Añade track by."
+  };
+
+  function prettyNg(text) {
+    var s = String(text);
+    if (s.indexOf("errors.angularjs.org") === -1) { return s; }
+    var out = [], cur = s, guard = 0, code = "";
+    while (cur.indexOf("errors.angularjs.org") > -1 && guard++ < 8) {
+      var m = /errors\.angularjs\.org\/[^/]+\/([^/]+)\/([^?\s]+)\?([^\s"']*)/.exec(cur);
+      if (!m) { break; }
+      code = m[2];
+      var args = m[3].split("&").map(function (kv) {
+        var i = kv.indexOf("=");
+        try { return decodeURIComponent(kv.slice(i + 1)); } catch (e) { return kv.slice(i + 1); }
+      });
+      out.push("[" + m[1] + ":" + code + "] " + args[0]);
+      cur = args.slice(1).join(" ");
+    }
+    if (!out.length) { return s; }
+    var txt = out.join("  →  ");
+    if (HINTS[code]) { txt += "\n" + HINTS[code]; }
+    return txt;
+  }
+
+  function langOf(name) {
+    if (/\.html?$/i.test(name)) { return "markup"; }
+    if (/\.css$/i.test(name)) { return "css"; }
+    return "javascript";
+  }
+
+  function minutesNow() {
+    var d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }
+
+  function toMinutes(hhmm) {
+    var p = hhmm.split(":");
+    return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+  }
+
+  /* ---------------------------------------------------------------- agenda */
+  var agendaEl = document.getElementById("agenda");
+  var current = 0;
+
+  function buildAgenda() {
+    agendaEl.innerHTML = "";
+    STEPS.forEach(function (step, i) {
+      var li = el("li");
+      var b = el("button", "ai" + (step.break ? " is-break" : "") +
+                 (step.kind === "Reto" ? " is-reto" : "") +
+                 (step.kind === "Cierre" ? " is-cierre" : ""));
+      b.type = "button";
+      b.appendChild(el("span", "t", step.time));
+      var box = el("span");
+      box.appendChild(el("span", "ttl", step.title));
+      box.appendChild(el("span", "kind", step.kind + " · " + step.dur + " min"));
+      b.appendChild(box);
+      b.addEventListener("click", function () { go(i); });
+      li.appendChild(b);
+      agendaEl.appendChild(li);
+    });
+  }
+
+  function markAgenda() {
+    var items = agendaEl.querySelectorAll(".ai");
+    for (var i = 0; i < items.length; i++) {
+      items[i].setAttribute("aria-current", i === current ? "true" : "false");
+    }
+  }
+
+  /* ---------------------------------------------------------------- lección */
+  var lessonEl = document.getElementById("lesson");
+  var mainEl = document.getElementById("main");
+  var runTimer = null;
+  var live = null;   // { files, frame, consoleEl, urlEl, dot, step }
+
+  function go(i, skipHash) {
+    if (i < 0 || i >= STEPS.length) { return; }
+    current = i;
+    markAgenda();
+    if (!skipHash) {
+      try { history.replaceState(null, "", "#" + STEPS[i].id); } catch (e) { location.hash = STEPS[i].id; }
+    }
+    renderLesson(STEPS[i]);
+    mainEl.scrollTop = 0;
+    if (window.innerWidth <= 900) { setRail(false); }
+  }
+
+  function renderLesson(step) {
+    live = null;
+    lessonEl.innerHTML = "";
+
+    /* cabecera */
+    var head = el("header", "lhead");
+    var meta = el("div", "lmeta");
+    if (step.modulo) { meta.appendChild(el("span", "pill mod", step.modulo)); }
+    meta.appendChild(el("span", "pill hour", step.time + " – " + step.end));
+    meta.appendChild(el("span", "pill", step.dur + " min"));
+    meta.appendChild(el("span", "pill", step.kind));
+    head.appendChild(meta);
+    head.appendChild(el("h2", null, step.title));
+    if (step.goal) { head.appendChild(el("p", "goal", step.goal)); }
+    lessonEl.appendChild(head);
+
+    if (step.break) {
+      var bc = el("div", "breakcard");
+      bc.appendChild(el("div", "big", step.time + " – " + step.end));
+      bc.appendChild(el("p", null, step.breakText));
+      lessonEl.appendChild(bc);
+      lessonEl.appendChild(navBlock());
+      return;
+    }
+
+    /* notas */
+    if (step.notes) {
+      var note = el("section", "note");
+      note.innerHTML = step.notes;
+      lessonEl.appendChild(note);
+    }
+
+    /* repl */
+    if (step.files) { lessonEl.appendChild(buildRepl(step)); }
+
+    /* reto */
+    if (step.reto) {
+      var r = el("section", "reto");
+      r.appendChild(el("h3", null, step.kind === "Reto" ? "Manos a la obra" : "Prueba a…"));
+      var body = el("div");
+      body.innerHTML = step.reto;
+      r.appendChild(body);
+      lessonEl.appendChild(r);
+    }
+
+    lessonEl.appendChild(navBlock());
+  }
+
+  function navBlock() {
+    var nav = el("nav", "lnav");
+    var prev = document.createElement("a");
+    prev.className = "pv"; prev.href = "#";
+    prev.innerHTML = '<span class="dir">Anterior</span><span class="nm"></span>';
+    var next = document.createElement("a");
+    next.className = "nx"; next.href = "#";
+    next.innerHTML = '<span class="dir">Siguiente</span><span class="nm"></span>';
+
+    if (current > 0) {
+      prev.querySelector(".nm").textContent = STEPS[current - 1].title;
+      prev.addEventListener("click", function (e) { e.preventDefault(); go(current - 1); });
+    } else { prev.setAttribute("aria-disabled", "true"); }
+
+    if (current < STEPS.length - 1) {
+      next.querySelector(".nm").textContent = STEPS[current + 1].title;
+      next.addEventListener("click", function (e) { e.preventDefault(); go(current + 1); });
+    } else { next.setAttribute("aria-disabled", "true"); }
+
+    nav.appendChild(prev);
+    nav.appendChild(next);
+    return nav;
+  }
+
+  /* ---------------------------------------------------------------- repl */
+  function buildRepl(step) {
+    var files = filesFor(step);
+    var activeName = files[0].name;
+
+    var repl = el("section", "repl");
+    repl.setAttribute("data-pane", "code");
+
+    /* barra superior */
+    var bar = el("div", "repl-bar");
+    bar.appendChild(el("span", "label", "Editor en vivo"));
+
+    var seg = el("div", "segbtn");
+    var bCode = el("button", null, "Código");
+    var bOut = el("button", null, "Resultado");
+    bCode.type = bOut.type = "button";
+    bCode.setAttribute("aria-pressed", "true");
+    bOut.setAttribute("aria-pressed", "false");
+    bCode.addEventListener("click", function () {
+      repl.setAttribute("data-pane", "code");
+      bCode.setAttribute("aria-pressed", "true"); bOut.setAttribute("aria-pressed", "false");
+    });
+    bOut.addEventListener("click", function () {
+      repl.setAttribute("data-pane", "out");
+      bOut.setAttribute("aria-pressed", "true"); bCode.setAttribute("aria-pressed", "false");
+    });
+    seg.appendChild(bCode); seg.appendChild(bOut);
+    bar.appendChild(seg);
+
+    bar.appendChild(el("span", "spacer"));
+
+    var addBtn = el("button", "btn", "+ archivo"); addBtn.type = "button";
+    var delBtn = el("button", "btn", "− archivo"); delBtn.type = "button";
+    var resetBtn = el("button", "btn", "Reiniciar"); resetBtn.type = "button";
+    var runBtn = el("button", "btn run", "Ejecutar"); runBtn.type = "button";
+    bar.appendChild(addBtn); bar.appendChild(delBtn);
+    if (step.solution) {
+      var solBtn = el("button", "btn sol", "Solución"); solBtn.type = "button";
+      solBtn.addEventListener("click", function () {
+        if (!confirm("Se sustituye tu código por la solución de referencia. ¿Seguir?")) { return; }
+        files = clone(step.solution);
+        activeName = files[0].name;
+        saveFiles(step, files);
+        renderTabs(); renderEditor(); run();
+      });
+      bar.appendChild(solBtn);
+    }
+    bar.appendChild(resetBtn); bar.appendChild(runBtn);
+    repl.appendChild(bar);
+
+    /* paneles */
+    var panes = el("div", "panes");
+    var codePane = el("div", "pane code");
+    var tabs = el("div", "tabs");
+    var edit = el("div", "edit");
+    var inner = el("div", "inner");
+    var pre = el("pre", "layer");
+    var ta = document.createElement("textarea");
+    ta.className = "layer";
+    ta.spellcheck = false;
+    ta.setAttribute("autocapitalize", "off");
+    ta.setAttribute("autocomplete", "off");
+    ta.setAttribute("aria-label", "Editor de código");
+    inner.appendChild(pre); inner.appendChild(ta);
+    edit.appendChild(inner);
+    codePane.appendChild(tabs); codePane.appendChild(edit);
+
+    var outPane = el("div", "pane out");
+    var outbar = el("div", "outbar");
+    var dot = el("span", "dot");
+    var urlEl = document.createElement("input");
+    urlEl.className = "urlbar"; urlEl.value = "#!/";
+    urlEl.setAttribute("aria-label", "URL de la aplicación");
+    var reloadBtn = el("button", "btn", "Recargar"); reloadBtn.type = "button";
+    outbar.appendChild(dot); outbar.appendChild(urlEl); outbar.appendChild(reloadBtn);
+
+    var outbody = el("div", "outbody");
+    var frame = document.createElement("iframe");
+    frame.className = "frame";
+    frame.title = "Resultado de la aplicación";
+    var cons = el("div", "console");
+    cons.hidden = true;
+    outbody.appendChild(frame); outbody.appendChild(cons);
+    outPane.appendChild(outbar); outPane.appendChild(outbody);
+
+    panes.appendChild(codePane); panes.appendChild(outPane);
+    repl.appendChild(panes);
+
+    /* --- comportamiento --- */
+    function fileByName(n) {
+      for (var i = 0; i < files.length; i++) { if (files[i].name === n) { return files[i]; } }
+      return files[0];
+    }
+
+    function renderTabs() {
+      tabs.innerHTML = "";
+      files.forEach(function (f) {
+        var t = el("button", null, f.name);
+        t.type = "button";
+        t.setAttribute("aria-selected", f.name === activeName ? "true" : "false");
+        t.addEventListener("click", function () { activeName = f.name; renderTabs(); renderEditor(); });
+        tabs.appendChild(t);
+      });
+    }
+
+    function renderEditor() {
+      var f = fileByName(activeName);
+      ta.value = f.code;
+      paint();
+    }
+
+    function paint() {
+      var f = fileByName(activeName);
+      var code = ta.value;
+      pre.innerHTML = "<code>" + highlight(code.slice(-1) === "\n" ? code + " " : code, f.lang || langOf(f.name)) + "</code>";
+    }
+
+    ta.addEventListener("input", function () {
+      var f = fileByName(activeName);
+      f.code = ta.value;
+      paint();
+      saveFiles(step, files);
+      clearTimeout(runTimer);
+      runTimer = setTimeout(run, 750);
+    });
+
+    ta.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        var s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + "  " + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + 2;
+        ta.dispatchEvent(new Event("input"));
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        clearTimeout(runTimer);
+        run();
+      }
+    });
+
+    addBtn.addEventListener("click", function () {
+      var name = prompt("Nombre del archivo (por ejemplo core/404.html o cursos/detalle.controller.js)");
+      if (!name) { return; }
+      name = name.trim();
+      if (!name) { return; }
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].name === name) { alert("Ya existe un archivo con ese nombre."); return; }
+      }
+      files.push({ name: name, lang: langOf(name), code: "" });
+      activeName = name;
+      saveFiles(step, files);
+      renderTabs(); renderEditor(); run();
+      ta.focus();
+    });
+
+    delBtn.addEventListener("click", function () {
+      if (activeName === "index.html") { alert("index.html no se puede borrar."); return; }
+      if (!confirm("¿Borrar " + activeName + "?")) { return; }
+      files = files.filter(function (f) { return f.name !== activeName; });
+      activeName = files[0].name;
+      saveFiles(step, files);
+      renderTabs(); renderEditor(); run();
+    });
+
+    resetBtn.addEventListener("click", function () {
+      if (!confirm("Se descartan tus cambios en este ejercicio. ¿Seguir?")) { return; }
+      files = resetFiles(step);
+      activeName = files[0].name;
+      renderTabs(); renderEditor(); run();
+    });
+
+    runBtn.addEventListener("click", function () { clearTimeout(runTimer); run(); });
+    reloadBtn.addEventListener("click", function () { clearTimeout(runTimer); run(); });
+
+    urlEl.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") { return; }
+      e.preventDefault();
+      try { frame.contentWindow.postMessage({ __ngrepl_go: urlEl.value }, "*"); } catch (err) {}
+    });
+
+    function logLine(kind, text) {
+      cons.hidden = false;
+      var ln = el("div", "ln" + (kind === "error" ? " error" : kind === "warn" ? " warn" : ""));
+      ln.appendChild(el("span", "tag", kind === "error" ? "error" : kind === "warn" ? "aviso" : "log"));
+      var t = kind === "log" ? String(text) : prettyNg(text);
+      if (t.length > 900) { t = t.slice(0, 900) + "…"; }
+      ln.appendChild(document.createTextNode(t));
+      cons.appendChild(ln);
+      while (cons.children.length > 60) { cons.removeChild(cons.firstChild); }
+      cons.scrollTop = cons.scrollHeight;
+      if (kind === "error") { dot.classList.add("err"); }
+    }
+
+    function run() {
+      cons.innerHTML = "";
+      cons.hidden = true;
+      dot.classList.remove("err");
+      var payload = buildPayload(files, step.libs);
+      live = { frame: frame, log: logLine, url: urlEl, dot: dot, payload: payload };
+      mount(live);
+    }
+
+    renderTabs();
+    renderEditor();
+    setTimeout(run, 0);
+
+    return repl;
+  }
+
+  /* ---------------------------------------------------------------- montaje del iframe */
+  var mode = "file";          // "file" usa preview.html; "srcdoc" es el plan B
+  var readyOk = false;
+  var pending = null;
+
+  function mount(ctx) {
+    pending = ctx;
+    if (mode === "file") {
+      var stored = false;
+      try { localStorage.setItem("ngrepl:payload", ctx.payload); stored = true; } catch (e) {}
+      if (stored) {
+        ctx.frame.removeAttribute("srcdoc");
+        ctx.frame.src = "preview.html?r=" + Date.now();
+        if (!readyOk) { setTimeout(checkFallback, 2600); }
+        return;
+      }
+      mode = "srcdoc";
+    }
+    ctx.frame.removeAttribute("src");
+    ctx.frame.srcdoc = ctx.payload;
+  }
+
+  function checkFallback() {
+    if (readyOk || mode !== "file" || !pending) { return; }
+    mode = "srcdoc";
+    pending.frame.removeAttribute("src");
+    pending.frame.srcdoc = pending.payload;
+  }
+
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.__ngrepl !== 1 || !live) { return; }
+    if (d.kind === "ready") { readyOk = true; return; }
+    if (d.kind === "route") { live.url.value = d.text; return; }
+    live.log(d.kind, d.text);
+  });
+
+  /* ---------------------------------------------------------------- cabecera y rail */
+  var railEl = document.getElementById("rail");
+  var railBtn = document.getElementById("railToggle");
+
+  function setRail(open) {
+    railEl.hidden = !open;
+    railBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  railBtn.addEventListener("click", function () {
+    setRail(railEl.hidden);
+  });
+
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute("data-theme") === "dark" ||
+      (!root.getAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+    try { localStorage.setItem("ngrepl:theme", dark ? "light" : "dark"); } catch (e) {}
+  });
+
+  try {
+    var th = localStorage.getItem("ngrepl:theme");
+    if (th) { document.documentElement.setAttribute("data-theme", th); }
+  } catch (e) {}
+
+  /* cabecera de la sesión */
+  document.title = "AngularJS · Sesión " + SESSION.n;
+  document.getElementById("railEyebrow").textContent = SESSION.eyebrow || ("Sesión " + SESSION.n);
+  document.getElementById("railFoot").innerHTML = SESSION.cubrimos || "";
+  (function () {
+    var ds = document.querySelectorAll("#daystrip .d");
+    for (var k = 0; k < ds.length; k++) {
+      var dn = ds[k].getAttribute("data-n");
+      if (Number(dn) === SESSION.n) { ds[k].classList.add("now"); ds[k].removeAttribute("href"); }
+      else if (DAY_LINKS[dn]) {
+        ds[k].href = DAY_LINKS[dn];
+        if (!LOCAL) { ds[k].target = "_blank"; ds[k].rel = "noopener"; }
+      }
+    }
+  }());
+
+  /* reloj de la sesión */
+  var clockEl = document.querySelector(".rail-head .clock");
+  function tick() {
+    var now = minutesNow();
+    var ini = toMinutes(SESSION.desde), fin = toMinutes(SESSION.hasta);
+    if (now >= ini && now <= fin) {
+      var queda = fin - now;
+      clockEl.textContent = "quedan " + Math.floor(queda / 60) + " h " + (queda % 60) + " min";
+    } else {
+      clockEl.textContent = SESSION.desde + "–" + SESSION.hasta;
+    }
+  }
+
+  function stepNow() {
+    var now = minutesNow();
+    for (var i = STEPS.length - 1; i >= 0; i--) {
+      if (now >= toMinutes(STEPS[i].time)) { return i; }
+    }
+    return -1;
+  }
+
+  /* ---------------------------------------------------------------- arranque */
+  buildAgenda();
+  tick();
+  setInterval(tick, 30000);
+
+  if (window.innerWidth <= 900) { setRail(false); }
+
+  var start = 0;
+  var hash = (location.hash || "").replace(/^#/, "");
+  for (var i = 0; i < STEPS.length; i++) { if (STEPS[i].id === hash) { start = i; } }
+  if (!hash) {
+    var n = stepNow();
+    if (n >= 0 && minutesNow() <= toMinutes(SESSION.hasta)) { start = n; }
+  }
+  go(start, true);
+
+  window.addEventListener("hashchange", function () {
+    var h = (location.hash || "").replace(/^#/, "");
+    for (var j = 0; j < STEPS.length; j++) {
+      if (STEPS[j].id === h && j !== current) { go(j, true); return; }
+    }
+  });
+
+}());
+</script>
+

@@ -7,12 +7,10 @@
       <span class="sub">Idexa · Ayesa · Pedro Hurtado</span>
     </div>
     <div class="spacer"></div>
-    <nav class="daystrip" aria-label="Sesiones del curso">
-      <span class="d now">S1 lun 21</span>
-      <span class="d">S2 mar 22</span>
-      <span class="d">S3 mié 23</span>
-      <span class="d">S4 jue 24</span>
-      <span class="d">S5 lun 28</span>
+    <nav class="daystrip" id="daystrip" aria-label="Sesiones del curso">
+      <a class="d" data-n="1" href="dia-01.html">S1 lun 21</a>
+      <a class="d" data-n="2" href="dia-02.html">S2 jue 24</a>
+      <a class="d" data-n="3" href="dia-03.html">S3 lun 28</a>
     </nav>
     <button class="tbtn railtoggle" id="railToggle" aria-expanded="true">Agenda</button>
     <button class="tbtn" id="themeToggle" title="Cambiar tema">Tema</button>
@@ -21,15 +19,13 @@
   <div class="body">
     <aside class="rail" id="rail" aria-label="Agenda de la sesión">
       <div class="rail-head">
-        <span class="eyebrow">Sesión 1 · 4 h</span>
+        <span class="eyebrow" id="railEyebrow">Sesión</span>
         <span class="clock">15:30–19:30</span>
       </div>
       <ul class="agenda" id="agenda"></ul>
       <div class="rail-foot">
         <b>Hoy cubrimos</b><br>
-        Módulo 1 · Introducción a AngularJS<br>
-        Módulo 2 · Fundamentos<br>
-        <span style="color:var(--ink-3)">+ el routing que sostiene todo lo demás</span>
+        <span id="railFoot"></span>
       </div>
     </aside>
 

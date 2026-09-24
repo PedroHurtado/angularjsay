@@ -108,6 +108,8 @@ body{
   font-family:var(--mono);font-size:10.5px;padding:3px 8px;border:1px solid var(--line);
   border-radius:999px;color:var(--ink-3);white-space:nowrap;
 }
+a.d{text-decoration:none}
+a.d:hover{border-color:var(--accent);color:var(--accent)}
 .daystrip .d.now{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:500}
 .tbtn{
   font:inherit;font-size:11.5px;font-family:var(--mono);cursor:pointer;
@@ -275,18 +277,28 @@ table.tbl td:first-child{font-weight:500}
   padding:3px 8px;color:var(--ink-2);
 }
 .urlbar:focus{outline:none;border-color:var(--live);color:var(--ink)}
-.outbody{display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0}
-.frame{width:100%;height:100%;border:0;background:#fff;display:block}
+/* Flex y no grid: un max-height en % dentro de una fila "auto" no tiene contra
+   qué resolverse y la consola quedaba aplastada a media línea. */
+.outbody{display:flex;flex-direction:column;min-height:0}
+.frame{flex:1 1 auto;min-height:120px;width:100%;border:0;background:#fff;display:block}
 .console{
-  border-top:1px solid var(--line);background:var(--surface-2);max-height:34%;overflow:auto;
-  font-family:var(--mono);font-size:11.5px;padding:0;
+  flex:0 0 auto;min-height:96px;max-height:45%;overflow:auto;
+  border-top:2px solid var(--line);background:var(--surface);
+  font-family:var(--mono);font-size:12.5px;line-height:1.5;padding:0;
 }
 .console[hidden]{display:none!important}
-.console .ln{padding:4px 10px;border-bottom:1px solid var(--line-soft);color:var(--ink-2);white-space:pre-wrap;overflow-wrap:break-word}
+.console .ln{padding:6px 12px;border-bottom:1px solid var(--line-soft);color:var(--ink);white-space:pre-wrap;overflow-wrap:break-word}
 .console .ln:last-child{border-bottom:0}
-.console .ln.error{color:var(--accent);background:var(--accent-soft)}
-.console .ln.warn{color:var(--warn);background:var(--warn-soft)}
-.console .ln .tag{color:var(--ink-3);margin-right:6px}
+.console .ln.error{color:var(--accent);background:var(--accent-soft);font-weight:500}
+.console .ln.warn{color:var(--warn);background:var(--warn-soft);font-weight:500}
+.console .ln .tag{
+  display:inline-block;min-width:44px;margin-right:8px;font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600;
+}
+.console .ln.error .tag,.console .ln.warn .tag{color:inherit}
+@media (max-width: 900px){
+  .console{max-height:40%}
+}
 
 /* ---------- challenge ---------- */
 .reto{

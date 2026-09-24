@@ -8,7 +8,26 @@
   var NG_CORE  = "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js";
   var NG_ROUTE = "https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.3/angular-route.min.js";
   var FONTS    = "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap";
-  var STORE    = "ngrepl:dia1:v1";
+  var STORE    = "ngrepl:dia" + SESSION.n + ":v1";
+
+  // Librerías opcionales por paso (step.libs). Todas verificadas en cdnjs.
+  var CDN = "https://cdnjs.cloudflare.com/ajax/libs/";
+  var LIBS = {
+    uirouter: CDN + "angular-ui-router/1.0.30/angular-ui-router.min.js",
+    messages: CDN + "angular-messages/1.8.3/angular-messages.min.js",
+    animate:  CDN + "angular-animate/1.8.3/angular-animate.min.js",
+    mocks:    CDN + "angular-mocks/1.8.3/angular-mocks.js"
+  };
+  var JASMINE = CDN + "jasmine/4.6.0/";
+
+  // Enlaces a las otras sesiones: las versiones publicadas. En local (http-server)
+  // se usan los archivos hermanos.
+  var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || location.protocol === "file:";
+  var DAY_LINKS = LOCAL ? { 1: "dia-01.html", 2: "dia-02.html", 3: "dia-03.html" } : {
+    1: "https://claude.ai/artifact/Q7huigsarBUs4VWfQsM7Cv",
+    2: "https://claude.ai/artifact/7fegGMYKf6baZLh3WS4nLd",
+    3: "https://claude.ai/artifact/2cz1Gqsncbrz4VBaCufMLU"
+  };
 
   /* ---------------------------------------------------------------- css de la vista previa */
   var BASE_CSS = [
@@ -44,11 +63,13 @@
   /* ---------------------------------------------------------------- construir el documento */
   var S = "<scr" + "ipt", E = "</scr" + "ipt>";
 
-  function harness(templates) {
+  function harness(templates, data) {
     var json = JSON.stringify(templates).replace(/</g, "\\u003c");
+    var djson = JSON.stringify(data).replace(/</g, "\\u003c");
     return [
       "(function(){",
       "var TPL=" + json + ";",
+      "var DATA=" + djson + ";",
       "function post(k,t){try{parent.postMessage({__ngrepl:1,kind:k,text:t},'*');}catch(e){}}",
       "function fmt(a){if(typeof a==='string')return a;try{return JSON.stringify(a);}catch(e){return String(a);}}",
       "if(window.__ngFails&&window.__ngFails.length){",
@@ -60,8 +81,10 @@
       "if(!window.angular){post('error','No se ha podido cargar angular.js. ¿Hay conexión?');return;}",
       "var base=angular.module;",
       "angular.module=function(name,requires){var m=base.apply(angular,arguments);",
-      "  if(requires){m.run(['$templateCache',function(tc){for(var k in TPL){tc.put(k,TPL[k]);}}]);}",
+      "  if(requires){m.run(['$templateCache',function(tc){for(var k in TPL){tc.put(k,TPL[k]);}}]);",
+      "    if(!angular.mock){m.config(['$provide',function(p){p.decorator('$httpBackend',['$delegate',fakeApi]);}]);}}",
       "  return m;};",
+      FAKE_API,
       "function route(){post('route',location.hash||'#!/');}",
       "window.addEventListener('hashchange',route);",
       "window.addEventListener('message',function(e){var d=e.data;",
@@ -71,35 +94,137 @@
     ].join("\n");
   }
 
+  /* API REST simulada. Cada archivo .json del ejercicio es una colección en
+     memoria: api/cursos.json → GET/POST api/cursos, GET/PUT/PATCH/DELETE
+     api/cursos/3. Se serializa con toString() y corre dentro del iframe como
+     decorador de $httpBackend, así que $http, las promesas y los
+     interceptores funcionan exactamente igual que contra un servidor. */
+  function fakeApi($delegate) {
+    if ($delegate.__fake) { return $delegate; }
+    var DB = {};
+    for (var k in DATA) {
+      var key = k.replace(/\.json$/i, "");
+      try { DB[key] = JSON.parse(DATA[k]); } catch (e) { DB[key] = DATA[k]; }
+    }
+
+    function parse(b) {
+      if (typeof b !== "string") { return b || {}; }
+      try { return JSON.parse(b); } catch (e) { return {}; }
+    }
+
+    function indexOfId(list, id) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] && String(list[i].id) === String(id)) { return i; }
+      }
+      return -1;
+    }
+
+    function nextId(list) {
+      var max = 0;
+      list.forEach(function (x) { if (x && Number(x.id) > max) { max = Number(x.id); } });
+      return max + 1;
+    }
+
+    function resolve(url) {
+      var clean = String(url).split(/[?#]/)[0].replace(/^(\.?\/)+/, "").replace(/\.json$/i, "");
+      if (Object.prototype.hasOwnProperty.call(DB, clean)) { return { coll: clean, path: clean }; }
+      var m = /^(.*)\/([^\/]+)$/.exec(clean);
+      if (m && Array.isArray(DB[m[1]])) { return { coll: m[1], id: decodeURIComponent(m[2]), path: clean }; }
+      return { path: clean };
+    }
+
+    function handle(method, r, body) {
+      var list = DB[r.coll], i, item;
+      if (r.id === undefined) {
+        if (method === "GET") { return [200, list]; }
+        if (method === "POST" && Array.isArray(list)) {
+          item = parse(body);
+          if (item.id == null) { item.id = nextId(list); }
+          list.push(item);
+          return [201, item];
+        }
+        return [405, { error: "Método " + method + " no permitido sobre " + r.path }];
+      }
+      i = indexOfId(list, r.id);
+      if (i < 0) { return [404, { error: "No existe " + r.path }]; }
+      if (method === "GET") { return [200, list[i]]; }
+      if (method === "PUT") {
+        item = parse(body); item.id = list[i].id; list[i] = item;
+        return [200, item];
+      }
+      if (method === "PATCH") { angular.extend(list[i], parse(body)); return [200, list[i]]; }
+      if (method === "DELETE") { list.splice(i, 1); return [204, null]; }
+      return [405, { error: "Método " + method + " no permitido" }];
+    }
+
+    var TEXT = { 200: "OK", 201: "Created", 204: "No Content", 404: "Not Found", 405: "Method Not Allowed", 500: "Internal Server Error" };
+
+    function fake(method, url, body, callback) {
+      var r = resolve(url), res;
+      method = String(method).toUpperCase();
+      if (/error500/.test(url)) { res = [500, { error: "Error interno simulado" }]; }
+      else if (r.coll) { res = handle(method, r, body); }
+      else if (/^api\//.test(r.path)) { res = [404, { error: "No existe " + r.path }]; }
+      else { return $delegate.apply(this, arguments); }
+
+      setTimeout(function () {
+        post(res[0] >= 400 ? "warn" : "log", "[api] " + method + " " + r.path + " → " + res[0]);
+        callback(res[0], res[1] == null ? "" : JSON.stringify(res[1]),
+                 "Content-Type: application/json", TEXT[res[0]] || "", "complete");
+      }, 400);
+    }
+    fake.__fake = true;
+    return fake;
+  }
+
+  var FAKE_API = "var fakeApi=" + fakeApi.toString() + ";";
+
   var BOOTCHECK = [
-    "(function(){setTimeout(function(){",
+    // Plan B por si Angular no arrancó solo. Espera a 'load': antes de eso el
+    // auto-bootstrap de DOMContentLoaded aún no ha corrido y arrancaríamos dos veces.
+    "(function(){window.addEventListener('load',function(){setTimeout(function(){",
     "if(!window.angular)return;",
     "var el=document.querySelector('[ng-app],[data-ng-app],[x-ng-app]');if(!el)return;",
     "if(el.className&&String(el.className).indexOf('ng-scope')>-1)return;",
     "try{if(angular.element(el).scope())return;}catch(e){}",
     "try{var n=el.getAttribute('ng-app')||el.getAttribute('data-ng-app');angular.bootstrap(el,n?[n]:[]);}",
     "catch(e){if(window.console)console.error(e.message||String(e));}",
-    "},0);}());"
+    "},0);});}());"
   ].join("\n");
 
-  function buildPayload(files) {
-    var index = "", js = [], css = [], tpl = {};
+  function buildPayload(files, libs) {
+    var index = "", js = [], css = [], tpl = {}, data = {};
+    libs = libs || [];
+    var jasmine = libs.indexOf("jasmine") > -1;
 
     files.forEach(function (f) {
       if (f.name === "index.html") { index = f.code; }
       else if (/\.html?$/i.test(f.name)) { tpl[f.name] = f.code; }
       else if (/\.css$/i.test(f.name)) { css.push(f.code); }
+      else if (/\.json$/i.test(f.name)) { data[f.name.replace(/^\.?\//, "")] = f.code; }
+      else if (/(^|\/)karma\.conf\.js$/i.test(f.name)) { /* se enseña, no se ejecuta */ }
       else { js.push(f.code); }
     });
 
     var out = "";
     out += '<link rel="stylesheet" href="' + FONTS + '">';
+    if (jasmine) { out += '<link rel="stylesheet" href="' + JASMINE + 'jasmine.min.css">'; }
     out += "<style>" + BASE_CSS + css.join("\n") + "</style>";
     out += index;
     out += S + ">window.__ngFail=function(n){(window.__ngFails=window.__ngFails||[]).push(n);};" + E;
+    // Jasmine antes que angular-mocks: ngMock sólo publica module() e inject()
+    // si encuentra window.jasmine al cargarse.
+    if (jasmine) {
+      ["jasmine.min.js", "jasmine-html.min.js", "boot0.min.js", "boot1.min.js"].forEach(function (n) {
+        out += S + ' src="' + JASMINE + n + '" onerror="__ngFail(\'' + n + '\')">' + E;
+      });
+    }
     out += S + ' src="' + NG_CORE + '" onerror="__ngFail(\'angular.js\')">' + E;
     out += S + ' src="' + NG_ROUTE + '" onerror="__ngFail(\'angular-route.js\')">' + E;
-    out += S + ">" + harness(tpl) + E;
+    libs.forEach(function (k) {
+      if (LIBS[k]) { out += S + ' src="' + LIBS[k] + '" onerror="__ngFail(\'' + k + '\')">' + E; }
+    });
+    out += S + ">" + harness(tpl, data) + E;
     js.forEach(function (code) { out += S + ">" + code + E; });
     out += S + ">" + BOOTCHECK + E;
     return out;
@@ -520,7 +645,7 @@
       cons.innerHTML = "";
       cons.hidden = true;
       dot.classList.remove("err");
-      var payload = buildPayload(files);
+      var payload = buildPayload(files, step.libs);
       live = { frame: frame, log: logLine, url: urlEl, dot: dot, payload: payload };
       mount(live);
     }
@@ -594,6 +719,22 @@
     var th = localStorage.getItem("ngrepl:theme");
     if (th) { document.documentElement.setAttribute("data-theme", th); }
   } catch (e) {}
+
+  /* cabecera de la sesión */
+  document.title = "AngularJS · Sesión " + SESSION.n;
+  document.getElementById("railEyebrow").textContent = SESSION.eyebrow || ("Sesión " + SESSION.n);
+  document.getElementById("railFoot").innerHTML = SESSION.cubrimos || "";
+  (function () {
+    var ds = document.querySelectorAll("#daystrip .d");
+    for (var k = 0; k < ds.length; k++) {
+      var dn = ds[k].getAttribute("data-n");
+      if (Number(dn) === SESSION.n) { ds[k].classList.add("now"); ds[k].removeAttribute("href"); }
+      else if (DAY_LINKS[dn]) {
+        ds[k].href = DAY_LINKS[dn];
+        if (!LOCAL) { ds[k].target = "_blank"; ds[k].rel = "noopener"; }
+      }
+    }
+  }());
 
   /* reloj de la sesión */
   var clockEl = document.querySelector(".rail-head .clock");

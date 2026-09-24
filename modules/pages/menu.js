@@ -9,7 +9,7 @@ const outlet = document.getElementById('outlet')
             ev.preventDefault();
             outlet.textContent = ''
             const {page} = node.dataset
-            const url = `./page${page}.js`
+            const url = `./page${page}.js`            
             const module = await import(url)
             module.default();
         }
